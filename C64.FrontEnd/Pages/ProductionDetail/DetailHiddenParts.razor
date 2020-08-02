@@ -1,0 +1,15 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@foreach (var hiddenPart in HiddenParts)
+{
+    <div>@hiddenPart.Description</div>
+    if (hiddenPart != HiddenParts.Last())
+    {
+        <hr />
+    }
+}
+
+@code {
+    [Parameter]
+    public ICollection<HiddenPart> HiddenParts { get; set; }
+}

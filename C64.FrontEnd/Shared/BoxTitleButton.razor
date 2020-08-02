@@ -1,0 +1,20 @@
+﻿<div class="float-right pr-3">
+    <h5 class="d-inline">
+        <a href="" @onclick:preventDefault @onclick="onClick" class="badge badge-@Style">@Text</a>
+    </h5>
+</div>
+@code {
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public EventCallback OnClicked { get; set; }
+
+    [Parameter]
+    public string Style { get; set; } = "success";
+
+    private void onClick()
+    {
+        OnClicked.InvokeAsync(null);
+    }
+}

@@ -1,0 +1,22 @@
+﻿[
+  {
+    "outputFile": "wwwroot/js/admin/admin.min.js",
+    "inputFile": "wwwroot/js/admin/admin.js"
+  },
+  {
+    "outputFile": "wwwroot/js/site.min.js",
+    "inputFile": "wwwroot/js/site.js"
+  },
+  {
+    "outputFile": "wwwroot/lib/fslightbox/fslightbox.min.js",
+    "inputFile": "wwwroot/lib/fslightbox/fslightbox.js"
+  },
+  {
+    "outputFile": "wwwroot/css/site.css",
+    "inputFile": "wwwroot/css/site.scss"
+  },
+  {
+    "outputFile": "wwwroot/js/inputfile.es5.js",
+    "inputFile": "wwwroot/js/inputfile.js"
+  }
+]

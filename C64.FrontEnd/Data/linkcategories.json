@@ -1,0 +1,32 @@
+[
+  {
+    "LinkCategoryId": 1,
+    "Name": "General",
+    "Selectable": true
+  },
+  {
+    "LinkCategoryId": 2,
+    "Name": "Games",
+    "Selectable": true
+  },
+  {
+    "LinkCategoryId": 3,
+    "Name": "SID",
+    "Selectable": true
+  },
+  {
+    "LinkCategoryId": 4,
+    "Name": "Group",
+    "Selectable": true
+  },
+  {
+    "LinkCategoryId": 5,
+    "Name": "Hardware",
+    "Selectable": true
+  },
+  {
+    "LinkCategoryId": 6,
+    "Name": "Zines",
+    "Selectable": true
+  }
+]

@@ -1,0 +1,11 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@foreach (var party in ProductionsParties)
+{
+    <a href="/parties/@party.PartyId/@party.Party.Name.UrlEncode()">@party.Party.Name  @(party.GetAchievementText != null ? $"({party.GetAchievementText})" : "")</a>
+    <br>
+}
+@code {
+    [Parameter]
+    public ICollection<ProductionsParties> ProductionsParties { get; set; }
+}

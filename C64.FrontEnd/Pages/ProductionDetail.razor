@@ -1,0 +1,343 @@
+﻿@page "/productions/{ProductionId:int}"
+@page "/productions/{ProductionId:int}/{ProdName}"
+
+@inject IUnitOfWork unitOfWork
+@inject NotifierService notifier
+@inject ILogger<Index> logger
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IModalService Modal
+
+@if (production != null)
+{
+    <Box>
+        <Title>
+            @production.Name<br />
+            by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
+            <AuthorizeView>
+                <Authorized>
+                    <div class="float-right pr-3 position-absolute" style="right:0; top:5px">
+                        <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
+                            <option value="0">Edit Production</option>
+                            <option value="general">- General</option>
+                            <option>- Screenshots</option>
+                            <option>- Videos</option>
+                            <option>- Downloads</option>
+                            <option>- Credits</option>
+                        </select>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <LoginLink>
+                        <Content>
+                            Login to edit
+                        </Content>
+                    </LoginLink>
+                </NotAuthorized>
+            </AuthorizeView>
+        </Title>
+        <Content>
+            <div class="row">
+                <div class="col-sm-5">
+                    <PicturesCarousel ProductionName="@production.Name" ProductionPictures="@production.ProductionPictures" ProductionVideos="@production.ProductionVideos" />
+                </div>
+                <div class="col-sm-7">
+                    <table class="table table-prod-list">
+                        @if (!string.IsNullOrEmpty(production.Aka))
+                        {
+                            <tr>
+                                <th>Aka:</th>
+                                <td>
+                                    @production.Aka
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <th>By:</th>
+                            <td>
+                                <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Category:</th>
+                            <td>
+                                <EnumDisplayNameAttribute DisplayNameFor="@production.TopCategory" /> -  <EnumDisplayNameAttribute DisplayNameFor="@production.SubCategory" />
+                            </td>
+                        </tr>
+                        <tr><th><span class="text-nowrap">Released on:</span></th><td><PartialDateDisplay DateType="@production.ReleaseDateType" DateValue="@production.ReleaseDate" /></td></tr>
+                        @if (production.ProductionsParties.Any())
+                        {
+                            <tr>
+                                <th>Released at:</th>
+                                <td>
+                                    <DetailParties ProductionsParties="@production.ProductionsParties" />
+                                </td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(production.Remarks))
+                        {
+                            <tr><th>Remarks:</th><td>@production.Remarks</td></tr>
+                        }
+                        @if (production.HiddenParts.Any())
+                        {
+                            <tr class="align-top">
+                                <th><span class="nowrap">Hidden Parts:</span></th>
+                                <td>
+                                    <DetailHiddenParts HiddenParts="@production.HiddenParts" />
+                                </td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <th>Rating:</th>
+                            <td>
+                                <RatingDetail Production="production" OnVote="OnVote" />
+                            </td>
+                        </tr>
+                        @if (production.ProductionCredits.Any())
+                        {
+                            <tr>
+                                <th>Credits:</th>
+                                <td>
+                                    @{
+                                        var currentCredit = "";
+                                    }
+                                    @foreach (var credit in production.ProductionCredits.OrderBy(p => p.Credit))
+                                    {
+                                        if (currentCredit != credit.Credit.ToString())
+                                        {
+                                            <b>@credit.Credit</b><br />
+                                            currentCredit = credit.Credit.ToString();
+                                        }
+
+                                        @if (credit.Scener.ScenersGroups.Any(p => p.Currently))
+                                        {
+                                            <span class="pl-4">@credit.Scener.Handle of <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="credit.Scener.ScenersGroups.Where(p => p.Currently).Select(p => p.Group)" /></span><br />
+                                        }
+                                        else
+                                        {
+                                            <span class="pl-4">@credit.Scener.Handle</span><br />
+                                        }
+
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        <tr><th>Added:</th><td>@production.Added.ParseDate()</td></tr>
+                        @if (!string.IsNullOrEmpty(production.UploaderFixed()))
+                        {
+                            <tr><th>Added by:</th><td>@production.UploaderFixed()</td></tr>
+                        }
+                        @if (!string.IsNullOrEmpty(production.SubmitterFixed()))
+                        {
+                            <tr><th><span class="text-nowrap">Submitted by:</span></th><td>@production.SubmitterFixed()</td></tr>
+                        }
+
+                        <tr>
+                            <th>Downloads:</th>
+                            <td>
+                                <AllDownloads ProductionFiles="@production.ProductionFiles" />
+                            </td>
+                        </tr>
+                        <tr><th><span class="text-nowrap">Total Downloads:</span></th><td>@production.Downloads</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <DownloadChart ProductionId="@production.ProductionId" />
+                </div>
+                <div class="col-md-6">
+                    <RatingChart @ref="ratingChart" ProductionId="@production.ProductionId" />
+                </div>
+            </div>
+        </Content>
+    </Box>
+    <Box>
+        <Title>
+            Comment Section
+            <div class="float-right pr-3">
+                <h5 class="d-inline">
+                    <AuthorizeView>
+                        <NotAuthorized>
+                            <LoginLink class="badge badge-warning"><Content>Please login to write a comment</Content></LoginLink>
+                        </NotAuthorized>
+                        <Authorized>
+                            @if (!CommentsBlocked)
+                            {
+                                <a href="" @onclick:preventDefault @onclick="OpenWriteCommentModal" class="badge badge-success">Write your comment</a>
+                            }
+                            else
+                            {
+                                <p class="badge badge-success">Thank you for your comment!</p>
+                            }
+                        </Authorized>
+                    </AuthorizeView>
+                </h5>
+            </div>
+        </Title>
+        <Content>
+            <DetailComments Comments="@production.Comments" />
+        </Content>
+    </Box>
+    <AuthorizeView>
+        <Authorized>
+            <WriteComment @ref="writeCommentModal" ProductionId="@production.ProductionId" ProductionName="@production.Name" OnCommented="OnCommented" />
+            @if (production != null)
+            {
+                <EditProductionModal @ref="editProductionModal" Production="@production" OnClosed="onClosed" unitOfWork="@unitOfWork" />
+            }
+        </Authorized>
+    </AuthorizeView>
+}
+
+@code{
+
+    //[CascadingParameter(Name = "FullWidth")]
+    //protected Data.Cascad FullWidth { get; set; } = new Data.Cascad();
+
+    [Parameter]
+    public string ProdName { get; set; }
+
+    [Parameter]
+    public int ProductionId { get; set; } = 1;
+
+    private Production production;
+    private RatingChart ratingChart;
+
+    private bool CommentsBlocked = false;
+
+    private WriteComment writeCommentModal;
+    private EditProductionModal editProductionModal;
+
+    private async Task OnSelectEdit(ChangeEventArgs args)
+    {
+        await jsRuntime.InvokeAsync<object>("ResetProdEditSelect");
+        editProductionModal.Show();
+    }
+
+    private void OpenWriteCommentModal()
+    {
+        writeCommentModal.Show();
+    }
+
+    private void onClosed()
+    {
+        logger.LogInformation("Production name is now {name}", production.Name);
+        StateHasChanged();
+    }
+
+    private async Task OnCommented(string comment)
+    {
+        logger.LogInformation("Comment received {comment}", comment);
+        production.Comments.Add(new Comment
+        {
+            CommentedAt = DateTime.Now,
+            Ip = httpContext.HttpContext.RemoteIp(),
+            Text = comment,
+            UserId = httpContext.HttpContext.GetUserId()
+        });
+
+        await unitOfWork.Commit();
+
+        await LoadProd(production.ProductionId);
+
+        CommentsBlocked = true;
+
+        writeCommentModal.Hide();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        logger.LogInformation("OnInitAsync");
+        navigationManager.LocationChanged += OnLocationChanged;
+        await LoadProd(ProductionId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeAsync<object>("initializeCarousel");
+            firstRender = false;
+        }
+        await jsRuntime.InvokeVoidAsync("refreshFsLightbox");
+        await jsRuntime.InvokeAsync<object>("bindCarousel");
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        logger.LogInformation("Location changed, ProductionId is now {ProductionId}", ProductionId);
+        try
+        {
+            await jsRuntime.InvokeAsync<object>("initializeCarousel");
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning("Catched exception {@e}", e);
+        }
+        await LoadProd(ProductionId);
+    }
+
+    private async Task LoadProd(int id)
+    {
+        var sw = new System.Diagnostics.Stopwatch();
+        sw.Start();
+
+        production = await unitOfWork.Productions.GetDetails(id);
+
+        sw.Stop();
+
+        logger.LogInformation("{milliseconds}ms to load Production with id {id}", sw.ElapsedMilliseconds, id);
+
+        var userId = httpContext.HttpContext.GetUserId();
+
+        logger.LogInformation("UserID: {userId}", userId);
+
+        if (production?.Comments.Where(p => p.UserId == userId && p.CommentedAt > DateTime.Now.AddHours(-6)).Count() >= 1)
+        {
+            logger.LogInformation("Comments are blocked");
+            CommentsBlocked = true;
+        }
+        else
+            CommentsBlocked = false;
+
+        StateHasChanged();
+    }
+
+    private async Task OnVote(int selectedRate)
+    {
+        var userId = httpContext.HttpContext.GetUserId();
+
+        logger.LogInformation("Rating {selectedRate} received.", selectedRate);
+
+        var userRating = production.Ratings.FirstOrDefault(p => p.UserId == userId);
+
+        if (userRating != null)
+        {
+            userRating.Value = selectedRate;
+            userRating.RatedAt = DateTime.Now;
+            userRating.Ip = httpContext.HttpContext.RemoteIp();
+        }
+        else
+        {
+            production.Ratings.Add(new Rating
+            {
+                Ip = httpContext.HttpContext.RemoteIp(),
+                ProductionId = production.ProductionId,
+                RatedAt = DateTime.Now,
+                UserId = httpContext.HttpContext.GetUserId(),
+                Value = selectedRate
+            });
+
+        }
+        await unitOfWork.Commit();
+
+        unitOfWork.Productions.UpdateSingleProductionStat(production);
+        await unitOfWork.Commit();
+
+        await ratingChart.Update();
+
+    }
+}

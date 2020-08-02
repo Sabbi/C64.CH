@@ -1,0 +1,78 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject ILogger<WriteComment>  logger;
+
+<BSModal @ref="WriteCommentModal" Size="Size.Large">
+    <BSModalHeader OnClick="@(() => WriteCommentModal.Hide())">Write your comment for @ProductionName</BSModalHeader>
+    <BSModalBody>
+        <EditForm Model="@writeCommentEditForm" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Your comment:</label><button class="btn btn-xs btn-primary float-right" type="button" @onclick="ToogleShowMarkdDown">Toggle Preview</button>
+                <div>
+                    @if (showMarkDown)
+                    {
+                        <div class="border border-secondary p-3">
+                            <RenderMarkdown MarkdownContent="@writeCommentEditForm.Comment" />
+                        </div>
+                    }
+                    else
+                    {
+                        <InputTextArea rows="10" class="form-control" @bind-Value="@writeCommentEditForm.Comment" />
+                        <ValidationMessage For="@(() => writeCommentEditForm.Comment)" />
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <BSButton Color="Color.Primary" type="Submit">Save and add your comment</BSButton>
+                </div>
+                <div class="col-6 text-right">
+                    <BSButton Color="Color.Secondary" @onclick="@(() => WriteCommentModal.Hide())">Cancel</BSButton>
+                </div>
+            </div>
+        </EditForm>
+        <div class="pt-2">
+            <p> Please: Be friendly, be fair. Abusive, offensive, insulting etc. comments are going to be deleted, and so are you in case you ignore good manners repeatedly. Don't try HTML-Codes, but you may use Markdown. Enters/Newlines are fine.</p>
+        </div>
+    </BSModalBody>
+</BSModal>
+
+@code {
+
+    [Parameter]
+    public int ProductionId { get; set; }
+
+    [Parameter]
+    public string ProductionName { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnCommented { get; set; }
+
+    private WriteCommentEditForm writeCommentEditForm = new WriteCommentEditForm();
+
+    private BSModal WriteCommentModal;
+
+    private bool showMarkDown = false;
+
+    private void ToogleShowMarkdDown()
+    {
+        showMarkDown = !showMarkDown;
+    }
+
+    private async Task HandleSubmit()
+    {
+        await OnCommented.InvokeAsync(writeCommentEditForm.Comment);
+    }
+
+    public void Show()
+    {
+        writeCommentEditForm = new WriteCommentEditForm();
+        WriteCommentModal.Show();
+    }
+
+    public void Hide()
+    {
+        WriteCommentModal.Hide();
+    }
+}

@@ -1,0 +1,170 @@
+﻿@inherits InputBase<PartialDate>
+@inject ILogger<InputPartialDate> logger
+<select @onchange="YearChange" class="form-control d-inline-block" style="width:25%">
+    <option value="0">- Year -</option>
+    @for (var i = StartingYear; i <= DateTime.Now.Year; i++)
+    {
+
+        if (year == i.ToString())
+        {
+            <option selected>@i.ToString()</option>
+        }
+        else
+        {
+            <option>@i.ToString()</option>
+        }
+    }
+</select>
+    &nbsp;
+<select @onchange="MonthChange" class="form-control d-inline-block" style="width:25%">
+    <option value="0">- Month -</option>
+    @for (var i = 1; i <= 12; i++)
+    {
+        if (month == i.ToString())
+        {
+            <option selected>@i.ToString()</option>
+        }
+        else
+        {
+            <option>@i.ToString()</option>
+        }
+    }
+</select>
+    &nbsp;
+<select @onchange="DayChange" class="form-control d-inline-block" style="width:25%">
+    <option value="0">- Day -</option>
+    @for (var i = 1; i <= 31; i++)
+    {
+        if (day == i.ToString())
+        {
+            <option selected>@i.ToString()</option>
+        }
+        else
+        {
+            <option>@i.ToString()</option>
+        }
+    }
+</select>
+
+@*<b>@Value?.IsValidDate (@Value?.Date / @Value?.Type)</b>*@
+@code {
+    /// <summary>
+    /// TODO: Chnorz - A lot of clearup 2 do!
+    /// </summary>
+
+    [Parameter]
+    public int StartingYear { get; set; } = 1982;
+
+    [Parameter]
+    public int EndingYear { get; set; } = DateTime.Now.Year;
+
+    private string day = "0";
+    private string month = "0";
+    private string year = "0";
+
+    private int dayInt = 0;
+    private int monthInt = 0;
+    private int yearInt = 0;
+
+    private void MonthChange(ChangeEventArgs eventArgs)
+    {
+        month = eventArgs.Value.ToString();
+
+        if (month == "0")
+            day = "0";
+
+        logger.LogInformation("MonthChange called");
+        Updater();
+    }
+
+    private void DayChange(ChangeEventArgs eventArgs)
+    {
+        day = eventArgs.Value.ToString();
+
+        if (day != "0" && month == "0")
+            month = "1";
+
+        logger.LogInformation("DayChange called");
+        Updater();
+    }
+
+    private void YearChange(ChangeEventArgs eventArgs)
+    {
+        year = eventArgs.Value.ToString();
+
+        if (year == "0")
+        {
+            month = "0";
+            day = "0";
+        }
+
+        logger.LogInformation("YearChange called");
+        Updater();
+    }
+
+    private void Updater()
+    {
+        dayInt = int.Parse(day);
+        monthInt = int.Parse(month);
+        yearInt = int.Parse(year);
+
+        if (yearInt == 0)
+        {
+            Value.Date = DateTime.MinValue;
+            Value.IsValidDate = true;
+            Value.Type = DateType.None;
+        }
+
+        if (monthInt > 0 && yearInt > 0)
+        {
+            var daysInMonth = DateTime.DaysInMonth(yearInt, monthInt);
+
+            if (dayInt > daysInMonth)
+            {
+                dayInt = daysInMonth;
+                day = daysInMonth.ToString();
+            }
+        }
+
+        try
+        {
+            Value.Date = new DateTime(int.Parse(year), int.Parse(month) == 0 ? 1 : int.Parse(month), int.Parse(day) == 0 ? 1 : int.Parse(day));
+
+            if (year == "0")
+                Value.Type = DateType.None;
+            if (month == "0" && day == "0")
+                Value.Type = DateType.Year;
+            else if (day == "0")
+                Value.Type = DateType.YearMonth;
+            else
+                Value.Type = DateType.YearMonthDay;
+
+            Value.IsValidDate = true;
+        }
+        catch (Exception e)
+        {
+            logger.LogInformation("Catched {e}", e);
+            Value.IsValidDate = false;
+        }
+    }
+
+    protected override string FormatValueAsString(PartialDate value)
+    {
+        throw new Exception("FormatValueasStsring");
+    }
+
+    protected override bool TryParseValueFromString(string value, out PartialDate result, out string validationErrorMessage)
+    {
+        throw new Exception("Tryparsevaluefromstring");
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Value != null)
+        {
+            day = Value.Type == DateType.YearMonthDay ? Value.Date.Day.ToString() : "0";
+            month = Value.Type == DateType.YearMonth || Value.Type == DateType.YearMonthDay ? Value.Date.Month.ToString() : "0";
+            year = Value.Type != DateType.None ? Value.Date.Year.ToString() : "0";
+        }
+    }
+}

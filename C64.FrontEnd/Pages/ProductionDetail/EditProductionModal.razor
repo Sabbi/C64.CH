@@ -1,0 +1,185 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+
+<BSModal @ref="editProductionModal" Size="Size.Large" HideEvent="HideEvent">
+    <BSModalHeader OnClick="@(() => editProductionModal.Hide())">Edit General Information of @Production.Name</BSModalHeader>
+    <BSModalBody>
+        <EditForm Model="editProductionGeneral" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label>Productionname:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editProductionGeneral.Name" />
+                    <ValidationMessage For="@(() => editProductionGeneral.Name)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Aka (also known as):</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editProductionGeneral.Aka" />
+                    <ValidationMessage For="@(() => editProductionGeneral.Aka)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Groups:</label>
+                <div>
+                    <BlazoredTypeahead @bind-Values="@editProductionGeneral.SelectedGroups" SearchMethod="SearchGroups">
+                        <SelectedTemplate Context="group">
+                            @group.Name
+                        </SelectedTemplate>
+                        <ResultTemplate Context="group">
+                            @group.GroupId (@group.Name)
+                        </ResultTemplate>
+                        <NotFoundTemplate>
+                            No group named @searchText found - please add it on the groups page first
+                        </NotFoundTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Category:</label>
+                <div>
+                    <InputSelect @bind-Value="editProductionGeneral.SubCategory" class="form-control">
+                        @foreach (var item in Enum.GetValues(typeof(SubCategory)))
+                        {
+                            <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Released on:</label>
+                <div>
+                    <InputPartialDate @bind-Value="@editProductionGeneral.ReleasedOn" StartingYear="1982" EndingYear="DateTime.Now.Year" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Released at:</label>
+                <div>
+                    <BlazoredTypeahead @bind-Value="@editProductionGeneral.Party" SearchMethod="SearchParty" placeholder="Enter party name">
+                        <SelectedTemplate Context="party">
+                            @party.Name
+                        </SelectedTemplate>
+                        <ResultTemplate Context="party">
+                            @party.Name (<PartialDateDisplay DateType="DateType.YearMonthDay" DateValue="@party.From" /> - <PartialDateDisplay DateType="DateType.YearMonthDay" DateValue="@party.To" />)
+                        </ResultTemplate>
+                        <NotFoundTemplate>
+                            Party not found - you may add a new party on the parties page.
+                        </NotFoundTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            @if (editProductionGeneral.Party != null)
+            {
+                <div class="form-group">
+                    <label>Achieved Rank in Category (Set to 0 / leave empty if not applicable or known):</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <InputNumber class="form-control" @bind-Value="@editProductionGeneral.PartyRank" placeholder="Rank" />
+                            <ValidationMessage For="@(() => editProductionGeneral.PartyRank)" />
+                        </div>
+                        <div class="col-6">
+                            <InputText class="form-control" @bind-Value="@editProductionGeneral.PartyCategory" placeholder="Category" />
+                            <ValidationMessage For="@(() => editProductionGeneral.PartyCategory)" />
+                        </div>
+                    </div>
+                </div>
+            }
+            <button class="btn btn-primary" type="submit">Update Production</button>
+        </EditForm>
+    </BSModalBody>
+</BSModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; } = new Production();
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BSModal editProductionModal { get; set; }
+
+    private EditProductionGeneral editProductionGeneral = new EditProductionGeneral();
+
+    private string searchText = string.Empty;
+
+    private async Task<IEnumerable<Party>> SearchParty(string searchPartyText)
+    {
+        var result = unitOfWork.Parties.Find(p => p.Name.Contains(searchPartyText, StringComparison.OrdinalIgnoreCase)).OrderByDescending(p => p.From);
+        return await Task.FromResult(result);
+    }
+
+    private async Task<IEnumerable<Group>> SearchGroups(string searchText)
+    {
+        this.searchText = searchText;
+
+        var result = unitOfWork.Groups.Find(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)).OrderBy(p => p.Name);
+        return await Task.FromResult(result.OrderBy(p => p.Name));
+
+    }
+
+    private async Task OnValidSubmit()
+    {
+        logger.LogInformation("OnValidSubmit");
+
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+        productionHistory.AddHistory(ProductionEditProperty.Name, editProductionGeneral.Name, HistoryStatus.ToApply);
+        productionHistory.AddHistory(ProductionEditProperty.Aka, editProductionGeneral.Aka, HistoryStatus.ToApply);
+        productionHistory.AddHistory(ProductionEditProperty.SubCategory, editProductionGeneral.SubCategory, HistoryStatus.ToApply);
+
+        productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type }, HistoryStatus.ToApply);
+        productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData { PartyId = editProductionGeneral.Party?.PartyId ?? 0, Category = editProductionGeneral.PartyCategory, Rank = editProductionGeneral.PartyRank }, HistoryStatus.ToApply);
+        productionHistory.AddHistory(ProductionEditProperty.Groups, editProductionGeneral.SelectedGroups, HistoryStatus.ToApply);
+
+        productionHistory.Apply();
+
+        await unitOfWork.Commit();
+
+        Hide();
+    }
+
+    private void HideEvent()
+    {
+        logger.LogInformation("Hide Event Fired");
+        OnClosed.InvokeAsync(null);
+
+    }
+
+    private void Hide()
+    {
+        logger.LogInformation("HIde Fired");
+        editProductionModal.Hide();
+    }
+
+    public void Show()
+    {
+        editProductionGeneral = new EditProductionGeneral();
+        editProductionGeneral.Name = Production.Name;
+        editProductionGeneral.Aka = Production.Aka;
+        editProductionGeneral.ReleasedOn = new PartialDate(Production.ReleaseDate, Production.ReleaseDateType);
+        editProductionGeneral.TopCategory = Production.TopCategory;
+        editProductionGeneral.SubCategory = Production.SubCategory;
+        editProductionGeneral.SelectedGroups = Production.ProductionsGroups.Select(p => p.Group).ToList();
+
+        editProductionGeneral.Party = Production.ProductionsParties.FirstOrDefault()?.Party;
+
+        if (editProductionGeneral != null)
+        {
+            editProductionGeneral.PartyCategory = Production.ProductionsParties.FirstOrDefault()?.Category;
+
+            var rank = Production.ProductionsParties.FirstOrDefault()?.Rank;
+            editProductionGeneral.PartyRank = rank.GetValueOrDefault();
+        }
+
+        StateHasChanged();
+
+        editProductionModal.Show();
+    }
+
+}

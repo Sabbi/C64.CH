@@ -1,0 +1,26 @@
+﻿@inject NotifierService notifierService
+@implements IDisposable
+<h3>Displayer</h3>
+<p>Message: @message</p>
+
+@code {
+
+    private string message;
+
+    protected override void OnInitialized()
+    {
+        notifierService.NewMessage += OnNewMessage;
+    }
+
+    private void OnNewMessage(object sender, string message)
+    {
+        this.message = message;
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        notifierService.NewMessage -= OnNewMessage;
+    }
+}

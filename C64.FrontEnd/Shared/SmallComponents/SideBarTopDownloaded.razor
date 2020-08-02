@@ -1,0 +1,39 @@
+﻿@namespace C64.FrontEnd.Shared
+@implements IDisposable
+@inject IUnitOfWork unitOfWork
+<Box ContentClasses="text-left p-1 overflow-hidden">
+    <Title>Top Downloaded</Title>
+    <Content>
+        @foreach (var production in productions)
+        {
+            <a href="/productions/@production.ProductionId/@production.Name.UrlEncode()">
+                <span class="nowrap">@production.Downloads - @production.Name</span>
+                <br />
+            </a>
+        }
+    </Content>
+</Box>
+@code{
+
+    private IEnumerable<Production> productions = new List<Production>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await unitOfWork.Productions.FindPaginated(p => true, "Downloads", false, 1, 10);
+        productions = result.Data;
+    }
+
+    //private void OnNewDownload(object sender, EventArgs e)
+    //{
+    //    this.message += "New Download<br>";
+
+    //    InvokeAsync(StateHasChanged);
+    //}
+
+    public void Dispose()
+    {
+        // notifierService.NewDownload -= OnNewDownload;
+
+    }
+
+}

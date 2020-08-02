@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20200603194009_FirstBatchOfTables.cs" />
+    <Compile Remove="Migrations\20200603194009_FirstBatchOfTables.Designer.cs" />
+    <Compile Remove="Migrations\20200603201433_FirstBatchOfTables.cs" />
+    <Compile Remove="Migrations\20200603201433_FirstBatchOfTables.Designer.cs" />
+    <Compile Remove="Migrations\20200725090656_historytest.cs" />
+    <Compile Remove="Migrations\20200725090656_historytest.Designer.cs" />
+    <Compile Remove="Migrations\20200725091412_HistoryTest.cs" />
+    <Compile Remove="Migrations\20200725091412_HistoryTest.Designer.cs" />
+    <Compile Remove="Migrations\20200725092950_HistoryTest.cs" />
+    <Compile Remove="Migrations\20200725092950_HistoryTest.Designer.cs" />
+    <Compile Remove="Migrations\20200725094308_HistoryTest2.cs" />
+    <Compile Remove="Migrations\20200725094308_HistoryTest2.Designer.cs" />
+    <Compile Remove="Migrations\20200731190256_HistoryTest2.cs" />
+    <Compile Remove="Migrations\20200731190256_HistoryTest2.Designer.cs" />
+    <Compile Remove="Migrations\20200731192907_HistoryTest3.cs" />
+    <Compile Remove="Migrations\20200731192907_HistoryTest3.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+  </ItemGroup>
+</Project>

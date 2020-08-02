@@ -1,0 +1,115 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using ChartJs.Blazor.Charts
+@using ChartJs.Blazor.ChartJS.LineChart;
+@using ChartJs.Blazor.ChartJS.Common;
+@using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.ChartJS.BarChart
+@using ChartJs.Blazor.ChartJS.Common.Enums
+@using ChartJs.Blazor.ChartJS.Common.Axes
+@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
+
+@inject ILogger<DownloadChart> logger
+@inject IUnitOfWork unitOfWork
+
+@if (_config != null)
+{
+    <ChartJsBarChart @ref="_barChartJs" Config="@_config" Width="600" Height="300" />
+}
+
+@code {
+
+    [Parameter]
+    public int ProductionId { get; set; } = 0;
+
+    private BarConfig _config;
+    private ChartJsBarChart _barChartJs;
+
+    private BarDataset<Point> barSet;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await Update(false);
+    }
+
+    public async Task Update(bool external = true)
+    {
+
+        var ratings = await unitOfWork.Productions.GetRatings(ProductionId);
+
+        var chartNumberOfRatings = new List<int>();
+        var chartRating = new List<int>();
+
+        for (var i = 10; i > 0; i--)
+        {
+            var cnt = ratings.Count(p => p.Value == i);
+            chartNumberOfRatings.Add(cnt);
+            chartRating.Add(i);
+        }
+
+        barSet = new BarDataset<Point>(ChartType.HorizontalBar)
+        {
+            BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Blue),
+            BorderColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Blue),
+            Label = "Ratings",
+            BorderWidth = 2,
+            Hidden = false
+        };
+
+        _config.Data.Labels.Clear();
+        _config.Data.Datasets.Clear();
+
+        for (var i = 0; i < chartRating.Count; i++)
+        {
+            _config.Data.Labels.Add((10 - i).ToString());
+            barSet.Add(new Point(chartNumberOfRatings[i], chartNumberOfRatings[i]));
+        }
+
+        _config.Data.Datasets.Add(barSet);
+
+        if (external)
+            StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        _config = new BarConfig(ChartType.HorizontalBar)
+        {
+            Options = new BarOptions
+            {
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Ratings"
+                },
+                Legend = new ChartJs.Blazor.ChartJS.Common.Handlers.Legend
+                {
+                    Display = false
+                },
+                Responsive = true,
+                Animation = new ArcAnimation
+                {
+                    AnimateRotate = true,
+                    AnimateScale = true
+                },
+                Scales = new BarScales
+                {
+                    XAxes = new List<CartesianAxis>
+{
+                        new LinearCartesianAxis
+                        {
+                            Ticks = new LinearCartesianTicks
+                            {
+                                AutoSkip = false,
+                                Min = 0 // Otherwise the lowest value in the dataset won't be visible
+                            }
+                        }
+                    }
+                }
+
+            }
+        };
+    }
+
+}

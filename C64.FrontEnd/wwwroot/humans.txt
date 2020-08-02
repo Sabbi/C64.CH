@@ -1,0 +1,16 @@
+﻿/* TEAM */
+	Creator: Damian 'Sabbi' Puppetti
+	Contact: d [at] c64.ch
+	Twitter: @c64ch
+	From:Oberrueti, Switzerland
+
+	Ex-COO: Daniel 'Robocop' Schröter
+	From: Switzerland
+
+/* THANKS */
+	
+
+/* SITE */
+	Language: English
+	Doctype:HTML5
+	IDE: Visual Studio, Paint.net, GitLab, GitHub

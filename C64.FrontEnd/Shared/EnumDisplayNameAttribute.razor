@@ -1,0 +1,33 @@
+﻿@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@displayName
+
+@code {
+
+    [Parameter]
+    public object DisplayNameFor { get; set; }
+
+    private string displayName;
+
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            displayName = DisplayNameFor.GetType()
+                            .GetMember(DisplayNameFor.ToString())
+                            .First()
+                            .GetCustomAttribute<DisplayAttribute>()
+                            .GetName();
+        }
+        catch
+        {
+            displayName = DisplayNameFor.GetType()
+                            .GetMember(DisplayNameFor.ToString())
+                            .First().Name;
+        }
+
+        StateHasChanged();
+
+    }
+
+}

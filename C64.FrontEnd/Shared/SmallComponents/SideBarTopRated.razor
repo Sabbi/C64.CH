@@ -1,0 +1,25 @@
+﻿@namespace C64.FrontEnd.Shared
+@inject IUnitOfWork unitOfWork
+<Box ContentClasses="text-left p-1 overflow-hidden">
+    <Title>Top Rated</Title>
+    <Content>
+        @foreach (var production in productions)
+        {
+            <a href="/productions/@production.ProductionId/@production.Name.UrlEncode()">
+                <span class="nowrap">@production.AverageRating.ToString("#.00") - @production.Name</span>
+                <br />
+            </a>
+        }
+    </Content>
+</Box>
+@code{
+
+    private IEnumerable<Production> productions = new List<Production>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await unitOfWork.Productions.FindPaginated(p => true, "AverageRating", false, 1, 10);
+        productions = result.Data;
+    }
+
+}

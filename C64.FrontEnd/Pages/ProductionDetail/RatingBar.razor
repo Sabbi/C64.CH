@@ -1,0 +1,48 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@for (int i = 1; i <= MaximumRating; i++)
+{
+    var starNumber = i;
+
+    <span @onclick="@(() => onclickHandle(starNumber))" @onmouseover="@(() => onmouseoverHandle(starNumber))" @onmouseout="@onmouseoutHandle" style="cursor:pointer" class="fa fa-star @(NewRating >= i ? "checked" : null)"></span>
+
+}
+<span> @NewRating  / @MaximumRating</span>
+
+@code {
+    [Parameter]
+    public int MaximumRating { get; set; }
+    [Parameter]
+    public int SelectedRating { get; set; }
+    [Parameter]
+    public EventCallback<int> OnVote { get; set; }
+
+    private int NewRating;
+
+    [CascadingParameter] public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        NewRating = SelectedRating;
+    }
+
+    private async Task onclickHandle(int starNumber)
+    {
+        SelectedRating = starNumber;
+        NewRating = starNumber;
+        await OnVote.InvokeAsync(SelectedRating);
+    }
+
+    private void onmouseoutHandle()
+    {
+
+        NewRating = SelectedRating;
+    }
+
+    private void onmouseoverHandle(int starNumber)
+    {
+
+        NewRating = starNumber;
+    }
+
+}

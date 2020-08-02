@@ -1,0 +1,3 @@
+﻿# Welcome everybody!
+User-agent: *
+Disallow: 

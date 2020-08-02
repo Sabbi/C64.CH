@@ -1,0 +1,43 @@
+﻿@((MarkupString)links)
+
+@code {
+    [Parameter]
+    public IEnumerable<ILinkJoinable> LinkJoinables { get; set; }
+
+    [Parameter]
+    public string BaseUrl { get; set; }
+
+    [Parameter]
+    public string Separator { get; set; } = ", ";
+
+    [Parameter]
+    public string LastSeparator { get; set; } = " and ";
+
+    [Parameter]
+    public bool AlsoAddValue { get; set; } = false;
+
+    private string links = "";
+
+    protected override void OnParametersSet()
+    {
+
+        links = "";
+        foreach (var joinable in LinkJoinables)
+        {
+            var data = joinable.KeyValue();
+
+            var url = AlsoAddValue ? string.Format(BaseUrl, data.Key, data.Value.UrlEncode()) : string.Format(BaseUrl, data.Key);
+
+            var tmpSeparator = Separator;
+
+            if (LastSeparator != null && LinkJoinables.Count() > 1 && joinable.KeyValue().Key == LinkJoinables.ToArray()[LinkJoinables.Count() - 2].KeyValue().Key)
+                tmpSeparator = LastSeparator;
+
+            links += $"<a href=\"{url}\">{data.Value}</a>";
+
+            links += (joinable == LinkJoinables.Last()) ? "" : tmpSeparator;
+
+        }
+    }
+
+}

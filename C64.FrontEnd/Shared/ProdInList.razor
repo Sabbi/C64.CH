@@ -1,0 +1,91 @@
+﻿<div class="prodlistitem">
+    <div class="prodlistitem-header">
+        <a href="">
+            @Production.Name
+        </a>
+        <span></span>
+    </div>
+    <div class="prodlistitem-body">
+        <div class="thumb">
+            <a href="/productions/@Production.ProductionId/@Production.Name.UrlEncode()">
+
+                @if (Production.ProductionPictures.Any(p => p.Show))
+                {
+                    <img class="prodlistitem-img" src="/data/thumbnails/240x169/@Production.ProductionPictures.FirstOrDefault(p => p.Show).Filename" alt="@Production.Name" />
+                }
+                else
+                {
+                    <img class="prodlistitem-img" src="/images/nopicture.jpg" width="240" height="169" alt="No screenshot yet" />
+                }
+
+                <div class="icons">
+                    @if (Production.NumberOfVideos > 0)
+                    {
+                        <i class="fas fa-film" title="has video"></i>
+                    }
+                    @if (Production.IsPartyRelease)
+                    {
+                        <i class="fas fa-beer" title="party release"></i>
+                    }
+
+                    @if (Production.NumberOfComments > 0)
+                    {
+                        <i class="fas fa-comment-dots" title="has comments"></i>
+                    }
+
+                    @if (Production.NumberOfHiddenParts > 0)
+                    {
+                        <i class="fas fa-user-secret" title="has hidden parts"></i>
+                    }
+                </div>
+            </a>
+        </div>
+        <div class="prodlistitem-content">
+            <table>
+                <tbody>
+                    <tr class="align-top">
+                        <th>by:</th>
+                        <td class="break-word @(NoWrapGroupName ? "nowrap" : "")">
+                            <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="Production.ProductionsGroups.Select(p => p.Group)" />
+                        </td>
+                    </tr>
+                    @if (ShowReleased)
+                    {
+                        <tr><th>Released:</th><td>@Production.ReleaseDate.ParseDate(Production.ReleaseDateType)</td></tr>
+                    }
+                    @if (ShowAdded)
+                    {
+                        <tr><th>Added:</th><td>@Production.Added.ParseDate(DateType.YearMonthDay)</td></tr>
+                    }
+                    @if (ShowDownloads)
+                    {
+                        <tr><th>Downloads:</th><td>@Production.Downloads</td></tr>
+                    }
+                    @if (ShowRating)
+                    {
+                        <tr><th>Rating:</th><td>@Production.GetRatingText()</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public Production Production { get; set; }
+
+    [Parameter]
+    public bool NoWrapGroupName { get; set; } = false;
+    [Parameter]
+    public bool ShowReleased { get; set; } = true;
+
+    [Parameter]
+    public bool ShowAdded { get; set; } = true;
+
+    [Parameter]
+    public bool ShowDownloads { get; set; } = true;
+
+    [Parameter]
+    public bool ShowRating { get; set; } = true;
+}

@@ -1,0 +1,31 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@if (ProductionFiles.Any(p => p.Show))
+{
+    @foreach (var download in ProductionFiles.Where(p => p.Show))
+    {
+        <DownloadProduction ProductionFile="@download" />
+        @if (download.IsArchive)
+        {
+            <p><a href="" @onclick="(() => ShowFileContents(download.ProductionFileId, download.Filename))" @onclick:preventDefault><i class="far fa-list-alt"></i> Show File-Contents</a></p>
+        }
+        <hr />
+    }
+    <FileContents @ref="@fileContents" />
+}
+else
+{
+    <p>Sorry, no downloads yet</p>
+}
+
+@code {
+    [Parameter]
+    public ICollection<ProductionFile> ProductionFiles { get; set; }
+
+    private FileContents fileContents;
+
+    private async Task ShowFileContents(int productionFileId, string productionFilename)
+    {
+        await fileContents.Show(productionFileId, productionFilename);
+    }
+}

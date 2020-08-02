@@ -1,0 +1,92 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using ChartJs.Blazor.Charts
+@using ChartJs.Blazor.ChartJS.LineChart;
+@using ChartJs.Blazor.ChartJS.Common;
+@using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.ChartJS.BarChart
+
+@inject ILogger<DownloadChart> logger
+@inject IUnitOfWork unitOfWork
+
+@if (_config != null)
+{
+    <ChartJsBarChart @ref="_barChartJs" Config="@_config" Width="600" Height="300" />
+}
+
+@code {
+
+    [Parameter]
+    public int ProductionId { get; set; } = 0;
+
+    private BarConfig _config;
+    private ChartJsBarChart _barChartJs;
+
+    private BarDataset<Point> barSet;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var downloads = await unitOfWork.Productions.GetDownloads(ProductionId);
+
+        var chartDownloads = new List<int>();
+        var chartDates = new List<string>();
+
+        for (var i = 11; i >= 0; i--)
+        {
+            var month = DateTime.Now.AddMonths(i * -1);
+
+            var dls = downloads.Where(p => p.DownloadedOn.Month == month.Month && p.DownloadedOn.Year == month.Year);
+            chartDownloads.Add(dls.Count());
+            chartDates.Add(month.ToString("MM/yy"));
+        }
+
+        barSet = new BarDataset<Point>()
+        {
+            BackgroundColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Red),
+            BorderColor = ColorUtil.FromDrawingColor(System.Drawing.Color.Red),
+            Label = "Downloads",
+
+            BorderWidth = 2,
+            Hidden = false
+        };
+
+        _config.Data.Labels.Clear();
+        _config.Data.Datasets.Clear();
+
+        for (var i = 0; i < chartDates.Count; i++)
+        {
+            _config.Data.Labels.Add(chartDates[i]);
+            barSet.Add(new Point(i, chartDownloads[i]));
+        }
+
+        _config.Data.Datasets.Add(barSet);
+
+    }
+
+    protected override void OnInitialized()
+    {
+        _config = new BarConfig
+        {
+            Options = new BarOptions
+            {
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Downloads"
+                },
+                Legend = new ChartJs.Blazor.ChartJS.Common.Handlers.Legend
+                {
+                    Display = false
+                },
+                Responsive = true,
+                Animation = new ArcAnimation
+                {
+                    AnimateRotate = true,
+                    AnimateScale = true
+                }
+            }
+        };
+    }
+
+}

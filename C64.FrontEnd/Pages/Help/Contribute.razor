@@ -1,0 +1,140 @@
+﻿@page "/help/contribute"
+@inject IJSRuntime jsRuntime
+@inject IEmailSender mailSender
+
+<Box>
+    <Title>Contribute</Title>
+    <Content>
+        @if (showForm)
+        {
+            <p><b>Note:</b> Please use this form to send anything we could use on our page - a new demo, infos for a party, a correction. You may also add one or multiple files. If you wish to contribute regularely, please <a href="/Help/Feedback">contact us</a> for an upgraded account!</p>
+            <EditForm Model="feedbackModel" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <InputText class="form-control" @bind-Value="@feedbackModel.Name" placeholder="Name" />
+                    <ValidationMessage For="@(() => feedbackModel.Name)" />
+                </div>
+                <div class="form-group">
+                    <InputText class="form-control" @bind-Value="@feedbackModel.Email" placeholder="Email-Adress" />
+                    <ValidationMessage For="@(() => feedbackModel.Email)" />
+                </div>
+                <div class="form-group">
+                    <InputTextArea rows="5" class="form-control" @bind-Value="@feedbackModel.Message" placeholder="Your message" />
+                    <ValidationMessage For="@(() => feedbackModel.Message)" />
+                </div>
+                <div class="form-group">
+
+                    <InputFile multiple OnChange="HandleSelection" />
+
+                    @if (uploadedFiles.Any())
+                    {
+                        foreach (var uploadedFile in uploadedFiles)
+                        {
+                            <div class="alert alert-info mt-1">
+                                File successfully uploaded @uploadedFile.Name (@uploadedFile.Size Bytes)
+                                <button type="button" class="close" @onclick="@(() => RemoveUploadedFile(uploadedFile))">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="form-group">
+                    <button type="submit" disabled="@buttonDisabled" class="btn btn-success">Send contribution</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <p>@message</p>
+        }
+    </Content>
+</Box>
+
+@code{
+    private bool buttonDisabled = false;
+
+    private FeedbackModel feedbackModel = new FeedbackModel();
+
+    private bool showForm = true;
+
+    private List<IFileListEntry> uploadedFiles = new List<IFileListEntry>();
+
+    private string message = "Your feedback has been received, thank you!";
+
+    protected override async Task OnInitializedAsync()
+    {
+        string lastFeedback;
+        try
+        {
+            lastFeedback = await jsRuntime.GetFromLocalStorage("Contribution");
+        }
+        catch (InvalidOperationException)
+        {
+            return;
+        }
+
+        if (lastFeedback != null)
+        {
+            showForm = false;
+
+            if (DateTime.TryParse(lastFeedback, out var result))
+            {
+                var span = DateTime.Now.Subtract(result);
+
+                if (span > TimeSpan.FromMinutes(10))
+                    showForm = true;
+                else
+                    message = "We've already received your contribution some minutes ago, Thank you! Please wait some minutes until you can try again.s";
+
+            }
+        }
+    }
+
+    private void RemoveUploadedFile(IFileListEntry file)
+    {
+        uploadedFiles.Remove(file);
+    }
+
+    void HandleSelection(IFileListEntry[] files)
+    {
+        uploadedFiles.AddRange(files);
+    }
+
+    private async Task OnValidSubmit()
+    {
+        await jsRuntime.SetInLocalStorage("Contribution", DateTime.Now.ToString());
+
+        var mailAttachments = new List<MailAttachment>();
+
+        foreach (var uploadedFile in uploadedFiles)
+        {
+
+            var ms = new System.IO.MemoryStream();
+            await uploadedFile.Data.CopyToAsync(ms);
+
+            var bytearray = ms.ToArray();
+
+            var attachment = new MailAttachment();
+            attachment.Content = bytearray;
+            attachment.Filename = uploadedFile.Name;
+
+            mailAttachments.Add(attachment);
+
+        }
+
+        var mailText = $"We're received the following contribution from {feedbackModel.Name} ({feedbackModel.Email}) on {DateTime.Now}:<br>{feedbackModel.Message}";
+        if (mailAttachments.Any())
+        {
+            mailText += $"<br><br><b>The mail contains {mailAttachments.Count} attachments, please open with care!";
+        }
+
+        buttonDisabled = true;
+        await InvokeAsync(StateHasChanged);
+        await mailSender.SendAdminEmailAsync(new MailAddress(feedbackModel.Email, feedbackModel.Name), "Feedback", mailText, mailAttachments);
+        showForm = false;
+        buttonDisabled = false;
+        await InvokeAsync(StateHasChanged);
+
+    }
+}

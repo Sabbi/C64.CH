@@ -1,0 +1,31 @@
+﻿$font-size-base: 1rem / 16 * 14;
+$table-cell-padding: 0.5rem;
+
+$blue: #3598DA;
+
+$toast-max-width: 350px;
+$toast-max-width: 95%;
+$grid-gutter-width: 20px !default;
+
+$border-radius: 1px;
+
+$darkblue: #50459b;
+$darkgrey: #626262;
+$lightblue: #887ecb;
+$red: #ca6759;
+$yellow: #c4cd2e;
+$dark: #555;
+
+$myblack: #212529;
+
+$lightgrey: #ced4da;
+
+@import "../lib/bootstrap/scss/bootstrap";
+
+@import "../lib/toastr/toastr";
+@import "../lib/fslightbox/fslightbox.min";
+@import "../lib/fontawesome/css/all";
+@import "../lib/owl-carousel/owl.carousel.css";
+@import "../lib/owl-carousel/owl.theme.default.css";
+
+@import "custom.scss";

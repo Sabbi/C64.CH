@@ -1,0 +1,54 @@
+﻿@inject ILogger<Sorter> logger
+<select class="form-control d-inline" style="width:300px" @onchange="OnDropDownSelected">
+    @foreach (var column in SorterData.SorterItems)
+    {
+        <option value="@column.Key" selected="@(column.Key == SorterData.CurrentSortColumn)">@column.Display</option>
+    }
+</select>&nbsp;<span @onclick="OnDirectionChanged" class="@GetSortStyle()"></span>
+<br />
+<br />
+@code {
+
+    [Parameter]
+    public SorterData SorterData { get; set; }
+
+    [Parameter]
+    public EventCallback Sorted { get; set; }
+
+    private async Task OnDropDownSelected(ChangeEventArgs args)
+    {
+        await OnColumnSelected(args.Value.ToString());
+    }
+
+    private async Task OnColumnSelected(string column)
+    {
+        if (column != SorterData.CurrentSortColumn)
+        {
+            SorterData.CurrentSortColumn = column;
+            SorterData.IsSortedAscending = SorterData.SorterItems.FirstOrDefault(p => p.Key == column).DefaultSortAscending;
+        }
+        else
+            InvertSortDirection();
+
+        await Sorted.InvokeAsync(null);
+
+        logger.LogInformation("Sorted fired for {Column}, returned {@SorterData}", column, SorterData);
+    }
+
+    private async Task OnDirectionChanged()
+    {
+        InvertSortDirection();
+        await Sorted.InvokeAsync(null);
+    }
+
+    private string GetSortStyle()
+    {
+        return SorterData.IsSortedAscending ? "fas fa-arrow-down" : "fas fa-arrow-up";
+    }
+
+    private void InvertSortDirection()
+    {
+        SorterData.IsSortedAscending = !SorterData.IsSortedAscending;
+    }
+
+}

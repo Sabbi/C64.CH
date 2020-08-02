@@ -1,0 +1,33 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject IJSRuntime jsRuntime
+@inject IFileStorageService fileStorageService
+@inject IUnitOfWork unitOfWork
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+
+@using System.Security.Claims
+
+@if (ProductionFile != null)
+{
+    <p>
+        <a href="" @onclick="DownloadFile" @onclick:preventDefault><i class="far fa-save"></i> @ProductionFile.Filename</a>
+        <br />
+        Downloads: @ProductionFile.Downloads
+        <br />
+        Size: @ProductionFile.SizeKb kBytes
+    </p>
+}
+
+@code {
+    [Parameter]
+    public ProductionFile ProductionFile { get; set; }
+
+    private async Task DownloadFile()
+    {
+        await unitOfWork.Productions.AddDownload(ProductionFile.Filename, null, null, httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        await unitOfWork.Commit();
+        ProductionFile.Downloads++;
+        var file = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
+        await FileUtil.SaveAs(jsRuntime, ProductionFile.Filename, file);
+    }
+}

@@ -1,0 +1,30 @@
+﻿<div class="text-center">Displaying records @StartRecord to @EndRecord of @TotalNumberOfRecords</div>
+
+@code {
+
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; }
+
+    [Parameter]
+    public int TotalNumberOfRecords { get; set; }
+
+    private int StartRecord
+    {
+        get
+        {
+            return (CurrentPage - 1) * PageSize + 1;
+        }
+    }
+
+    private int EndRecord
+    {
+        get
+        {
+            var tmp = CurrentPage * PageSize;
+            return Math.Min(tmp, TotalNumberOfRecords);
+        }
+    }
+}

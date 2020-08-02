@@ -1,0 +1,42 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using C64.Data.Models
+
+@inject IUnitOfWork unitOfWork
+
+@if (paginatedResult?.Data != null)
+{
+    <ul class="list-unstyled">
+        @foreach (var info in paginatedResult.Data)
+        {
+
+            <SiteNewsDetail SiteInfo="@info" />
+        }
+    </ul>
+    <Paginator CurrentPage="@paginatedResult.CurrentPage" TotalAmountPages="@paginatedResult.NumberOfPages" SelectedPage="OnSelectPage" />
+    <PaginatorRecordInfo CurrentPage="@paginatedResult.CurrentPage" PageSize="@pageSize" TotalNumberOfRecords="@paginatedResult.TotalNumberOfRecords" />
+}
+
+@code {
+    private int page = 1;
+    private int pageSize = 5;
+
+    private PaginatedResult<SiteInfo> paginatedResult;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load(1);
+    }
+
+    private async Task OnSelectPage(int selectedPage)
+    {
+        await Load(selectedPage);
+    }
+
+    private async Task Load(int selectedPage)
+    {
+        paginatedResult = await unitOfWork.SiteInfos.FindPaginated(p => p.Show, "PublishedAt", false, selectedPage, pageSize);
+        page = selectedPage;
+    }
+
+}

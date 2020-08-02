@@ -1,0 +1,85 @@
+﻿@page "/help/faq"
+<Box>
+    <Title>Frequently asked questions</Title>
+    <Content>
+        <div class="accordian" id="accordionFaq">
+            <h5>General questions</h5>
+            @foreach (var entry in faqs.Where(p => p.Section.Equals("General", StringComparison.OrdinalIgnoreCase)))
+            {
+                <div class="card ">
+                    <div class="card-header">
+                        <a href="#" class="accordion-toggle" data-toggle="collapse" data-target="#collapse@(faqCounter)" aria-expanded="true" aria-controls="collapse@(faqCounter)">@entry.Title</a>
+                        <span></span>
+                    </div>
+                    <div id="collapse@(faqCounter)" class="panel-collapse collapse in" data-parent="#accordionFaq">
+                        <div class="card-block">
+                            @((MarkupString)entry.Content)
+                        </div>
+                    </div>
+                </div>
+                faqCounter++;
+            }
+        </div>
+    </Content>
+</Box>
+@code{
+
+    private int faqCounter = 0;
+    private List<FaqEntry> faqs = new List<FaqEntry>
+{
+            new FaqEntry
+            {
+                 Section = "General",
+                  Title = "Yes nice and all, but why?",
+                  Content = "Yes, I'm aware there are other very fine C64-Pages as CSDB, Lemon or Demozoo. But I did not want to bury one of the first of them all - C64.CH went online in 1998 - and I'm positive that we have one or another feature you'll like. And no, there's no drama here (yet)."
+            },
+            new FaqEntry
+            {
+                 Section = "General",
+                  Title = "The page page does not feel finished...?!",
+                  Content = "While you're reading this we're adding features and are fixing bugs. You can have a look at the process in our <a href =\"/help/changelog\">changelog</a>."
+            },
+            new FaqEntry
+            {
+                 Section = "General",
+                  Title = "Is my account safe?",
+                  Content = "We do our best to do so. First of all, no account-data will ever be shared with a third party. For additional security, you may enable 2FA on your account using Google Authenticator. Last but not least, we don't store any passwords in clear, all are salted and SHA'd."
+            },
+            new FaqEntry
+            {
+                 Section = "General",
+                  Title = "Is account registration required?",
+                  Content =  "A lot of features can be used as guests, but - as everywhere - at the certain point it would just not make sense anymore. Note we also have nice features for registered users, like personal favorites and such. We only require a username and e-mail, sharing more personal data is <strike>mandatory</strike> optional. You can also keep your ratings private."
+            },
+            new FaqEntry
+              {
+                 Section = "General",
+                  Title = "I want to contribute, can I?",
+                  Content =  $"Sure, just drop me a note! We're desperately looking for moderators. I'm currently working on features that (confirmed) users can add and edit themselves, but it still will take some time until these functions are finished.<br />In any case, if you found something cool we should add to our database, please use <a href=\"/help/contribute\">this form</a>."
+            },
+            new FaqEntry
+            {
+                 Section = "General",
+                  Title = "There is a mistake in your database!",
+                  Content =  $"Please:<ul><li>don't kill me!</li><li>use <a href=\"/help/contribute\">this form</a> to let me know. It's gonna fixed asap!</li></ul>"
+            },
+            new FaqEntry
+            {
+                 Section = "General",
+                  Title = "I found a bug!",
+                  Content =  "Just one? ;) There are three ways to get rid of it:<ul><li>go to <a href= \"https://github.com/Sabbi/c64.ch\" target=\"_blank\" rel=\"noopener\">https://github.com/Sabbi/c64.ch</a>, fork the repository, fix the bug, do a pull request.</li><li>go to <a href= \"https://github.com/Sabbi/c64.ch\" target=\"_blank\" rel=\"noopener\">https://github.com/Sabbi/c64.ch</a> and open an issue</li><li>drop us <a href=\"/help/feedback\">a note</a></li></ul>"
+            },
+             new FaqEntry
+            {
+                 Section = "General",
+                  Title = "I have an idea for a feature!",
+                  Content =  "Cool - as features might be bugs and vice-versa, the procedure is similar:<ul><li>go to <a href= \"https://github.com/Sabbi/c64.ch\" target=\"_blank\" rel=\"noopener\">https://github.com/Sabbi/c64.ch</a>, fork the repository, add the feature, do a pull request.</li><li>go to <a href= \"https://github.com/Sabbi/c64.ch\" target=\"_blank\" rel=\"noopener\">https://github.com/Sabbi/c64.ch</a> and open an issue</li><li>drop us <a href=\"/help/feedback\">a note</a></li></ul>"
+            },
+            new FaqEntry
+            {
+                 Section = "General",
+                  Title = "AMIGAAAAAA!",
+                  Content =  "Not yet, sorry!"
+            },
+        };
+}

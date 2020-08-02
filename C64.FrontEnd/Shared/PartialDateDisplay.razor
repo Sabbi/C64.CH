@@ -1,0 +1,16 @@
+﻿<span>@parsedDate</span>
+
+@code {
+    [Parameter]
+    public DateType DateType { get; set; } = DateType.YearMonthDay;
+
+    [Parameter]
+    public DateTime DateValue { get; set; }
+
+    private string parsedDate;
+
+    protected override void OnParametersSet()
+    {
+        parsedDate = DateValue.ParseDate(DateType);
+    }
+}

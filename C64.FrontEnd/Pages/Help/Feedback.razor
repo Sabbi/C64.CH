@@ -1,0 +1,88 @@
+﻿@page "/help/feedback"
+@inject IJSRuntime jsRuntime
+@inject IEmailSender mailSender
+<Box>
+    <Title>Please send us your feedback about c64.ch</Title>
+    <Content>
+        @if (showForm)
+        {
+            <p><b>Note:</b> Please do not use this form to send a submission - use <a href="/help/contribute">this form</a> instead.</p>
+            <EditForm Model="feedbackModel" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <InputText class="form-control" @bind-Value="@feedbackModel.Name" placeholder="Name" />
+                    <ValidationMessage For="@(() => feedbackModel.Name)" />
+                </div>
+                <div class="form-group">
+                    <InputText class="form-control" @bind-Value="@feedbackModel.Email" placeholder="Email-Adress" />
+                    <ValidationMessage For="@(() => feedbackModel.Email)" />
+                </div>
+                <div class="form-group">
+                    <InputTextArea rows="5" class="form-control" @bind-Value="@feedbackModel.Message" placeholder="Your message" />
+                    <ValidationMessage For="@(() => feedbackModel.Message)" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" disabled="@buttonDisabled" class="btn btn-success">Send feedback</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <p>@message</p>
+        }
+    </Content>
+</Box>
+
+@code
+{
+
+    private bool buttonDisabled = false;
+
+    private FeedbackModel feedbackModel = new FeedbackModel();
+
+    private bool showForm = true;
+
+    private string message = "Your feedback has been received, thank you!";
+
+    protected override async Task OnInitializedAsync()
+    {
+        string lastFeedback;
+        try
+        {
+            lastFeedback = await jsRuntime.GetFromLocalStorage("Feedback");
+        }
+        catch (InvalidOperationException)
+        {
+            return;
+        }
+
+        if (lastFeedback != null)
+        {
+            showForm = false;
+
+            if (DateTime.TryParse(lastFeedback, out var result))
+            {
+                var span = DateTime.Now.Subtract(result);
+
+                if (span > TimeSpan.FromMinutes(30))
+                    showForm = true;
+                else
+                    message = "We've already received your feedback some minutes ago, Thank you!";
+            }
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        await jsRuntime.SetInLocalStorage("Feedback", DateTime.Now.ToString());
+
+        buttonDisabled = true;
+        await InvokeAsync(StateHasChanged);
+        await mailSender.SendAdminEmailAsync(new MailAddress(feedbackModel.Email, feedbackModel.Name), "Feedback", $"We're received the following feedback from {feedbackModel.Name} ({feedbackModel.Email}) on {DateTime.Now}:<br>{feedbackModel.Message}");
+        showForm = false;
+        buttonDisabled = false;
+        await InvokeAsync(StateHasChanged);
+
+    }
+
+}

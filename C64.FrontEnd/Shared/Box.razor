@@ -1,0 +1,23 @@
+﻿<div class="card mb-@MarginBottom">
+    <div class="card-header card-header-big">
+        @Title
+        <span></span>
+    </div>
+    <div class="card-body @ContentClasses">
+        @Content
+    </div>
+</div>
+@code
+{
+    [Parameter]
+    public RenderFragment Title { get; set; }
+    [Parameter]
+    public RenderFragment Content { get; set; }
+
+    [Parameter]
+    public string ContentClasses { get; set; }
+
+    [Parameter]
+    public int MarginBottom { get; set; } = 2;
+
+}

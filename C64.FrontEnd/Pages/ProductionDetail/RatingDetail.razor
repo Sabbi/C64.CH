@@ -1,0 +1,61 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IModalService Modal
+@inject ILogger<RatingDetail> logger
+@inject IUnitOfWork unitOfWork
+
+<div id="rating-overview">@Production.GetRatingText(true)</div>
+<div>
+    <div id="rating-text">
+        <AuthorizeView>
+            <Authorized>
+                @if (hasVoted)
+                {
+                    <div class="pt-2">Info: You rated this production on <PartialDateDisplay DateValue="@rating.RatedAt" /> and gave it a rating of @rating.Value.<br />You may update your rating anytime:</div>
+                    <span id="resetRating" data-value="@rating.Value" />
+                }
+                else
+                {
+                    <div class="pt-2">Hey, you did not rate this production yet, why not rate it now?</div>
+                }
+            </Authorized>
+            <NotAuthorized>
+                <div class="pt-2">
+                    <LoginLink><Content>Please login to rate this production</Content></LoginLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+    <AuthorizeView>
+        <Authorized>
+            <RatingBar MaximumRating="10" SelectedRating="@rating.Value" OnVote="OnVoteClicked" />
+        </Authorized>
+    </AuthorizeView>
+</div>
+
+@code
+{
+    [Parameter]
+    public EventCallback<int> OnVote { get; set; }
+
+    [Parameter]
+    public Production Production { get; set; }
+
+    private bool hasVoted = false;
+    private Rating rating = new Rating();
+
+    protected override void OnParametersSet()
+    {
+        hasVoted = Production.Ratings.Any(p => p.UserId == httpContext.HttpContext.GetUserId());
+        if (hasVoted)
+            rating = Production.Ratings.First(p => p.UserId == httpContext.HttpContext.GetUserId());
+        else
+            rating.Value = 0;
+    }
+
+    private async Task OnVoteClicked(int selectedRate)
+    {
+        await OnVote.InvokeAsync(selectedRate);
+    }
+}

@@ -1,0 +1,38 @@
+﻿@page "/groups/{Id:int}"
+@page "/groups/{Id:int}/{GroupName}"
+
+@inject IUnitOfWork unitOfWork
+<Box>
+    <Title>@title</Title>
+    <Content>
+        @if (productionIds != null)
+        {
+            <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" />
+        }
+    </Content>
+</Box>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    // Fake, only for nicer URL.
+    [Parameter]
+    public string GroupName { get; set; }
+
+    private ICollection<int> productionIds;
+
+    private string groupName;
+
+    private string baseUrl => $"groups/{Id}/{groupName}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var group = await unitOfWork.Groups.GetWithProductions(Id);
+        productionIds = group.ProductionsGroups.Select(p => p.Production.ProductionId).ToList();
+        groupName = group.Name;
+    }
+
+    private string title => $"Productions from {groupName}";
+}

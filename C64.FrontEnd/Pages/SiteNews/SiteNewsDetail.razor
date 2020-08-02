@@ -1,0 +1,18 @@
+﻿@namespace C64.FrontEnd.Pages
+<li class="my-1">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="d-inline">@SiteInfo.Title</h4>
+        </div>
+        <div class="col-12">
+            @((MarkupString)SiteInfo.Text)
+            <div class="small float-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
+            <hr>
+        </div>
+    </div>
+</li>
+
+@code {
+    [Parameter]
+    public SiteInfo SiteInfo { get; set; }
+}

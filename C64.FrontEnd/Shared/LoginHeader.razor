@@ -1,0 +1,34 @@
+﻿@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject NavigationManager navigationManager
+@inject IModalService Modal
+
+@using System.Security.Claims
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+            <div class="col" style="padding:12px 12px">
+                <a class="text-dark" href="manage" title="Manage">
+                    <i class="fas fa-users-cog" title="Settings"></i>
+                    @httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Name)
+                </a>
+            </div>
+            <div class="row">
+                <button type="button" @onclick="Logout" class="btn btn-link text-dark"><i class="fas fa-sign-out-alt" title="Logout"></i> Logout</button>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="row">
+            <div class="col" style="padding:12px 12px">
+                <a class="text-dark" href="register">Register</a> <text>|</text> <LoginLink><Content>Login</Content></LoginLink>
+            </div>
+        </div>
+        @*<LoginForm @ref="loginFormModal" />*@
+    </NotAuthorized>
+</AuthorizeView>
+@code{
+    private void Logout()
+    {
+        navigationManager.NavigateTo("/user/logout", true);
+    }
+}

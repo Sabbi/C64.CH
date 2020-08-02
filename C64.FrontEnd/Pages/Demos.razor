@@ -1,0 +1,88 @@
+﻿@inject IUnitOfWork unitOfWork
+@inject NavigationManager navigationManager
+@inject ILogger<Demos> logger
+
+@page "/productions/demos"
+<Box>
+    <Title>Demos - Search, choose and decide!</Title>
+    <Content>
+        <div class="form-group row">
+            <label for="search" class="col-sm-3 col-form-label">Search:</label>
+            <div class="col-sm-9">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" /><button class="btn btn-primary">Go</button>
+                </div>
+            </div>
+            <hr />
+        </div>
+        <div class="form-group row">
+            <label for="search" class="col-sm-3 col-form-label">Show demos from:</label>
+            <div class="col-sm-9">
+                <SelectPicker KeyValuePairs="groupData" LiveSearch="true" OnSelect="GroupSelect" />&nbsp;<button class="btn btn-primary" @onclick="ShowByGroup">Go</button>
+            </div>
+            <hr />
+        </div>
+        <div class="form-group row">
+            <label for="search" class="col-sm-3 col-form-label">Show demos from:</label>
+            <div class="col-sm-9">
+                <SelectPicker KeyValuePairs="yearData" LiveSearch="false" OnSelect="YearSelect" />&nbsp;<button class="btn btn-primary" @onclick="ShowByYear">Go</button>
+            </div>
+            <hr />
+        </div>
+    </Content>
+</Box>
+
+@code {
+
+    private Dictionary<string, string> groupData = new Dictionary<string, string>();
+    private Dictionary<string, string> yearData = new Dictionary<string, string>();
+
+    private string selectedGroup;
+    private string selectedYear;
+
+    private void GroupSelect(string group)
+    {
+        selectedGroup = group;
+    }
+
+    private void YearSelect(string year)
+    {
+        selectedYear = year;
+    }
+
+    protected override void OnInitialized()
+    {
+
+        var groups = unitOfWork.Groups.GetAll().OrderBy(p => p.Name);
+
+        foreach (var group in groups)
+        {
+            groupData.Add(group.GroupId.ToString(), group.Name);
+        }
+
+        for (var i = 1982; i <= DateTime.Now.Year; i++)
+        {
+            yearData.Add(i.ToString(), i.ToString());
+        }
+
+    }
+
+    private void ShowByGroup()
+    {
+        if (selectedGroup != null && selectedGroup != "0")
+        {
+            var groupName = groupData.FirstOrDefault(p => p.Key == selectedGroup);
+            navigationManager.NavigateTo($"/groups/{selectedGroup}/{groupName.Value.UrlEncode()}");
+        }
+    }
+
+    private void ShowByYear()
+    {
+        if (selectedYear != null && selectedYear != "0")
+        {
+
+            navigationManager.NavigateTo($"/years/{selectedYear}");
+        }
+    }
+
+}

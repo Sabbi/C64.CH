@@ -1,0 +1,71 @@
+﻿@page "/"
+
+@inject IUnitOfWork unitOfWork
+@inject IJSRuntime jsRuntime
+<Box>
+    <Title>
+        Site News
+        <div class="float-right pr-3">
+            <h5 class="d-inline">
+                <a href="/help/contribute" class="badge badge-success">Got some news?</a>
+            </h5>
+        </div>
+    </Title>
+    <Content>
+        <SiteNews />
+    </Content>
+</Box>
+<Box>
+    <Title>Latest Additions</Title>
+    <Content>
+        @if (latestAdded?.Data != null)
+        {
+            <div class="owl-carousel">
+                @foreach (var production in latestAdded.Data)
+                {
+                    <div class="col-12">
+                        <ProdInList Production="production" NoWrapGroupName="true" ShowAdded="true" ShowReleased="false" ShowDownloads="false" ShowRating="false" />
+                    </div>
+                }
+            </div>
+        }
+    </Content>
+</Box>
+<Box>
+    <Title>Latest Released</Title>
+    <Content>
+        @if (latestReleased?.Data != null)
+        {
+            <div class="owl-carousel">
+                @foreach (var production in latestReleased.Data)
+                {
+                    <div class="col-12">
+                        <ProdInList Production="production" NoWrapGroupName="true" ShowAdded="false" ShowDownloads="false" ShowRating="false" />
+                    </div>
+                }
+            </div>
+        }
+    </Content>
+</Box>
+@code
+{
+
+    private PaginatedResult<Production> latestAdded;
+    private PaginatedResult<Production> latestReleased;
+
+    protected override async Task OnInitializedAsync()
+    {
+        latestAdded = await unitOfWork.Productions.GetPaginatedWithGroups(p => true, "Added", false, 1, 20);
+        latestReleased = await unitOfWork.Productions.GetPaginatedWithGroups(p => true, "ReleaseDate", false, 1, 20);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeAsync<object>("initOwlCarousel");
+            firstRender = false;
+
+        }
+    }
+}

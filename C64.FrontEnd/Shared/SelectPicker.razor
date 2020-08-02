@@ -1,0 +1,48 @@
+﻿@inject ILogger<SelectPicker> logger
+@inject IJSRuntime jsRuntime
+
+<select class="selectpicker" @onchange="SelectItem" data-live-search="@LiveSearch.ToString()">
+    @foreach (var pair in KeyValuePairs)
+    {
+        var selected = Selected == pair.Key;
+
+        @if (selected)
+        {
+            <option value="@pair.Key" selected>@pair.Value</option>
+        }
+        else
+        {
+            <option value="@pair.Key">@pair.Value</option>
+        }
+
+    }
+</select>
+
+@code {
+    [Parameter]
+    public bool LiveSearch { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
+
+    [Parameter]
+    public string Selected { get; set; }
+
+    [Parameter]
+    public Dictionary<string, string> KeyValuePairs { get; set; } = new Dictionary<string, string>();
+
+    private async Task SelectItem(ChangeEventArgs args)
+    {
+        logger.LogInformation("Item Selected {SelectedItem}", args.Value.ToString());
+        await OnSelect.InvokeAsync(args.Value.ToString());
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeAsync<object>("initSelectPicker");
+            firstRender = false;
+        }
+    }
+}

@@ -1,0 +1,115 @@
+﻿<header>
+    <div class="container-fluid">
+        <div class="container-fluid" style="max-width:1400px;">
+            <div class="grid-wrapper">
+                <div class="grid-logo">
+                    <a class="navbar-brand" href="/">
+                        <img src="/images/title2.gif" width="300" alt="c64.ch" class="header-logo" />
+                    </a>
+                </div>
+
+                <div class="grid-usermenu d-none d-md-block">
+                    <LoginHeader />
+                </div>
+                <div class="grid-search mb-1">
+                    <form asp-controller="productions" asp-action="search" asp-area="" method="get" class="header-search-grid form-inline my-0 my-md-0">
+                        <div class="input-group flex-nowrap">
+                            <input class="form-control" type="text" name="search" placeholder="Search" aria-label="Search" value="ViewBag.Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="header-hamburger d-block d-md-none" onclick="openNav()">
+
+                        <i class="fas fa-bars"></i>
+                    </div>
+                </div>
+                <div class="grid-navigation d-none d-md-block">
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a href="/" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/productions/demos" class="nav-link">Demos</a>
+                        </li>
+                        @*<li class="nav-item">
+                                <a href="#" class="nav-link">Groups</a>
+                            </li>*@
+                        <li class="nav-item">
+                            <a asp-controller="Parties" asp-action="Index" asp-route-area="" class="nav-link">Parties</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Links" asp-action="Index" asp-route-area="" class="nav-link">Links</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Programming</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/">Tutorial</a>
+                                <a class="dropdown-item" href="/">Sourcecodes</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Guestbook" asp-action="Index" asp-route-area="" asp-route-id="0" class="nav-link">Guestbook</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Help</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/help/faq">FAQ</a>
+                                <a class="dropdown-item" href="/help/feedback">Feedback</a>
+                                <a class="dropdown-item" href="/help/contribute">Contribute</a>
+                                <a class="dropdown-item" href="/help/changelog">Changelog</a>
+                                <a class="dropdown-item" href="/help/donations">Donations</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/help/about">About</a>
+                                <a class="dropdown-item" href="/help/technical">Technical</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item ml-auto">
+                            <a class="nav-link" asp-area="Admin" asp-action="Index" asp-controller="Home"><i>Administration</i></a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="mobileNav" class="navOverlay">
+                    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                    <div class="navOverlay-content">
+                        <ul>
+                            <li><a href="/"><i class="fas fa-home w-25px" title="Home"></i> Home</a></li>
+                            <li><a asp-controller="Productions" asp-action="Demos" asp-route-area=""><i class="fas fa-laptop-code w-25px" title="Demos"></i> Demos</a></li>
+                            @*<li><a href="#"><i class="fas fa-users w-25px" title="Groups"></i> Groups</a></li>*@
+                            <li><a asp-controller="Parties" asp-action="Index" asp-route-area=""><i class="fas fa-glass-cheers w-25px" title="Partis"></i> Parties</a></li>
+                            <li><a asp-controller="Links" asp-action="Index" asp-route-area=""><i class="fas fa-link w-25px" title="Links"></i> Links</a></li>
+                            <li>
+                                <a class="trigger"><i class="fas fa-microchip w-25px" title="Programming"></i> Programming</a>
+                                <nav class="nav-items">
+                                    <ul>
+                                        <li><a href="/">Tutorial</a></li>
+                                        <li><a href="/">Sourcecodes</a></li>
+                                    </ul>
+                                </nav>
+                            </li>
+                            <li><a asp-controller="Guestbook" asp-action="Index" asp-route-area="" asp-route-id="0"><i class="fas fa-atlas w-25px" title="Guestbook"></i> Guestbook</a></li>
+                            <li class="mb-4">
+                                <a class="trigger"><i class="fas fa-question w-25px" title="Help"></i> Help</a>
+                                <nav class="nav-items">
+                                    <ul>
+                                        <li><a href="/">FAQ</a></li>
+                                        <li><a href="/">Feedback</a></li>
+                                        <li><a href="/">Contribute</a></li>
+                                        <li><a href="/">Changelog</a></li>
+                                        <li><a href="/">Donations</a></li>
+                                        <li><div class="dropdown-divider"></div></li>
+                                        <li><a href="/">About</a></li>
+                                        <li><a href="/">Technical</a></li>
+                                    </ul>
+                                </nav>
+                            </li>
+                            @*<partial name="_LoginPartialMobile" />*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

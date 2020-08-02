@@ -1,0 +1,38 @@
+﻿@page "/parties/{Id:int}"
+@page "/parties/{Id:int}/{PartyName}"
+
+@inject IUnitOfWork unitOfWork
+<Box>
+    <Title>@title</Title>
+    <Content>
+        @if (productionIds != null)
+        {
+            <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" />
+        }
+    </Content>
+</Box>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    // Fake, only for nicer URL.
+    [Parameter]
+    public string PartyName { get; set; }
+
+    private ICollection<int> productionIds;
+
+    private string partyName;
+
+    private string baseUrl => $"parties/{Id}/{partyName.UrlEncode()}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var party = await unitOfWork.Parties.GetWithProductions(Id);
+        productionIds = party.ProductionsParties.Select(p => p.Production.ProductionId).ToList();
+        partyName = party.Name;
+    }
+
+    private string title => $"Productions released at {partyName}";
+}

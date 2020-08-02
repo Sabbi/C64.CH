@@ -1,0 +1,19 @@
+﻿@namespace C64.FrontEnd.Pages
+
+<ul class="list-unstyled">
+    @foreach (var comment in Comments.OrderByDescending(p => p.CommentedAt))
+    {
+        <li class="media my-4">
+            <img class="mr-3" src="/images/avatar.jpg" alt="No avatar" width="80" height="80">
+            <div class="media-body">
+                <p class="mt-0">@comment.Text</p>
+                <small>@(comment.User?.UserName ?? "Anonymous") @@ @comment.CommentedAt</small>
+            </div>
+        </li>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public ICollection<Comment> Comments { get; set; }
+}

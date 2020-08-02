@@ -1,0 +1,86 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject IFileStorageService fileStorageService
+@inject IArchiveService archiveService
+
+<BSModal @ref="FileContentsModal" Size="Size.Large">
+    <BSModalHeader OnClick="@(() => FileContentsModal.Hide())">Contents of @productionFileName (@size Bytes)</BSModalHeader>
+    <BSModalBody>
+        @if (archiveService.ArchiveInfo != null)
+        {
+            @if (archiveService.ArchiveInfo.CompressedFileInfos.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+
+                            <th>Created</th>
+                            <th>Size</th>
+                            <th>Compressed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var file in archiveService.ArchiveInfo?.CompressedFileInfos)
+                        {
+                            <tr>
+                                <td>@file.FileName</td>
+                                <td>@file.Created.ToShortDateString()</td>
+                                <td>@file.Size</td>
+                                <td>@file.CompressedSize</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No files found, possible corrupt archive</p>
+            }
+
+            @if (archiveService.ArchiveInfo.NumberOfD64Files > 0)
+            {
+                <hr />
+                <div class="d64-body">
+                    <h5>Contents of the contained .d64-Files:</h5>
+                    @for (var i = 0; i < archiveService.ArchiveInfo.NumberOfD64Files; i++)
+                    {
+                        var img = archiveService.ArchiveInfo.CompressedFileInfos.Where(p => p.IsD64).ElementAt(i);
+                        <hr />
+                        <div class="d64-content">
+                            @img.FileName
+                            <div class="image">
+                                <img src="/data/productions/diskimage/d64-@productionFileId-@(i).png" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+        }
+    </BSModalBody>
+    <BSModalFooter>
+        <BSButton Color="Color.Primary" @onclick="@(() => FileContentsModal.Hide())">Close</BSButton>
+    </BSModalFooter>
+</BSModal>
+
+@code {
+    private BSModal FileContentsModal;
+
+    private int size { get; set; }
+
+    private string productionFileName;
+    private int productionFileId;
+
+    public async Task Show(int fileId, string fileName)
+    {
+        productionFileName = fileName;
+        productionFileId = fileId;
+        var file = await fileStorageService.GetFileContents("productionfiles", productionFileName);
+
+        size = file.Length;
+        archiveService.Load(file);
+
+        FileContentsModal.Show();
+    }
+}
