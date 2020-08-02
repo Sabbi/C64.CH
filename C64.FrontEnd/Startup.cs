@@ -69,7 +69,7 @@ namespace C64.FrontEnd
             services.AddScoped<HttpContextAccessor>();
             services.AddOptions();
 
-            // Inject our services
+            // Inject our services.
             // -------------------------------------------------------------------------------------------------------------
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 
