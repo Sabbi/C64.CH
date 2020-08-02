@@ -339,6 +339,8 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
+!/Dependencies/*
+
 C64.FrontEnd/appsettings.Development.json
 C64.FrontEnd/appsettings.json
 /OldDataImporter/appsettings.json
