@@ -1,6 +1,5 @@
 ﻿using C64.Data.Entities;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -42,12 +41,6 @@ namespace C64.Data.History
             };
 
             return dbhistory;
-        }
-
-        public HistoryProduction CreateHistoryProduction(string property, Production production, object newValue, HistoryStatus status)
-        {
-            var editProperty = (ProductionEditProperty)Enum.Parse(typeof(ProductionEditProperty), property);
-            return CreateHistoryProduction(editProperty, production, newValue, status);
         }
     }
 }
