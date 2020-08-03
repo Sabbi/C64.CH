@@ -1,7 +1,10 @@
 ﻿@namespace C64.FrontEnd.Shared
-@inject IUnitOfWork unitOfWork
 @inject NavigationManager navigationManager
 @implements IDisposable
+
+@using Microsoft.Extensions.DependencyInjection
+@inherits OwningComponentBase
+
 @using System.Timers;
 
 <Box ContentClasses="p-0 pt-1">
@@ -50,6 +53,8 @@
 
     private async Task LoadRandomProduction()
     {
+
+        var unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
         production = await unitOfWork.Productions.GetRandomProduction();
         await InvokeAsync(StateHasChanged);
     }

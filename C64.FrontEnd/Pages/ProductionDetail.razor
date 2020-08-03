@@ -1,7 +1,10 @@
 ﻿@page "/productions/{ProductionId:int}"
 @page "/productions/{ProductionId:int}/{ProdName}"
 
-@inject IUnitOfWork unitOfWork
+@using Microsoft.Extensions.DependencyInjection
+@inherits OwningComponentBase
+
+@implements IDisposable
 @inject NotifierService notifier
 @inject ILogger<Index> logger
 @inject IJSRuntime jsRuntime
@@ -21,6 +24,7 @@
                         <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
                             <option value="0">Edit Production</option>
                             <option value="general">- General</option>
+                            <option value="additional">- Additional info</option>
                             <option>- Screenshots</option>
                             <option>- Videos</option>
                             <option>- Downloads</option>
@@ -187,6 +191,7 @@
             @if (production != null)
             {
                 <EditProductionModal @ref="editProductionModal" Production="@production" OnClosed="onClosed" unitOfWork="@unitOfWork" />
+                <EditRemarksModal @ref="editRemarksModal" Production="@production" OnClosed="onClosed" unitOfWork="@unitOfWork" />
             }
         </Authorized>
     </AuthorizeView>
@@ -208,13 +213,20 @@
 
     private bool CommentsBlocked = false;
 
+    private IUnitOfWork unitOfWork;
+
     private WriteComment writeCommentModal;
     private EditProductionModal editProductionModal;
+    private EditRemarksModal editRemarksModal;
 
     private async Task OnSelectEdit(ChangeEventArgs args)
     {
         await jsRuntime.InvokeAsync<object>("ResetProdEditSelect");
-        editProductionModal.Show();
+
+        if (args.Value.ToString() == "general")
+            editProductionModal.Show();
+        else if (args.Value.ToString() == "additional")
+            editRemarksModal.Show();
     }
 
     private void OpenWriteCommentModal()
@@ -224,7 +236,6 @@
 
     private void onClosed()
     {
-        logger.LogInformation("Production name is now {name}", production.Name);
         StateHasChanged();
     }
 
@@ -285,6 +296,8 @@
         var sw = new System.Diagnostics.Stopwatch();
         sw.Start();
 
+        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+
         production = await unitOfWork.Productions.GetDetails(id);
 
         sw.Stop();
@@ -339,5 +352,10 @@
 
         await ratingChart.Update();
 
+    }
+
+    public void Dispose()
+    {
+        navigationManager.LocationChanged -= OnLocationChanged;
     }
 }
