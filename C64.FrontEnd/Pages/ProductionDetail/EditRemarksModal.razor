@@ -1,0 +1,99 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+
+<BSModal @ref="editRemarksModal" Size="Size.Large" HideEvent="HideEvent">
+    <BSModalHeader OnClick="@(() => editRemarksModal.Hide())">Edit Additional Infos of @Production.Name</BSModalHeader>
+    <BSModalBody>
+        @if (shown)
+        {
+            <EditForm Model="editProductionAdditional" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group">
+                    <label>Remarks:</label>
+                    <div>
+                        <InputText class="form-control" @bind-Value="@editProductionAdditional.Remarks" />
+                        <ValidationMessage For="@(() => editProductionAdditional.Remarks)" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Hidden Parts:</label>
+                    <div>@editProductionAdditional.HiddenParts.Count()</div>
+                    @for (var i = 0; i < editProductionAdditional.HiddenParts.Count; i++)
+                    {
+                        <div>
+                            <input class="form-control" @bind="@editProductionAdditional.HiddenParts[i].Description" />
+                        </div>
+                    }
+                </div>
+                <button class=" btn btn-primary" type="submit">Update Production</button>
+            </EditForm>}
+    </BSModalBody>
+</BSModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; } = new Production();
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BSModal editRemarksModal { get; set; }
+
+    private EditProductionAdditional editProductionAdditional = new EditProductionAdditional();
+
+    private async Task OnValidSubmit()
+    {
+        logger.LogInformation("OnValidSubmit");
+
+        Production.Remarks = editProductionAdditional.Remarks;
+
+        //var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+        //productionHistory.AddHistory(ProductionEditProperty.Name, editProductionGeneral.Name);
+        //productionHistory.AddHistory(ProductionEditProperty.Aka, editProductionGeneral.Aka);
+        //productionHistory.AddHistory(ProductionEditProperty.SubCategory, editProductionGeneral.SubCategory);
+
+        //productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
+        //productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData { PartyId = editProductionGeneral.Party?.PartyId ?? 0, Category = editProductionGeneral.PartyCategory, Rank = editProductionGeneral.PartyRank });
+        //productionHistory.AddHistory(ProductionEditProperty.Groups, editProductionGeneral.SelectedGroups);
+
+        //productionHistory.Apply();
+
+        //await unitOfWork.Commit();
+
+        Hide();
+    }
+
+    private void HideEvent()
+    {
+        logger.LogInformation("Hide Event Fired");
+        OnClosed.InvokeAsync(null);
+
+    }
+
+    private void Hide()
+    {
+        logger.LogInformation("HIde Fired");
+        editRemarksModal.Hide();
+        shown = false;
+    }
+
+    private bool shown = false;
+
+    public void Show()
+    {
+
+        editProductionAdditional = new EditProductionAdditional();
+        editProductionAdditional.Remarks = Production.Remarks;
+
+        editProductionAdditional.HiddenParts = Production.HiddenParts?.ToList();
+        editRemarksModal.Show();
+        shown = true;
+    }
+
+}
