@@ -7,6 +7,6 @@ namespace C64.FrontEnd.Models
     {
         public string Remarks { get; set; }
 
-        public List<HiddenPart> HiddenParts { get; set; } = new List<HiddenPart>() { new HiddenPart(), new HiddenPart(), new HiddenPart};
+        public List<HiddenPart> HiddenParts { get; set; } = new List<HiddenPart>() { new HiddenPart(), new HiddenPart(), new HiddenPart() };
     }
 }
