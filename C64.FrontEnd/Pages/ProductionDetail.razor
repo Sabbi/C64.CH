@@ -185,11 +185,6 @@
             <DetailComments Comments="@production.Comments" />
         </Content>
     </Box>
-    <AuthorizeView>
-        <Authorized>
-            <WriteComment @ref="writeCommentModal" ProductionId="@production.ProductionId" ProductionName="@production.Name" OnCommented="OnCommented" />
-        </Authorized>
-    </AuthorizeView>
 }
 
 @code{
@@ -241,9 +236,17 @@
         await jsRuntime.InvokeAsync<object>("ResetProdEditSelect");
     }
 
-    private void OpenWriteCommentModal()
+    private async Task OpenWriteCommentModal()
     {
-        writeCommentModal.Show();
+
+        var commentModal = Modal.Show<WriteComment>();
+        var result = await commentModal.Result;
+
+        if (!result.Cancelled)
+        {
+            await OnCommented(result.Data as string);
+        }
+
     }
 
     private async Task OnCommented(string comment)
@@ -258,12 +261,9 @@
         });
 
         await unitOfWork.Commit();
-
         await LoadProd(production.ProductionId);
 
         CommentsBlocked = true;
-
-        writeCommentModal.Hide();
     }
 
     protected override async Task OnInitializedAsync()

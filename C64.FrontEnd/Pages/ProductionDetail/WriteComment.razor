@@ -2,9 +2,8 @@
 
 @inject ILogger<WriteComment>  logger;
 
-<BSModal @ref="WriteCommentModal" Size="Size.Large">
-    <BSModalHeader OnClick="@(() => WriteCommentModal.Hide())">Write your comment for @ProductionName</BSModalHeader>
-    <BSModalBody>
+<BootstrapModal @ref="bootstrapModal" Title="@($"Write your comment for {ProductionName}")">
+    <Content>
         <EditForm Model="@writeCommentEditForm" OnValidSubmit="HandleSubmit">
             <DataAnnotationsValidator />
             <div class="form-group">
@@ -25,18 +24,18 @@
             </div>
             <div class="row">
                 <div class="col-6">
-                    <BSButton Color="Color.Primary" type="Submit">Save and add your comment</BSButton>
+                    <button class="btn btn-primary" type="Submit">Save and add your comment</button>
                 </div>
                 <div class="col-6 text-right">
-                    <BSButton Color="Color.Secondary" @onclick="@(() => WriteCommentModal.Hide())">Cancel</BSButton>
+                    <BSButton class="btn btn-secondary" @onclick="@(() => bootstrapModal.Cancel())">Cancel</BSButton>
                 </div>
             </div>
         </EditForm>
         <div class="pt-2">
             <p> Please: Be friendly, be fair. Abusive, offensive, insulting etc. comments are going to be deleted, and so are you in case you ignore good manners repeatedly. Don't try HTML-Codes, but you may use Markdown. Enters/Newlines are fine.</p>
         </div>
-    </BSModalBody>
-</BSModal>
+    </Content>
+</BootstrapModal>
 
 @code {
 
@@ -51,7 +50,7 @@
 
     private WriteCommentEditForm writeCommentEditForm = new WriteCommentEditForm();
 
-    private BSModal WriteCommentModal;
+    private BootstrapModal bootstrapModal;
 
     private bool showMarkDown = false;
 
@@ -62,17 +61,6 @@
 
     private async Task HandleSubmit()
     {
-        await OnCommented.InvokeAsync(writeCommentEditForm.Comment);
-    }
-
-    public void Show()
-    {
-        writeCommentEditForm = new WriteCommentEditForm();
-        WriteCommentModal.Show();
-    }
-
-    public void Hide()
-    {
-        WriteCommentModal.Hide();
+        await bootstrapModal.BlazoredModal.Close(ModalResult.Ok(writeCommentEditForm.Comment));
     }
 }
