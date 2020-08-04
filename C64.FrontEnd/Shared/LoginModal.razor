@@ -1,0 +1,103 @@
+﻿@inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+
+@inject IUnitOfWork unitOfWork
+@inject C64.Services.IPasswordHasher passwordHasher
+
+@inject ILogger<LoginForm> logger
+
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+@inject Microsoft.AspNetCore.Identity.SignInManager<User> signInManager
+
+<BootstrapModal Title="Login">
+    <Content>
+        <EditForm EditContext="editContext" OnSubmit="OnSubmit">
+            <div class="row text-left">
+                <div class="col-12">
+                    <div class="form">
+                        <DataAnnotationsValidator />
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <div>
+                                <InputText class="form-control" name="Email" @bind-Value="@userInfo.Email" />
+                                <ValidationMessage For="@(() => userInfo.Email)" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <div>
+                                <InputPassword class="form-control" name="Password" @bind-Value="@userInfo.Password" />
+                                <ValidationMessage For="@(() => userInfo.Password)" />
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-2">
+
+                            <InputCheckbox class="form-check-input" id="Persistent" @bind-Value="@userInfo.Persistent" />
+                            <label class="form-check-label" for="Persistent">Stay logged in</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+        <form method="post" id="headerLoginForm" action="/user/login">
+            <input type="hidden" name="username" value="@userInfo.Email" />
+            <input type="hidden" name="password" value="@userInfo.Password" />
+            <input type="hidden" name="persistent" value="@(userInfo.Persistent ? "true" : "false")" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+        </form>
+    </Content>
+</BootstrapModal>
+
+@code{
+    private LoginInfo userInfo = new LoginInfo();
+    private EditContext editContext;
+    private ValidationMessageStore messageStore;
+
+    private string returnUrl;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(userInfo);
+
+        messageStore = new ValidationMessageStore(editContext);
+
+        returnUrl = "~/" + navigationManager.ToBaseRelativePath(navigationManager.Uri);
+    }
+
+    private async Task OnSubmit()
+    {
+        messageStore.Clear();
+
+        if (editContext.Validate())
+        {
+            var user = await userManager.FindByEmailAsync(userInfo.Email);
+
+            if (user != null)
+            {
+
+                var checkpw = await signInManager.CheckPasswordSignInAsync(user, userInfo.Password, true);
+
+                if (checkpw.Succeeded)
+                {
+                    await jsRuntime.InvokeVoidAsync("submitLogin");
+                    return;
+                }
+                else
+                {
+                    logger.LogInformation("Known user tried to login, but did not succeed ({Result}) for {User} / {Password}", checkpw, userInfo.Email, userInfo.Password);
+                    messageStore.Add(editContext.Field("Email"), checkpw.ToString());
+                }
+            }
+            else
+            {
+                logger.LogInformation("User tried to login, but user {User} / {Password} does not exist", userInfo.Email, userInfo.Password);
+                messageStore.Add(editContext.Field("Email"), "Invalid EMail / Password");
+                messageStore.Add(editContext.Field("Password"), "Invalid EMail / Password");
+            }
+
+        }
+    }
+}

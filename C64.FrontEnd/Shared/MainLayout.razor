@@ -8,26 +8,24 @@
 
 @if (Allowed)
 {
-    <LoginForm @ref="LoginFormModal" />
-    <CascadingValue Value="@OpenLoginEvent" Name="OpenLoginEvent">
-        <Header />
-        <div class="container-fluid" style="max-width:1400px">
-            <main role="main" class="pb-3">
-                <div class="row">
-                    <div class="col-12 col-md-9 col-lg-10" style="padding-left:5px; padding-right:5px">
-                        @Body
-                    </div>
-                    <div class="col-12 col-md-3 col-lg-2" style="padding-left:5px; padding-right:5px">
-                        <div class="pb-5 d-block d-md-none"></div>
-                        <SideBarDemoRand />
-                        <SideBarTopRated />
-                        <SideBarLatest />
-                        <SideBarTopDownloaded />
-                    </div>
+    @*<LoginForm @ref="LoginFormModal" />*@
+    <Header />
+    <div class="container-fluid" style="max-width:1400px">
+        <main role="main" class="pb-3">
+            <div class="row">
+                <div class="col-12 col-md-9 col-lg-10" style="padding-left:5px; padding-right:5px">
+                    @Body
                 </div>
-            </main>
-        </div>
-    </CascadingValue>
+                <div class="col-12 col-md-3 col-lg-2" style="padding-left:5px; padding-right:5px">
+                    <div class="pb-5 d-block d-md-none"></div>
+                    <SideBarDemoRand />
+                    <SideBarTopRated />
+                    <SideBarLatest />
+                    <SideBarTopDownloaded />
+                </div>
+            </div>
+        </main>
+    </div>
     <Footer />
 }
 else
@@ -36,15 +34,6 @@ else
 }
 @code{
     private bool Allowed = false;
-
-    public LoginForm LoginFormModal { get; set; }
-
-    public EventCallback OpenLoginEvent => EventCallback.Factory.Create(this, OpenLogin);
-
-    public void OpenLogin()
-    {
-        LoginFormModal.Show();
-    }
 
     protected override void OnInitialized()
     {
