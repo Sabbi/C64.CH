@@ -1,6 +1,6 @@
 ﻿<div class="modal-backdrop fade show" @onclick="Close"></div>
 <div class="modal fade show d-block" style="pointer-events: none;" tabindex="-1" role="dialog">
-    <div class="modal-dialog " role="document">
+    <div class="modal-dialog modal-dialog-scrollable @sizeClass" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">@Title</h5>
@@ -11,6 +11,12 @@
             <div class="modal-body">
                 @Content
             </div>
+            @if (Footer != null)
+            {
+                <div class="modal-footer">
+                    @Footer
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -19,11 +25,51 @@
     [CascadingParameter]
     public BlazoredModalInstance BlazoredModal { get; set; }
 
-    async Task Close() => await BlazoredModal.Close(ModalResult.Ok(true));
-
     [Parameter]
     public string Title { get; set; }
 
     [Parameter]
+    public ModalSize Size { get; set; } = ModalSize.Default;
+
+    [Parameter]
     public RenderFragment Content { get; set; }
+
+    [Parameter]
+    public RenderFragment Footer { get; set; }
+
+    private string sizeClass = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        switch (Size)
+        {
+            case ModalSize.Small:
+                sizeClass = "modal-sm";
+                break;
+            case ModalSize.Large:
+                sizeClass = "modal-lg";
+                break;
+            case ModalSize.ExtraLarge:
+                sizeClass = "modal-xl";
+                break;
+            default:
+                sizeClass = "";
+                break;
+        }
+    }
+
+    public async Task Close()
+    {
+        await BlazoredModal.Close();
+    }
+
+    public enum ModalSize
+    {
+        Small,
+        Default,
+        Large,
+        ExtraLarge
+
+    }
+
 }

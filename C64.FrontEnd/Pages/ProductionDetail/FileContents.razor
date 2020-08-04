@@ -3,9 +3,8 @@
 @inject IFileStorageService fileStorageService
 @inject IArchiveService archiveService
 
-<BSModal @ref="FileContentsModal" Size="Size.Large">
-    <BSModalHeader OnClick="@(() => FileContentsModal.Hide())">Contents of @productionFileName (@size Bytes)</BSModalHeader>
-    <BSModalBody>
+<BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
+    <Content>
         @if (archiveService.ArchiveInfo != null)
         {
             @if (archiveService.ArchiveInfo.CompressedFileInfos.Any())
@@ -50,7 +49,7 @@
                         <div class="d64-content">
                             @img.FileName
                             <div class="image">
-                                <img src="/data/productions/diskimage/d64-@productionFileId-@(i).png" />
+                                <img src="/data/productions/diskimage/d64-@ProductionFileId-@(i).png" />
                             </div>
                         </div>
                     }
@@ -58,29 +57,36 @@
             }
 
         }
-    </BSModalBody>
-    <BSModalFooter>
-        <BSButton Color="Color.Primary" @onclick="@(() => FileContentsModal.Hide())">Close</BSButton>
-    </BSModalFooter>
-</BSModal>
+    </Content>
+    <Footer>
+        <button type="button" class="btn btn-secondary" @onclick="Close">Close</button>
+    </Footer>
+</BootstrapModal>
 
 @code {
-    private BSModal FileContentsModal;
+    [Parameter]
+    public int ProductionFileId { get; set; }
+
+    [Parameter]
+    public string ProductionFilename { get; set; }
+
+    private string title => "Contents of " + ProductionFilename;
+
+    private BootstrapModal bootstrapModal;
 
     private int size { get; set; }
 
-    private string productionFileName;
-    private int productionFileId;
-
-    public async Task Show(int fileId, string fileName)
+    protected override async Task OnInitializedAsync()
     {
-        productionFileName = fileName;
-        productionFileId = fileId;
-        var file = await fileStorageService.GetFileContents("productionfiles", productionFileName);
+        var file = await fileStorageService.GetFileContents("productionfiles", ProductionFilename);
 
         size = file.Length;
         archiveService.Load(file);
-
-        FileContentsModal.Show();
     }
+
+    private async Task Close()
+    {
+        await bootstrapModal.Close();
+    }
+
 }

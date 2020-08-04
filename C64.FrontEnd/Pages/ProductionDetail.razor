@@ -188,11 +188,6 @@
     <AuthorizeView>
         <Authorized>
             <WriteComment @ref="writeCommentModal" ProductionId="@production.ProductionId" ProductionName="@production.Name" OnCommented="OnCommented" />
-            @if (production != null)
-            {
-                <EditProductionModal @ref="editProductionModal" Production="@production" OnClosed="onClosed" unitOfWork="@unitOfWork" />
-                <EditRemarksModal @ref="editRemarksModal" Production="@production" OnClosed="onClosed" unitOfWork="@unitOfWork" />
-            }
         </Authorized>
     </AuthorizeView>
 }
@@ -221,22 +216,34 @@
 
     private async Task OnSelectEdit(ChangeEventArgs args)
     {
-        await jsRuntime.InvokeAsync<object>("ResetProdEditSelect");
+
+        IModalReference reference;
 
         if (args.Value.ToString() == "general")
-            editProductionModal.Show();
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditProductionModal.Production), production);
+            parameters.Add(nameof(EditProductionModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditProductionModal>("", parameters);
+            await reference.Result;
+        }
         else if (args.Value.ToString() == "additional")
-            editRemarksModal.Show();
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditRemarksModal.Production), production);
+            parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditRemarksModal>("", parameters);
+            await reference.Result;
+        }
+
+        StateHasChanged();
+
+        await jsRuntime.InvokeAsync<object>("ResetProdEditSelect");
     }
 
     private void OpenWriteCommentModal()
     {
         writeCommentModal.Show();
-    }
-
-    private void onClosed()
-    {
-        StateHasChanged();
     }
 
     private async Task OnCommented(string comment)
@@ -264,6 +271,7 @@
         logger.LogInformation("OnInitAsync");
         navigationManager.LocationChanged += OnLocationChanged;
         await LoadProd(ProductionId);
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

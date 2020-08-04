@@ -3,47 +3,42 @@
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger;
 
-<BSModal @ref="editRemarksModal" Size="Size.Large" HideEvent="HideEvent">
-    <BSModalHeader OnClick="@(() => editRemarksModal.Hide())">Edit Additional Infos of @Production.Name</BSModalHeader>
-    <BSModalBody>
-        @if (shown)
-        {
-            <EditForm Model="editProductionAdditional" OnValidSubmit="OnValidSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-                <div class="form-group">
-                    <label>Remarks:</label>
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit additional information of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <EditForm Model="editProductionAdditional" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label>Remarks:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editProductionAdditional.Remarks" />
+                    <ValidationMessage For="@(() => editProductionAdditional.Remarks)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Hidden Parts:</label>
+                <div>@editProductionAdditional.HiddenParts.Count()</div>
+                @for (var i = 0; i < editProductionAdditional.HiddenParts.Count; i++)
+                {
+                    var local = i;
                     <div>
-                        <InputText class="form-control" @bind-Value="@editProductionAdditional.Remarks" />
-                        <ValidationMessage For="@(() => editProductionAdditional.Remarks)" />
+                        <InputText class="form-control" @bind-Value="@editProductionAdditional.HiddenParts[local].Description" />
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Hidden Parts:</label>
-                    <div>@editProductionAdditional.HiddenParts.Count()</div>
-                    @for (var i = 0; i < editProductionAdditional.HiddenParts.Count; i++)
-                    {
-                        <div>
-                            <input class="form-control" @bind="@editProductionAdditional.HiddenParts[i].Description" />
-                        </div>
-                    }
-                </div>
-                <button class=" btn btn-primary" type="submit">Update Production</button>
-            </EditForm>}
-    </BSModalBody>
-</BSModal>
+                }
+            </div>
+            <button class=" btn btn-primary" type="submit">Update Production</button>
+        </EditForm>
+    </Content>
+</BootstrapModal>
 
 @code {
     [Parameter]
     public Production Production { get; set; } = new Production();
 
     [Parameter]
-    public EventCallback OnClosed { get; set; }
-
-    [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
-    private BSModal editRemarksModal { get; set; }
+    private BootstrapModal bootstrapModal;
 
     private EditProductionAdditional editProductionAdditional = new EditProductionAdditional();
 
@@ -66,34 +61,15 @@
 
         //await unitOfWork.Commit();
 
-        Hide();
+        await bootstrapModal.Close();
     }
 
-    private void HideEvent()
-    {
-        logger.LogInformation("Hide Event Fired");
-        OnClosed.InvokeAsync(null);
-
-    }
-
-    private void Hide()
-    {
-        logger.LogInformation("HIde Fired");
-        editRemarksModal.Hide();
-        shown = false;
-    }
-
-    private bool shown = false;
-
-    public void Show()
+    protected override void OnInitialized()
     {
 
         editProductionAdditional = new EditProductionAdditional();
         editProductionAdditional.Remarks = Production.Remarks;
-
-        editProductionAdditional.HiddenParts = Production.HiddenParts?.ToList();
-        editRemarksModal.Show();
-        shown = true;
+        editProductionAdditional.HiddenParts = Production.HiddenParts.ToList();
+        editProductionAdditional.HiddenParts.Add(new HiddenPart());
     }
-
 }

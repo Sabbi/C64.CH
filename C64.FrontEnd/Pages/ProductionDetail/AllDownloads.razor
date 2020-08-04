@@ -1,5 +1,7 @@
 ﻿@namespace C64.FrontEnd.Pages
 
+@inject IModalService modal
+
 @if (ProductionFiles.Any(p => p.Show))
 {
     @foreach (var download in ProductionFiles.Where(p => p.Show))
@@ -11,7 +13,6 @@
         }
         <hr />
     }
-    <FileContents @ref="@fileContents" />
 }
 else
 {
@@ -24,8 +25,12 @@ else
 
     private FileContents fileContents;
 
-    private async Task ShowFileContents(int productionFileId, string productionFilename)
+    private void ShowFileContents(int productionFileId, string productionFilename)
     {
-        await fileContents.Show(productionFileId, productionFilename);
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(FileContents.ProductionFileId), productionFileId);
+        parameters.Add(nameof(FileContents.ProductionFilename), productionFilename);
+
+        modal.Show<FileContents>("Contents of " + productionFilename, parameters);
     }
 }

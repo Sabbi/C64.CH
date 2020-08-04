@@ -3,9 +3,8 @@
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger;
 
-<BSModal @ref="editProductionModal" Size="Size.Large" HideEvent="HideEvent">
-    <BSModalHeader OnClick="@(() => editProductionModal.Hide())">Edit General Information of @Production.Name</BSModalHeader>
-    <BSModalBody>
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit General Information of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
         <EditForm Model="editProductionGeneral" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
@@ -90,12 +89,12 @@
             }
             <button class="btn btn-primary" type="submit">Update Production</button>
         </EditForm>
-    </BSModalBody>
-</BSModal>
+    </Content>
+</BootstrapModal>
 
 @code {
     [Parameter]
-    public Production Production { get; set; } = new Production();
+    public Production Production { get; set; }
 
     [Parameter]
     public EventCallback OnClosed { get; set; }
@@ -103,7 +102,7 @@
     [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
-    private BSModal editProductionModal { get; set; }
+    private BootstrapModal bootstrapModal;
 
     private EditProductionGeneral editProductionGeneral = new EditProductionGeneral();
 
@@ -141,24 +140,15 @@
 
         await unitOfWork.Commit();
 
-        Hide();
-    }
+        await OnClosed.InvokeAsync(null);
 
-    private void HideEvent()
-    {
-        logger.LogInformation("Hide Event Fired");
-        OnClosed.InvokeAsync(null);
+        await bootstrapModal.Close();
 
     }
 
-    private void Hide()
+    protected override void OnInitialized()
     {
-        logger.LogInformation("HIde Fired");
-        editProductionModal.Hide();
-    }
 
-    public void Show()
-    {
         editProductionGeneral = new EditProductionGeneral();
         editProductionGeneral.Name = Production.Name;
         editProductionGeneral.Aka = Production.Aka;
@@ -177,9 +167,6 @@
             editProductionGeneral.PartyRank = rank.GetValueOrDefault();
         }
 
-        StateHasChanged();
-
-        editProductionModal.Show();
     }
 
 }
