@@ -1,5 +1,4 @@
 using Blazored.Modal;
-using BlazorStrap;
 using C64.Data;
 using C64.Data.Archive;
 using C64.Data.Entities;
@@ -59,7 +58,6 @@ namespace C64.FrontEnd
               .AddDefaultTokenProviders();
 
             services.AddBlazoredModal();
-            services.AddBootstrapCss();
             services.AddMvc(config =>
             {
                 // https://github.com/aspnet/AspNetCore/issues/5055
