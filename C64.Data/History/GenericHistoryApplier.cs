@@ -9,9 +9,16 @@ namespace C64.Data.History
         public void Apply(Production production, HistoryProduction historyProduction)
         {
             var type = Type.GetType(historyProduction.Type, true);
-            var des = JsonConvert.DeserializeObject(historyProduction.NewValue, type);
             var property = typeof(Production).GetProperty(historyProduction.Property);
-            property.SetValue(production, des);
+            if (historyProduction.NewValue == null)
+            {
+                property.SetValue(production, null);
+            }
+            else
+            {
+                var des = JsonConvert.DeserializeObject(historyProduction.NewValue, type);
+                property.SetValue(production, des);
+            }
         }
 
         public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
