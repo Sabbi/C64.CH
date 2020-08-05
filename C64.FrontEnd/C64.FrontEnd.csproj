@@ -166,7 +166,7 @@
     <PackageReference Include="Blazored.Typeahead" Version="4.3.0" />
     <PackageReference Include="BlazorInputFile" Version="0.2.0" />
     <PackageReference Include="ChartJs.Blazor" Version="1.1.0" />
-    <PackageReference Include="D64ReaderCore" Version="1.0.5" />
+    <PackageReference Include="D64ReaderCore" Version="1.0.6" />
     <PackageReference Include="Markdig" Version="0.20.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.4">
