@@ -21,6 +21,10 @@
     <Compile Remove="Migrations\20200731190256_HistoryTest2.Designer.cs" />
     <Compile Remove="Migrations\20200731192907_HistoryTest3.cs" />
     <Compile Remove="Migrations\20200731192907_HistoryTest3.Designer.cs" />
+    <Compile Remove="Migrations\20200805143637_DownloadsIndexFix.cs" />
+    <Compile Remove="Migrations\20200805143637_DownloadsIndexFix.Designer.cs" />
+    <Compile Remove="Migrations\20200805144038_DownloadsIndexFix.cs" />
+    <Compile Remove="Migrations\20200805144038_DownloadsIndexFix.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

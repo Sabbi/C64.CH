@@ -128,7 +128,9 @@ namespace C64.Data
                 .WithMany(p => p.PartiesSceners);
 
             // Additional indexes (or indices, depending on your philosophy)
+            modelBuilder.Entity<Download>().HasIndex(p => new { p.ProductionFileId });
             modelBuilder.Entity<Download>().HasIndex(p => new { p.DownloadedOn });
+            modelBuilder.Entity<Download>().HasIndex(p => new { p.ProductionFileId, p.DownloadedOn });
             modelBuilder.Entity<DbFile>().HasIndex(p => new { p.Container, p.FileName });
 
             modelBuilder.Entity<Country>().HasData(GetCountries());
