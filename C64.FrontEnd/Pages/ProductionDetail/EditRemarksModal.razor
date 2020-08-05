@@ -11,20 +11,22 @@
             <div class="form-group">
                 <label>Remarks:</label>
                 <div>
-                    <InputText class="form-control" @bind-Value="@editProductionAdditional.Remarks" />
+                    <InputTextArea rows="4" class="form-control" @bind-Value="@editProductionAdditional.Remarks" placeholder="Remarks" />
                     <ValidationMessage For="@(() => editProductionAdditional.Remarks)" />
                 </div>
             </div>
             <div class="form-group">
                 <label>Hidden Parts:</label>
-                <div>@editProductionAdditional.HiddenParts.Count()</div>
                 @for (var i = 0; i < editProductionAdditional.HiddenParts.Count; i++)
                 {
                     var local = i;
-                    <div>
-                        <InputText class="form-control" @bind-Value="@editProductionAdditional.HiddenParts[local].Description" />
+                    <div class="pb-2">
+                        <InputTextArea rows="4" class="form-control" @bind-Value="@editProductionAdditional.HiddenParts[local].Description" placeholder="Hidden part" />
                     </div>
                 }
+                <div class="pb-2">
+                    <InputTextArea rows="4" class="form-control" @bind-Value="@newHiddenPart" placeholder="Hidden part" />
+                </div>
             </div>
             <button class=" btn btn-primary" type="submit">Update Production</button>
         </EditForm>
@@ -42,34 +44,37 @@
 
     private EditProductionAdditional editProductionAdditional = new EditProductionAdditional();
 
+    private string newHiddenPart = string.Empty;
+
     private async Task OnValidSubmit()
     {
-        logger.LogInformation("OnValidSubmit");
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
 
-        Production.Remarks = editProductionAdditional.Remarks;
+        if (string.IsNullOrWhiteSpace(editProductionAdditional.Remarks))
+            editProductionAdditional.Remarks = null;
 
-        //var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
-        //productionHistory.AddHistory(ProductionEditProperty.Name, editProductionGeneral.Name);
-        //productionHistory.AddHistory(ProductionEditProperty.Aka, editProductionGeneral.Aka);
-        //productionHistory.AddHistory(ProductionEditProperty.SubCategory, editProductionGeneral.SubCategory);
+        productionHistory.AddHistory(ProductionEditProperty.Remarks, editProductionAdditional.Remarks);
 
-        //productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
-        //productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData { PartyId = editProductionGeneral.Party?.PartyId ?? 0, Category = editProductionGeneral.PartyCategory, Rank = editProductionGeneral.PartyRank });
-        //productionHistory.AddHistory(ProductionEditProperty.Groups, editProductionGeneral.SelectedGroups);
+        if (!string.IsNullOrWhiteSpace(newHiddenPart))
+            editProductionAdditional.HiddenParts.Add(new HiddenPart { Description = newHiddenPart });
 
-        //productionHistory.Apply();
+        productionHistory.AddHistory(ProductionEditProperty.HiddenParts, editProductionAdditional.HiddenParts);
 
-        //await unitOfWork.Commit();
+        productionHistory.Apply();
+
+        await unitOfWork.Commit();
 
         await bootstrapModal.Close();
     }
 
     protected override void OnInitialized()
     {
-
         editProductionAdditional = new EditProductionAdditional();
         editProductionAdditional.Remarks = Production.Remarks;
-        editProductionAdditional.HiddenParts = Production.HiddenParts.ToList();
-        editProductionAdditional.HiddenParts.Add(new HiddenPart());
+
+        foreach (var hiddenPart in Production.HiddenParts)
+        {
+            editProductionAdditional.HiddenParts.Add(new HiddenPart { HiddenPartId = hiddenPart.HiddenPartId, Description = hiddenPart.Description });
+        }
     }
 }
