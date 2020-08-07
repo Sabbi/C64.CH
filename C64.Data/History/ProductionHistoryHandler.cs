@@ -63,6 +63,9 @@ namespace C64.Data.History
         ReleaseDateType,
         SubCategory,
         Party,
-        Groups
+        Groups,
+        Remarks,
+        HiddenParts,
+        ProductionVideos
     }
 }

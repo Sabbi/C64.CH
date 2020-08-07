@@ -17,6 +17,12 @@ namespace C64.Data.History
                 case ProductionEditProperty.ReleaseDate:
                     return new PartialDateApplier();
 
+                case ProductionEditProperty.HiddenParts:
+                    return new HiddenPartsApplier();
+
+                case ProductionEditProperty.ProductionVideos:
+                    return new VideoApplier();
+
                 default:
                     return new GenericHistoryApplier();
             }

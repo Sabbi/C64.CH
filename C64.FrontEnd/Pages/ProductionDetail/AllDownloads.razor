@@ -23,8 +23,6 @@ else
     [Parameter]
     public ICollection<ProductionFile> ProductionFiles { get; set; }
 
-    private FileContents fileContents;
-
     private void ShowFileContents(int productionFileId, string productionFilename)
     {
         var parameters = new ModalParameters();

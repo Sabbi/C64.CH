@@ -1,0 +1,118 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IJSRuntime jsRuntime
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit videos of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <p>As of now, only YouTube-Videos are supported. To add a video, paste in the full YouTube-Link</p>
+        <EditForm EditContext="editContext" Model="editProductionVideos" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="row">
+                @for (var i = 0; i < editProductionVideos.ProductionVideos.Count(); i++)
+                {
+                    var local = i;
+                    <div class="col-sm-4" draggable="true" title="@editProductionVideos.ProductionVideos[local].VideoId" @ondragstart="@(() => HandleDragStart(editProductionVideos.ProductionVideos[local]))" @ondragover="(() => HandleDragOver(editProductionVideos.ProductionVideos[local]))">
+                        <img class="w-100" src="https://img.youtube.com/vi/@editProductionVideos.ProductionVideos[local].VideoId/0.jpg" />
+                        <br />
+                        <a href="" @onclick:preventDefault @onclick="(() => DeleteVideo(editProductionVideos.ProductionVideos[local]))">Delete video</a>
+                        <hr />
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <label>Add new Video:</label>
+                <div class="input-group">
+                    <InputText class="form-control" @bind-Value="@editProductionVideos.NewVideoUrl" placeholder="Full YouTube-Url" />
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary" @onclick="AddVideo">Add</button>
+                    </div>
+                    <ValidationMessage For="@(() => editProductionVideos.NewVideoUrl)" />
+                </div>
+            </div>
+            <button class=" btn btn-primary" type="submit">Update Production</button>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; } = new Production();
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private EditProductionVideos editProductionVideos = new EditProductionVideos();
+
+    private BootstrapModal bootstrapModal;
+    private EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        foreach (var video in Production.ProductionVideos)
+        {
+            editProductionVideos.ProductionVideos.Add(new ProductionVideo { Show = video.Show, ProductionId = video.ProductionId, VideoId = video.VideoId, Sort = video.Sort, VideoProvider = video.VideoProvider, ProductionVideoId = video.ProductionVideoId });
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        for (var i = 0; i < editProductionVideos.ProductionVideos.Count; i++)
+            editProductionVideos.ProductionVideos[i].Sort = i;
+
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+        productionHistory.AddHistory(ProductionEditProperty.ProductionVideos, editProductionVideos.ProductionVideos);
+
+        productionHistory.Apply();
+
+        await unitOfWork.Commit();
+        await bootstrapModal.Close();
+    }
+
+    private async Task DeleteVideo
+        (ProductionVideo video)
+    {
+
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Delete Video?");
+        if (confirmed)
+            editProductionVideos.ProductionVideos.Remove(video);
+    }
+
+    private void AddVideo()
+    {
+        string videoId;
+
+        try
+        {
+            videoId = YouTubeVideoProvider.ParseIdFromUrl(editProductionVideos.NewVideoUrl);
+            if (!editProductionVideos.ProductionVideos.Any(p => p.VideoId == videoId))
+                editProductionVideos.ProductionVideos.Add(new ProductionVideo { Show = true, VideoProvider = VideoProvider.Youtube, ProductionId = Production.ProductionId, VideoId = videoId });
+            editProductionVideos.NewVideoUrl = string.Empty;
+        }
+        catch (ArgumentException)
+        {
+            // Todo: Display an error message
+        }
+
+    }
+
+    private ProductionVideo draggedItem;
+
+    private void HandleDragStart(ProductionVideo item)
+    {
+        draggedItem = item;
+    }
+
+    private void HandleDragOver(ProductionVideo item)
+    {
+        if (!item.Equals(draggedItem))
+        {
+            var dragElementIndex = editProductionVideos.ProductionVideos.IndexOf(draggedItem);
+            var elementIndex = editProductionVideos.ProductionVideos.IndexOf(item);
+
+            editProductionVideos.ProductionVideos[elementIndex] = draggedItem;
+            editProductionVideos.ProductionVideos[dragElementIndex] = item;
+        }
+    }
+}
