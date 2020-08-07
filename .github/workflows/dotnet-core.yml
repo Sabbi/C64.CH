@@ -21,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build FrontEnd
-      run: dotnet build C64.Frontend --configuration Release --no-restore
+      run: dotnet build C64.FrontEnd --configuration Release --no-restore
     - name: Build Tests
       run: dotnet build C64.Tests --configuration Release --no-restore
     - name: Test
