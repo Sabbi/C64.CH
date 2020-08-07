@@ -1,4 +1,7 @@
-﻿namespace C64.Data.Entities
+﻿using System;
+using System.Web;
+
+namespace C64.Data.Entities
 {
     public class ProductionVideo
     {
@@ -54,6 +57,31 @@
 
         public string Identifier => "YouTube";
 
+        public static string ParseIdFromUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                throw new ArgumentException("Invalid URL");
+
+            if (!url.Contains("youtube.com", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("Invalid URL");
+            try
+            {
+                var querystring = new Uri(url).Query;
+                var queryDictionary = HttpUtility.ParseQueryString(querystring);
+
+                var v = queryDictionary.Get("v");
+
+                if (string.IsNullOrEmpty(v))
+                    throw new ArgumentException("Invalid URL");
+
+                return queryDictionary.Get("v");
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException("Invalid URL", e);
+            }
+        }
+
         public string ThumbnailUrl()
         {
             return $"https://img.youtube.com/vi/{videoId}/hqdefault.jpg";
@@ -66,7 +94,7 @@
 
         public string VideoUrl()
         {
-            return $"https://img.youtube.com/vi/{videoId}/hqdefault.jpg";
+            return $"https://www.youtube.com/watch?v={videoId}";
         }
     }
 }

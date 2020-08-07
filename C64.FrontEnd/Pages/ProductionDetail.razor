@@ -26,7 +26,7 @@
                             <option value="general">- General</option>
                             <option value="additional">- Additional info</option>
                             <option>- Screenshots</option>
-                            <option>- Videos</option>
+                            <option value="videos">- Videos</option>
                             <option>- Downloads</option>
                             <option>- Credits</option>
                         </select>
@@ -205,10 +205,6 @@
 
     private IUnitOfWork unitOfWork;
 
-    private WriteComment writeCommentModal;
-    private EditProductionModal editProductionModal;
-    private EditRemarksModal editRemarksModal;
-
     private async Task OnSelectEdit(ChangeEventArgs args)
     {
 
@@ -228,6 +224,14 @@
             parameters.Add(nameof(EditRemarksModal.Production), production);
             parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditRemarksModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "videos")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditRemarksModal.Production), production);
+            parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditVideoModal>("", parameters);
             await reference.Result;
         }
 

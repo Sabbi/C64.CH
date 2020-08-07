@@ -65,6 +65,7 @@ namespace C64.Data.History
         Party,
         Groups,
         Remarks,
-        HiddenParts
+        HiddenParts,
+        ProductionVideos
     }
 }
