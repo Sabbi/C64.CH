@@ -20,7 +20,9 @@ jobs:
         configurationFile: 'appsettings.Sample.json' 
     - name: Install dependencies
       run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: Build FrontEnd
+      run: dotnet build C64.Frontend --configuration Release --no-restore
+    - name: Build Tests
+      run: dotnet build C64.Tests --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
