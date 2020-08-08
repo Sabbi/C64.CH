@@ -68,5 +68,6 @@ namespace C64.Data.History
         HiddenParts,
         ProductionVideos,
         ProductionPictures,
+        AddProduction
     }
 }

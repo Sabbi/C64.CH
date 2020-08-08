@@ -52,6 +52,24 @@
                         <li class="nav-item">
                             <a asp-controller="Guestbook" asp-action="Index" asp-route-area="" asp-route-id="0" class="nav-link">Guestbook</a>
                         </li>
+                        <AuthorizeView>
+                            <Authorized>
+                                <li class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Add</a>
+                                    <div class="dropdown-menu">
+                                        <AddProductionLink class="dropdown-item"><Content>Add Production</Content></AddProductionLink>
+                                    </div>
+                                </li>
+                            </Authorized>
+                            <NotAuthorized>
+                                <li class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Add</a>
+                                    <div class="dropdown-menu">
+                                        <LoginLink class="dropdown-item"><Content>Login</Content></LoginLink>
+                                    </div>
+                                </li>
+                            </NotAuthorized>
+                        </AuthorizeView>
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Help</a>
                             <div class="dropdown-menu">
