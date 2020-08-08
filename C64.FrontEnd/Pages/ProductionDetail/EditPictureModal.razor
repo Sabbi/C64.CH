@@ -1,0 +1,167 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IJSRuntime jsRuntime
+
+@inject IFileStorageService fileStorageService
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit pictures of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+
+        <EditForm EditContext="editContext" Model="editProductionPictures" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="row">
+                @for (var i = 0; i < editProductionPictures.ProductionPictures.Count(); i++)
+                {
+                    var local = i;
+                    <div class="col-sm-4" draggable="true" title="@editProductionPictures.ProductionPictures[local].ProductionPictureId" @ondragstart="@(() => HandleDragStart(editProductionPictures.ProductionPictures[local]))" @ondragover="(() => HandleDragOver(editProductionPictures.ProductionPictures[local]))">
+
+                        @if (!string.IsNullOrEmpty(editProductionPictures.ProductionPictures[local].Base64Data))
+                        {
+                            <img class="w-100" style="opacity: @(editProductionPictures.ProductionPictures[local].Show ? "1.0" : "0.2")" src="data:image/jpeg;base64,@editProductionPictures.ProductionPictures[local].Base64Data" />
+                            <br />
+                            <a href="" @onclick:preventDefault @onclick="(() => DeletePicture(editProductionPictures.ProductionPictures[local]))">Delete</a>
+
+                        }
+                        else
+                        {
+                            <img class="w-100" style="opacity: @(editProductionPictures.ProductionPictures[local].Show ? "1.0" : "0.2")" src="/data/thumbnails/170x120/@editProductionPictures.ProductionPictures[local].Filename" />
+                            <br />
+                            <a href="" @onclick:preventDefault @onclick="(() => HidePicture(editProductionPictures.ProductionPictures[local]))">Toggle Hide</a>
+
+                        }
+                        <hr />
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <InputFile multiple OnChange="HandleSelection" />
+                <p>@fileErrorMessage</p>
+            </div>
+
+            <button class=" btn btn-primary" type="submit">Update Production</button>
+            <p class="pt-2">Upload image files only, perfect image size would be 384 x 271! Filesize is 512kb max. Existing images cannot be deleted, only hidden. They are deleted automatically after a certain grace period.</p>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; } = new Production();
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private EditProductionPictures editProductionPictures = new EditProductionPictures();
+
+    private BootstrapModal bootstrapModal;
+    private EditContext editContext;
+
+    private string fileErrorMessage = string.Empty;
+
+    private List<IFileListEntry> uploadedFiles = new List<IFileListEntry>();
+
+    protected override void OnInitialized()
+    {
+        foreach (var picture in Production.ProductionPictures)
+        {
+            editProductionPictures.ProductionPictures.Add(new ProductionPictureExtended { Filename = picture.Filename, ProductionId = picture.ProductionId, ProductionPictureId = picture.ProductionPictureId, Show = picture.Show, Size = picture.Size, Sort = picture.Sort });
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        for (var i = 0; i < editProductionPictures.ProductionPictures.Count; i++)
+            editProductionPictures.ProductionPictures[i].Sort = i;
+
+        var newValues = new List<ProductionPicture>();
+
+        for (var i = 0; i < editProductionPictures.ProductionPictures.Count; i++)
+        {
+            var src = editProductionPictures.ProductionPictures[i];
+
+            if (string.IsNullOrEmpty(src.Base64Data))
+                newValues.Add(new ProductionPicture { Filename = src.Filename, ProductionId = src.ProductionId, ProductionPictureId = src.ProductionPictureId, Show = src.Show, Size = src.Size, Sort = src.Sort });
+            else
+            {
+                var fileName = await fileStorageService.SaveFile(Convert.FromBase64String(src.Base64Data), "productionPictures", src.Filename);
+                newValues.Add(new ProductionPicture { Filename = fileName, ProductionId = src.ProductionId, ProductionPictureId = src.ProductionPictureId, Show = src.Show, Size = src.Size, Sort = src.Sort });
+            }
+        }
+
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+        productionHistory.AddHistory(ProductionEditProperty.ProductionPictures, newValues);
+
+        productionHistory.Apply();
+
+        await unitOfWork.Commit();
+        await bootstrapModal.Close();
+    }
+
+    private void HidePicture(ProductionPicture picture)
+    {
+        picture.Show = !picture.Show;
+    }
+
+    private void DeletePicture(ProductionPictureExtended picture)
+    {
+        editProductionPictures.ProductionPictures.Remove(picture);
+    }
+
+    public async Task HandleSelection(IFileListEntry[] files)
+    {
+        // Check Files
+
+        foreach (var file in files)
+        {
+            if (file.Size > 524288)
+            {
+                fileErrorMessage = "Maxiumum filesize is 512kb";
+                return;
+            }
+
+            var extension = System.IO.Path.GetExtension(file.Name)?.ToLower();
+
+            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+
+            if (!validExtensions.Contains(extension))
+            {
+                fileErrorMessage = $"Invalid file {file.Name}, only pictures are allowed";
+                return;
+            }
+        }
+
+        uploadedFiles.AddRange(files);
+
+        foreach (var file in files)
+        {
+            using (var ms = new System.IO.MemoryStream())
+            {
+                await file.Data.CopyToAsync(ms);
+                var bytes = ms.ToArray();
+                var base64 = Convert.ToBase64String(bytes);
+                editProductionPictures.ProductionPictures.Add(new ProductionPictureExtended { Base64Data = base64, Filename = file.Name, Size = int.Parse(file.Size.ToString()) });
+            }
+        }
+    }
+
+    private ProductionPictureExtended draggedItem;
+
+    private void HandleDragStart(ProductionPictureExtended item)
+    {
+        draggedItem = item;
+    }
+
+    private void HandleDragOver(ProductionPictureExtended item)
+    {
+        if (!item.Equals(draggedItem))
+        {
+            var dragElementIndex = editProductionPictures.ProductionPictures.IndexOf(draggedItem);
+            var elementIndex = editProductionPictures.ProductionPictures.IndexOf(item);
+
+            editProductionPictures.ProductionPictures[elementIndex] = draggedItem;
+            editProductionPictures.ProductionPictures[dragElementIndex] = item;
+        }
+    }
+}

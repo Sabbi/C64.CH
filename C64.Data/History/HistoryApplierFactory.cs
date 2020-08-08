@@ -23,6 +23,9 @@ namespace C64.Data.History
                 case ProductionEditProperty.ProductionVideos:
                     return new VideoApplier();
 
+                case ProductionEditProperty.ProductionPictures:
+                    return new ProductionPicturesApplier();
+
                 default:
                     return new GenericHistoryApplier();
             }

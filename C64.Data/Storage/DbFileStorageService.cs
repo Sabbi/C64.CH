@@ -73,9 +73,9 @@ namespace C64.Data.Storage
                 else
                 {
                     // Add a random char between filename and extension...
-                    var rnd = Guid.NewGuid().ToString().Substring(0, 1);
+                    var rnd = Guid.NewGuid().ToString().Substring(0, 3);
 
-                    newFileName = Path.GetFileNameWithoutExtension(newFileName) + rnd + Path.GetExtension(newFileName);
+                    newFileName = Path.GetFileNameWithoutExtension(newFileName) + "-" + rnd + Path.GetExtension(newFileName);
                 }
             }
 
