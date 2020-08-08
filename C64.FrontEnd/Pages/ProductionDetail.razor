@@ -25,7 +25,7 @@
                             <option value="0">Edit Production</option>
                             <option value="general">- General</option>
                             <option value="additional">- Additional info</option>
-                            <option>- Screenshots</option>
+                            <option value="pictures">- Screenshots</option>
                             <option value="videos">- Videos</option>
                             <option>- Downloads</option>
                             <option>- Credits</option>
@@ -234,7 +234,14 @@
             reference = Modal.Show<EditVideoModal>("", parameters);
             await reference.Result;
         }
-
+        else if (args.Value.ToString() == "pictures")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditRemarksModal.Production), production);
+            parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditPictureModal>("", parameters);
+            await reference.Result;
+        }
         StateHasChanged();
 
         await jsRuntime.InvokeAsync<object>("ResetProdEditSelect");
