@@ -64,8 +64,7 @@
 
     private async Task OnValidSubmit()
     {
-        for (var i = 0; i < editProductionFiles.Files.Count; i++)
-            editProductionFiles.Files[i].Sort = i;
+        editProductionFiles.Files.UpdateSort();
 
         var newValues = new List<ProductionFile>();
 
@@ -73,11 +72,10 @@
         {
             var src = editProductionFiles.Files[i];
 
-            if (src.Downloads > 0)
+            if (src.Size > 0)
                 newValues.Add(new ProductionFile { Filename = src.Filename, ProductionId = src.ProductionId, Description = src.Description, Downloads = src.Downloads, ProductionFileId = src.ProductionFileId, Show = src.Show, Size = src.Size, Sort = src.Sort });
             else
             {
-
                 using (var ms = new System.IO.MemoryStream())
                 {
                     var uploadedFile = uploadedFiles.First(p => p.Name == src.Filename);

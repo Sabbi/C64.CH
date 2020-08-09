@@ -2,7 +2,7 @@
 
 namespace C64.Data.Entities
 {
-    public class ProductionFile
+    public class ProductionFile : ISortable
     {
         public int ProductionFileId { get; set; }
 

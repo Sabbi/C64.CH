@@ -72,8 +72,8 @@
 
     private async Task OnValidSubmit()
     {
-        for (var i = 0; i < editProductionPictures.ProductionPictures.Count; i++)
-            editProductionPictures.ProductionPictures[i].Sort = i;
+
+        editProductionPictures.ProductionPictures.UpdateSort();
 
         var newValues = new List<ProductionPicture>();
 
