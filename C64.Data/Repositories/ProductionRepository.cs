@@ -40,7 +40,7 @@ namespace C64.Data.Repositories
             var ratings = await context.Set<Rating>().Include(p => p.User).Where(p => p.ProductionId == productionId).ToListAsync();
             production.Ratings = ratings;
 
-            var credits = await context.Set<ProductionCredit>().Include(p => p.Scener).ThenInclude(p => p.ScenersGroups).ThenInclude(p => p.Group).ToListAsync();
+            var credits = await context.Set<ProductionCredit>().Include(p => p.Scener).ThenInclude(p => p.ScenersGroups).ThenInclude(p => p.Group).Where(p => p.ProductionId == productionId).ToListAsync();
             production.ProductionCredits = credits;
 
             // Resort Pictures
