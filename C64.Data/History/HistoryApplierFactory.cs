@@ -26,6 +26,9 @@ namespace C64.Data.History
                 case ProductionEditProperty.ProductionPictures:
                     return new ProductionPicturesApplier();
 
+                case ProductionEditProperty.ProductionFiles:
+                    return new ProductionFilesApplier();
+
                 case ProductionEditProperty.AddProduction:
                     return new AddProductionApplier();
 

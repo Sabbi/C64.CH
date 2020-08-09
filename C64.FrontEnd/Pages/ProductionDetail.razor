@@ -27,7 +27,7 @@
                             <option value="additional">- Additional info</option>
                             <option value="pictures">- Screenshots</option>
                             <option value="videos">- Videos</option>
-                            <option>- Downloads</option>
+                            <option value="downloads">- Downloads</option>
                             <option>- Credits</option>
                         </select>
                     </div>
@@ -240,6 +240,14 @@
             parameters.Add(nameof(EditRemarksModal.Production), production);
             parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditPictureModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "downloads")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditRemarksModal.Production), production);
+            parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditDownloadsModal>("", parameters);
             await reference.Result;
         }
         StateHasChanged();
