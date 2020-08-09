@@ -1,0 +1,162 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IJSRuntime jsRuntime
+
+@inject IFileStorageService fileStorageService
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit downloads of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+
+        <EditForm EditContext="editContext" Model="editProductionFiles" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="row">
+                @for (var i = 0; i < editProductionFiles.Files.Count(); i++)
+                {
+                    var local = i;
+                    <div class="col-sm-12" draggable="true" title="@editProductionFiles.Files[local].Filename" @ondragstart="@(() => HandleDragStart(editProductionFiles.Files[local]))" @ondragover="(() => HandleDragOver(editProductionFiles.Files[local]))">
+                        <div class="row">
+                            <div class="col-8"><span style="text-decoration:@(editProductionFiles.Files[local].Show ? "none" : "line-through")">@editProductionFiles.Files[local].Filename (Size: @editProductionFiles.Files[local].Size)</span></div>
+                            @if (editProductionFiles.Files[local].Size != -1)
+                            {
+                                <div class="col-4"><a href="" @onclick:preventDefault @onclick="(() => HideFile(editProductionFiles.Files[local]))">Toggle Hide</a></div>
+                            }
+                            else
+                            {
+                                <div class="col-4"><a href="" @onclick:preventDefault @onclick="(() => DeleteFile(editProductionFiles.Files[local]))">Delete</a></div>
+                            }
+                        </div>
+                        <hr />
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <InputFile OnChange="HandleSelection" />
+                <p>@fileErrorMessage</p>
+            </div>
+            <button class=" btn btn-primary" type="submit">Update Production</button>
+            <p class="pt-2">Upload .ZIP-Files only!</p>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; } = new Production();
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private EditProductionFiles editProductionFiles = new EditProductionFiles();
+    private BootstrapModal bootstrapModal;
+    private EditContext editContext;
+    private string fileErrorMessage = string.Empty;
+    private List<IFileListEntry> uploadedFiles = new List<IFileListEntry>();
+
+    protected override void OnInitialized()
+    {
+        foreach (var file in Production.ProductionFiles)
+        {
+            editProductionFiles.Files.Add(new ProductionFile { Description = file.Description, Downloads = file.Downloads, Filename = file.Filename, ProductionFileId = file.ProductionFileId, ProductionId = file.ProductionId, Show = file.Show, Size = file.Size, Sort = file.Sort });
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        for (var i = 0; i < editProductionFiles.Files.Count; i++)
+            editProductionFiles.Files[i].Sort = i;
+
+        var newValues = new List<ProductionFile>();
+
+        for (var i = 0; i < editProductionFiles.Files.Count; i++)
+        {
+            var src = editProductionFiles.Files[i];
+
+            if (src.Downloads > 0)
+                newValues.Add(new ProductionFile { Filename = src.Filename, ProductionId = src.ProductionId, Description = src.Description, Downloads = src.Downloads, ProductionFileId = src.ProductionFileId, Show = src.Show, Size = src.Size, Sort = src.Sort });
+            else
+            {
+
+                using (var ms = new System.IO.MemoryStream())
+                {
+                    var uploadedFile = uploadedFiles.First(p => p.Name == src.Filename);
+
+                    await uploadedFile.Data.CopyToAsync(ms);
+                    var bytes = ms.ToArray();
+
+                    var fileName = await fileStorageService.SaveFile(bytes, "productionFiles", src.Filename);
+                    newValues.Add(new ProductionFile { Filename = fileName, ProductionId = src.ProductionId, Description = src.Description, Downloads = src.Downloads, Show = src.Show, Size = uploadedFile.Size, Sort = src.Sort });
+                }
+            }
+        }
+
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+        productionHistory.AddHistory(ProductionEditProperty.ProductionFiles, newValues);
+
+        productionHistory.Apply();
+
+        await unitOfWork.Commit();
+        await bootstrapModal.Close();
+    }
+
+    private void HideFile(ProductionFile file)
+    {
+        file.Show = !file.Show;
+    }
+
+    private void DeleteFile(ProductionFile file)
+    {
+        editProductionFiles.Files.Remove(file);
+    }
+
+    public async Task HandleSelection(IFileListEntry[] files)
+    {
+        // Check Files
+        foreach (var file in files)
+        {
+            if (file.Size > 16777216)
+            {
+                fileErrorMessage = "Maxiumum filesize is 16MB.";
+                return;
+            }
+
+            var extension = System.IO.Path.GetExtension(file.Name)?.ToLower();
+
+            if (!extension.Equals(".zip"))
+            {
+                fileErrorMessage = $"Invalid file {file.Name}, only .Zip-Files are allowed";
+                return;
+            }
+
+            // Todo: Check the Zip-File
+
+        }
+
+        uploadedFiles.AddRange(files);
+
+        foreach (var file in files)
+        {
+            editProductionFiles.Files.Add(new ProductionFile { Downloads = 0, Filename = file.Name, Show = true, Size = -1 });
+        }
+    }
+
+    private ProductionFile draggedItem;
+
+    private void HandleDragStart(ProductionFile item)
+    {
+        draggedItem = item;
+    }
+
+    private void HandleDragOver(ProductionFile item)
+    {
+        if (!item.Equals(draggedItem))
+        {
+            var dragElementIndex = editProductionFiles.Files.IndexOf(draggedItem);
+            var elementIndex = editProductionFiles.Files.IndexOf(item);
+
+            editProductionFiles.Files[elementIndex] = draggedItem;
+            editProductionFiles.Files[dragElementIndex] = item;
+        }
+    }
+}
