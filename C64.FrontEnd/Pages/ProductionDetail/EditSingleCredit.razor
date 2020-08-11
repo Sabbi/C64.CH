@@ -1,0 +1,64 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject IUnitOfWork unitOfWork;
+<label>
+    <span>Add Credit:</span>
+</label>
+<div class="row">
+    <div class="col-4">
+        <select @bind="Credit" class="form-control">
+            @foreach (var item in Enum.GetValues(typeof(Credit)))
+            {
+                <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
+            }
+        </select>
+    </div>
+    <div class="col-5">
+        <BlazoredTypeahead TValue="Scener" TItem="Scener" ValueExpression="@(() => Scener)" Value="@Scener" ValueChanged="OnValueChanged" SearchMethod="SearchScener">
+            <SelectedTemplate Context="scener">
+                @scener.HandleWithGroups()
+            </SelectedTemplate>
+            <ResultTemplate Context="scener">
+                @scener.ScenerId (@scener.HandleWithGroups())
+            </ResultTemplate>
+            <NotFoundTemplate>
+                Scener not found
+            </NotFoundTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="col-3">
+        <button class="btn btn-primary" @onclick="Submit" disabled="@disabled">Add</button>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public Credit Credit { get; set; }
+
+    [Parameter]
+    public Scener Scener { get; set; } = new Scener();
+
+    [Parameter]
+    public EventCallback<EditCredit> OnSubmit { get; set; }
+
+    private bool disabled = true;
+
+    private void OnValueChanged(Scener selectedScener)
+    {
+        Scener = selectedScener;
+        disabled = Scener == null;
+    }
+
+    private void Submit()
+    {
+        OnSubmit.InvokeAsync(new EditCredit { Id = 0, Added = true, ScenerId = Scener.ScenerId, ScenerHandle = Scener.HandleWithGroups(), Credit = Credit });
+        Scener = null;
+        Credit = C64.Data.Credit.Unspecified;
+    }
+
+    private async Task<IEnumerable<Scener>> SearchScener(string searchText)
+    {
+        return await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+    }
+}
