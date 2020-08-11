@@ -1,11 +1,15 @@
-﻿@namespace C64.FrontEnd.Shared
-@inject NavigationManager navigationManager
-@implements IDisposable
+﻿@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Configuration
 
-@using Microsoft.Extensions.DependencyInjection
+@namespace C64.FrontEnd.Shared
+
+@implements IDisposable
 @inherits OwningComponentBase
 
-@using System.Timers;
+@inject NavigationManager navigationManager
+@inject IConfiguration configuration
+
+@using System.Timers
 
 <Box ContentClasses="p-0 pt-1">
     <Title>DemoRand();<div class="float-right pr-1"><i class="fas fa-xs fa-sync cursor-pointer" @onclick="Reload"></i></div></Title>
@@ -24,12 +28,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var delay = configuration.GetValue<double>("DemoRandDelay");
+
         await LoadRandomProduction();
         timer = new Timer();
-        timer.Interval = 30000;
+        timer.Interval = delay;
         timer.Elapsed += OnTimerElapsed;
         timer.Start();
-
     }
 
     private async Task GoToProduction()
@@ -47,7 +52,6 @@
 
     private async void OnTimerElapsed(object sender, ElapsedEventArgs e)
     {
-        //LoadRandomProduction().GetAwaiter().GetResult();
         await LoadRandomProduction();
     }
 
