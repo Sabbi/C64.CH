@@ -1,4 +1,5 @@
-﻿using C64.Data.Entities;
+﻿using C64.Data.Archive;
+using C64.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
@@ -10,10 +11,12 @@ namespace C64.Data.Storage
     public class DbFileStorageService : IFileStorageService
     {
         private readonly ApplicationDbContext context;
+        private readonly IArchiveService archiveService;
 
-        public DbFileStorageService(ApplicationDbContext context)
+        public DbFileStorageService(ApplicationDbContext context, IArchiveService archiveService)
         {
             this.context = context;
+            this.archiveService = archiveService;
         }
 
         public async Task DeleteFile(string container, string fileName)
@@ -62,6 +65,12 @@ namespace C64.Data.Storage
 
         public async Task<string> SaveFile(byte[] content, string container, string fileName)
         {
+            if (Path.GetExtension(fileName).ToLower() == ".zip")
+            {
+                archiveService.Load(content);
+                content = archiveService.AddFileId();
+            }
+
             var freeFileFound = false;
 
             var newFileName = fileName;
