@@ -16,8 +16,8 @@ namespace C64.Data.Archive
                         + "       ____   __     __  __      ____   __  __" + Environment.NewLine
                         + "      / __/\\ / /__  / /_/ /\\    / __/\\ / /_/ /\\" + Environment.NewLine
                         + "     / /_ \\ / __ /\\/__   / /_  / /_ \\// __  / /" + Environment.NewLine
-                        + "    / ____/\\/____/ /\\_/__/ /_/\\/____/\\/_/\\/_/ /" + Environment.NewLine
-                        + "   \\____\\/\\____\\/   \\__\\/\\_\\/\\____\\/\\_\\/\\_\\/" + Environment.NewLine
+                        + "    /____/\\/____/ /\\_/__/ /_/\\/____/\\/_/\\/_/ /" + Environment.NewLine
+                        + "    \\____\\/\\____\\/   \\__\\/\\_\\/\\____\\/\\_\\/\\_\\/" + Environment.NewLine
                         + "" + Environment.NewLine
                         + "" + Environment.NewLine
                         + "       C64.CH - Your #1 Source for C64-Demos" + Environment.NewLine
