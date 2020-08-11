@@ -3,7 +3,7 @@ using System.Web;
 
 namespace C64.Data.Entities
 {
-    public class ProductionVideo
+    public class ProductionVideo : ISortable
     {
         public int ProductionVideoId { get; set; }
         public VideoProvider VideoProvider { get; set; }

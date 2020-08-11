@@ -58,8 +58,7 @@
 
     private async Task OnValidSubmit()
     {
-        for (var i = 0; i < editProductionVideos.ProductionVideos.Count; i++)
-            editProductionVideos.ProductionVideos[i].Sort = i;
+        editProductionVideos.ProductionVideos.UpdateSort();
 
         var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
         productionHistory.AddHistory(ProductionEditProperty.ProductionVideos, editProductionVideos.ProductionVideos);

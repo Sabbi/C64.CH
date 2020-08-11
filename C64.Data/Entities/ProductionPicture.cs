@@ -2,7 +2,7 @@
 
 namespace C64.Data.Entities
 {
-    public class ProductionPicture
+    public class ProductionPicture : ISortable
     {
         public int ProductionPictureId { get; set; }
         public int ProductionId { get; set; }
@@ -15,8 +15,11 @@ namespace C64.Data.Entities
         public int Sort { get; set; } = 0;
         public bool Show { get; set; } = true;
 
-        //public int DbFileId { get; set; } = 0;
-        //public virtual DbFile DbFile { get; set; }
         public int Size { get; set; } = 0;
+    }
+
+    public interface ISortable
+    {
+        int Sort { get; set; }
     }
 }
