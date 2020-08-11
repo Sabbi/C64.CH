@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore.Internal;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
 
 namespace C64.Data.Entities
 {
@@ -18,5 +21,19 @@ namespace C64.Data.Entities
         public virtual ICollection<ScenersSceners> AlterEgos { get; set; } = new HashSet<ScenersSceners>();
 
         public virtual ICollection<PartiesSceners> PartiesSceners { get; set; } = new HashSet<PartiesSceners>();
+
+        public string HandleWithGroups()
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(Handle);
+
+            if (ScenersGroups.Any())
+            {
+                sb.Append(" of " + string.Join(",", ScenersGroups.Select(p => p.Group?.Name)));
+            }
+
+            return sb.ToString();
+        }
     }
 }

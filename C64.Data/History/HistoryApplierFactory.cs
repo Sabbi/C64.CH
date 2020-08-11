@@ -32,6 +32,9 @@ namespace C64.Data.History
                 case ProductionEditProperty.AddProduction:
                     return new AddProductionApplier();
 
+                case ProductionEditProperty.ProductionCredits:
+                    return new ProductionCreditsApplier();
+
                 default:
                     return new GenericHistoryApplier();
             }

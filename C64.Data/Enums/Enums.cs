@@ -37,11 +37,11 @@ namespace C64.Data
 
     public enum Credit
     {
+        Unspecified = 0,
         Code = 10,
         Music = 20,
         Graphics = 30,
         Loader = 40,
-        Unassigned = 9999
     }
 
     public enum Job

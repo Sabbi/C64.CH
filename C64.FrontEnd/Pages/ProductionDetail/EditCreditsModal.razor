@@ -1,0 +1,98 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit credits of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <div class="form-group">
+            <EditSingleCredit OnSubmit="OnAddCreditSubmit" />
+        </div>
+        <div class="form-group">
+            <label>Credits:</label>
+            @for (var i = 0; i < editProductionCredits.EditCredits.Count; i++)
+            {
+                var local = i;
+                var isDeleted = editProductionCredits.EditCredits[local].Deleted;
+
+                <div class="row">
+                    <div class="col-5">
+                        <span style="text-decoration:@(isDeleted ? "line-through": "none")">@editProductionCredits.EditCredits[local].Credit.ToString()</span>
+                    </div>
+                    <div class="col-5">
+                        <span style="text-decoration:@(isDeleted? "line-through": "none")">@editProductionCredits.EditCredits[local].ScenerHandle.ToString()</span>
+                    </div>
+                    <div class="col-2">
+                        <a href="" @onclick:preventDefault @onclick="(() => DeleteCredit(editProductionCredits.EditCredits[local]))">@(isDeleted ? "Undelete" : "Delete")</a>
+                    </div>
+                </div>
+            }
+        </div>
+        <button class=" btn btn-primary" @onclick="OnValidSubmit">Update Production</button>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; } = new Production();
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private EditProductionCredits editProductionCredits = new EditProductionCredits();
+
+    private string newHiddenPart = string.Empty;
+
+    private Scener scener = null;
+
+    private void DeleteCredit(EditCredit credit)
+    {
+        credit.Deleted = !credit.Deleted;
+    }
+
+    private void OnAddCreditSubmit(EditCredit credit)
+    {
+        if (!editProductionCredits.EditCredits.Any(p => p.Credit == credit.Credit && p.ScenerId == credit.ScenerId))
+            editProductionCredits.EditCredits.Add(credit);
+        else
+        {
+            var currentCredits = editProductionCredits.EditCredits.Where(p => p.Credit == credit.Credit && p.ScenerId == credit.ScenerId);
+            foreach (var item in currentCredits)
+                item.Deleted = false;
+        }
+        editProductionCredits.EditCredits = editProductionCredits.EditCredits.OrderBy(p => p.Credit).ToList();
+    }
+
+    private async Task OnValidSubmit()
+    {
+        logger.LogInformation("OnValidSubmit @ EditCreditsModal");
+
+        var removed = editProductionCredits.EditCredits.RemoveAll(p => (p.Added == true && p.Deleted == true));
+        logger.LogInformation("{removed} entries removed from creditslist", removed);
+        logger.LogInformation("Credits: {@credits}", editProductionCredits.EditCredits);
+
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+
+        productionHistory.AddHistory(ProductionEditProperty.ProductionCredits, editProductionCredits.EditCredits);
+        productionHistory.Apply();
+
+        foreach (var credit in Production.ProductionCredits)
+        {
+            var loadedScener = await unitOfWork.Sceners.FindWithGroups(p => p.ScenerId == credit.ScenerId);
+            credit.Scener = loadedScener.FirstOrDefault();
+        }
+
+        await unitOfWork.Commit();
+        await bootstrapModal.Close();
+    }
+
+    protected override void OnInitialized()
+    {
+        editProductionCredits = new EditProductionCredits();
+
+        foreach (var credit in Production.ProductionCredits.OrderBy(p => p.Credit))
+            editProductionCredits.EditCredits.Add(new EditCredit { Credit = credit.Credit, Id = credit.ProductionCreditId, ScenerId = credit.ScenerId, ScenerHandle = credit.Scener.HandleWithGroups() });
+    }
+}
