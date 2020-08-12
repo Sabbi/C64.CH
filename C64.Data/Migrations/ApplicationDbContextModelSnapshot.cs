@@ -1733,6 +1733,10 @@ namespace C64.Data.Migrations
                     b.Property<DateTime?>("Applied")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("IpAdress")
+                        .HasColumnType("varchar(46) CHARACTER SET utf8mb4")
+                        .HasMaxLength(46);
+
                     b.Property<string>("NewValue")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
