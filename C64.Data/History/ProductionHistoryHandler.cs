@@ -9,13 +9,15 @@ namespace C64.Data.History
         private readonly IUnitOfWork unitOfWork;
         private readonly Production production;
         private readonly string userId;
+        private readonly string userIp;
         private List<HistoryProduction> history = new List<HistoryProduction>();
 
-        public ProductionHistoryHandler(IUnitOfWork unitOfWork, Production production, string userId)
+        public ProductionHistoryHandler(IUnitOfWork unitOfWork, Production production, string userId, string userIp)
         {
             this.unitOfWork = unitOfWork;
             this.production = production;
             this.userId = userId;
+            this.userIp = userIp;
         }
 
         public void AddHistory(ProductionEditProperty property, object newValue, HistoryStatus status = HistoryStatus.ToApply)
@@ -28,6 +30,7 @@ namespace C64.Data.History
                 return;
 
             dbhistory.UserId = userId;
+            dbhistory.IpAdress = userIp;
 
             history.Add(dbhistory);
         }
