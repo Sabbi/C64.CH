@@ -69,6 +69,15 @@
                                 <EnumDisplayNameAttribute DisplayNameFor="@production.TopCategory" /> -  <EnumDisplayNameAttribute DisplayNameFor="@production.SubCategory" />
                             </td>
                         </tr>
+                        @if (production.VideoType != VideoType.Unknown)
+                        {
+                            <tr>
+                                <th>Video-Standard:</th>
+                                <td>
+                                    <EnumDisplayNameAttribute DisplayNameFor="@production.VideoType" />
+                                </td>
+                            </tr>
+                        }
                         <tr><th><span class="text-nowrap">Released on:</span></th><td><PartialDateDisplay DateType="@production.ReleaseDateType" DateValue="@production.ReleaseDate" /></td></tr>
                         @if (production.ProductionsParties.Any())
                         {
