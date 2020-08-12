@@ -11,7 +11,7 @@
 
                 @if (Production.ProductionPictures.Any(p => p.Show))
                 {
-                    <img class="prodlistitem-img" src="/data/thumbnails/240x169/@Production.ProductionPictures.FirstOrDefault(p => p.Show).Filename" alt="@Production.Name" />
+                    <img class="prodlistitem-img" src="/data/thumbnails/240x169/@Production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show).Filename" alt="@Production.Name" />
                 }
                 else
                 {
