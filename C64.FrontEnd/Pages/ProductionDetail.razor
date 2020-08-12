@@ -137,8 +137,9 @@
                                 </td>
                             </tr>
                         }
+
                         <tr><th>Added:</th><td>@production.Added.ParseDate()</td></tr>
-                        @if (!string.IsNullOrEmpty(production.UploaderFixed()))
+                        @if (!string.IsNullOrEmpty(production.UploaderFixed()) && production.UploaderFixed() != production.SubmitterFixed())
                         {
                             <tr><th>Added by:</th><td>@production.UploaderFixed()</td></tr>
                         }
