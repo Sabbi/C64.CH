@@ -14,27 +14,33 @@
 <Box ContentClasses="p-0 pt-1">
     <Title>DemoRand();<div class="float-right pr-1"><i class="fas fa-xs fa-sync cursor-pointer" @onclick="Reload"></i></div></Title>
     <Content>
-        <a @onclick="GoToProduction">
-            <img class="w-100" src="/data/productionpictures/@production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show)?.Filename" />
-            <div class="picture-caption">@production.Name</div>
-        </a>
+        @if (production != null)
+        {
+            <a @onclick="GoToProduction">
+                <img class="w-100" src="/data/productionpictures/@production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show)?.Filename" />
+                <div class="picture-caption">@production.Name</div>
+            </a>
+        }
     </Content>
 </Box>
 
 @code {
 
-    Production production = new Production();
-    private Timer timer;
+    Production production;
+    private Timer timer = new Timer();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var delay = configuration.GetValue<double>("DemoRandDelay");
+        if (firstRender)
+        {
+            var delay = configuration.GetValue<double>("DemoRandDelay");
 
-        await LoadRandomProduction();
-        timer = new Timer();
-        timer.Interval = delay;
-        timer.Elapsed += OnTimerElapsed;
-        timer.Start();
+            await LoadRandomProduction();
+
+            timer.Interval = delay;
+            timer.Elapsed += OnTimerElapsed;
+            timer.Start();
+        }
     }
 
     private async Task GoToProduction()
