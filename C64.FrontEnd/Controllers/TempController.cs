@@ -20,7 +20,7 @@ namespace C64.FrontEnd.Controllers
         {
             var production = unitOfWork.Productions.Find(p => p.ProductionId == 1).First();
 
-            var handler = new ProductionHistoryHandler(unitOfWork, production, "1");
+            var handler = new ProductionHistoryHandler(unitOfWork, production, "1", "2");
 
             handler.AddHistory(ProductionEditProperty.Name, "NewName2", HistoryStatus.ToApply);
             handler.AddHistory(ProductionEditProperty.Aka, "NewAka", HistoryStatus.ToApply);
@@ -33,7 +33,7 @@ namespace C64.FrontEnd.Controllers
         public async Task<IActionResult> Undo()
         {
             var production = unitOfWork.Productions.Find(p => p.ProductionId == 993).First();
-            var handler = new ProductionHistoryHandler(unitOfWork, production, "1");
+            var handler = new ProductionHistoryHandler(unitOfWork, production, "1", "2");
 
             var toUndo = await unitOfWork.Productions.GetHistory(993);
 
