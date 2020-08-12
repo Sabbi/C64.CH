@@ -41,7 +41,7 @@
     // Sorting
     private SorterData sorterData = new SorterData();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         navigationManager.LocationChanged += OnLocationChanged;
 
@@ -49,12 +49,16 @@
         sorterData.CurrentSortColumn = "Name";
         sorterData.IsSortedAscending = true;
         sorterData.SorterItems.Add(new SorterItem("Name", "Name of the Demo", true));
-        sorterData.SorterItems.Add(new SorterItem("Downloads", "Downlöds", false));
-        sorterData.SorterItems.Add(new SorterItem("AverageRating", "Average Ratingof the Demo", false));
+        sorterData.SorterItems.Add(new SorterItem("Downloads", "Downloads", false));
+        sorterData.SorterItems.Add(new SorterItem("AverageRating", "Average Rating of the Demo", false));
         sorterData.SorterItems.Add(new SorterItem("Added", "Sort By Added", false));
         sorterData.SorterItems.Add(new SorterItem("ReleaseDate", "Sort By Released", false));
 
         LoadQueryParamters();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
         await LoadProductions();
     }
 
@@ -74,6 +78,7 @@
         LoadQueryParamters();
         await LoadProductions();
         StateHasChanged();
+
     }
 
     private void LoadQueryParamters()
@@ -104,6 +109,7 @@
         currentPage = paginatedResult.CurrentPage;
         totalNumberOfPages = paginatedResult.NumberOfPages;
         totalNumberOfRecords = paginatedResult.TotalNumberOfRecords;
+        logger.LogWarning("Loaded {total}", totalNumberOfRecords);
     }
 
     public void Dispose()

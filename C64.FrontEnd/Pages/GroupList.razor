@@ -27,12 +27,13 @@
 
     private string baseUrl => $"groups/{Id}/{groupName}";
 
-    protected override async Task OnInitializedAsync()
+    private string title => $"Productions from {groupName}";
+
+    protected override async Task OnParametersSetAsync()
     {
         var group = await unitOfWork.Groups.GetWithProductions(Id);
         productionIds = group.ProductionsGroups.Select(p => p.Production.ProductionId).ToList();
         groupName = group.Name;
     }
 
-    private string title => $"Productions from {groupName}";
 }
