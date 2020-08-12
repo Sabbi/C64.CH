@@ -66,6 +66,7 @@ namespace C64.Data.History
         Groups,
         Remarks,
         HiddenParts,
+        VideoType,
         ProductionVideos,
         ProductionPictures,
         ProductionFiles,

@@ -28,6 +28,17 @@
                     <InputTextArea rows="4" class="form-control" @bind-Value="@newHiddenPart" placeholder="Hidden part" />
                 </div>
             </div>
+            <div class="form-group">
+                <label>Video-Standard:</label>
+                <div>
+                    <InputSelect @bind-Value="editProductionAdditional.VideoType" class="form-control">
+                        @foreach (var item in Enum.GetValues(typeof(VideoType)))
+                        {
+                            <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
             <button class=" btn btn-primary" type="submit">Update Production</button>
         </EditForm>
     </Content>
@@ -60,6 +71,8 @@
 
         productionHistory.AddHistory(ProductionEditProperty.HiddenParts, editProductionAdditional.HiddenParts);
 
+        productionHistory.AddHistory(ProductionEditProperty.VideoType, editProductionAdditional.VideoType);
+
         productionHistory.Apply();
 
         await unitOfWork.Commit();
@@ -71,6 +84,7 @@
     {
         editProductionAdditional = new EditProductionAdditional();
         editProductionAdditional.Remarks = Production.Remarks;
+        editProductionAdditional.VideoType = Production.VideoType;
 
         foreach (var hiddenPart in Production.HiddenParts)
         {
