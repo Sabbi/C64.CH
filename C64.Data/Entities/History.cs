@@ -19,6 +19,9 @@ namespace C64.Data.Entities
 
         public virtual User User { get; set; }
 
+        [MaxLength(46)]
+        public string IpAdress { get; set; }
+
         public DateTime? Applied { get; set; }
         public DateTime? Undid { get; set; }
 

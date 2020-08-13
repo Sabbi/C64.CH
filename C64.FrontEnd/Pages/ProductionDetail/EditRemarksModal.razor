@@ -59,7 +59,7 @@
 
     private async Task OnValidSubmit()
     {
-        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
 
         if (string.IsNullOrWhiteSpace(editProductionAdditional.Remarks))
             editProductionAdditional.Remarks = null;

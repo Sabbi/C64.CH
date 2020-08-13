@@ -87,7 +87,7 @@
             }
         }
 
-        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
         productionHistory.AddHistory(ProductionEditProperty.ProductionFiles, newValues);
 
         productionHistory.Apply();

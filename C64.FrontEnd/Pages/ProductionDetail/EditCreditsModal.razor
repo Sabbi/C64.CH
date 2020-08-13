@@ -69,7 +69,7 @@
         logger.LogInformation("{removed} entries removed from creditslist", removed);
         logger.LogInformation("Credits: {@credits}", editProductionCredits.EditCredits);
 
-        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId());
+        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
 
         productionHistory.AddHistory(ProductionEditProperty.ProductionCredits, editProductionCredits.EditCredits);
         productionHistory.Apply();
