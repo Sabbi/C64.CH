@@ -9,7 +9,7 @@ namespace C64.Data.History
         private readonly IUnitOfWork unitOfWork;
         private readonly Production production;
         private readonly string userId;
-        private List<HistoryProduction> history = new List<HistoryProduction>();
+        private readonly List<HistoryProduction> history = new List<HistoryProduction>();
 
         public ProductionHistoryHandler(IUnitOfWork unitOfWork, Production production, string userId)
         {
