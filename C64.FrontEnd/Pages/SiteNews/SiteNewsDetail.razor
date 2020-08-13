@@ -5,7 +5,7 @@
             <h4 class="d-inline">@SiteInfo.Title</h4>
         </div>
         <div class="col-12">
-            @((MarkupString)SiteInfo.Text)
+            <RenderMarkdown MarkdownContent="@SiteInfo.Text" />
             <div class="small float-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
             <hr>
         </div>
