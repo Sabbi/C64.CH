@@ -10,9 +10,9 @@ namespace C64.Data.History
         private readonly Production production;
         private readonly string userId;
         private readonly string userIp;
-        private List<HistoryProduction> history = new List<HistoryProduction>();
+        private readonly List<HistoryProduction> history = new List<HistoryProduction>();
 
-        public ProductionHistoryHandler(IUnitOfWork unitOfWork, Production production, string userId, string userIp)
+      public ProductionHistoryHandler(IUnitOfWork unitOfWork, Production production, string userId, string userIp)
         {
             this.unitOfWork = unitOfWork;
             this.production = production;

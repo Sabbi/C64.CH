@@ -6,7 +6,7 @@
 <BootstrapModal @ref="bootstrapModal" Title="@($"Edit videos of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
     <Content>
         <p>As of now, only YouTube-Videos are supported. To add a video, paste in the full YouTube-Link</p>
-        <EditForm EditContext="editContext" Model="editProductionVideos" OnValidSubmit="OnValidSubmit">
+        <EditForm Model="editProductionVideos" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="row">
@@ -44,9 +44,7 @@
     public IUnitOfWork unitOfWork { get; set; }
 
     private EditProductionVideos editProductionVideos = new EditProductionVideos();
-
     private BootstrapModal bootstrapModal;
-    private EditContext editContext;
 
     protected override void OnInitialized()
     {

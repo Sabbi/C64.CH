@@ -7,8 +7,7 @@
 
 <BootstrapModal @ref="bootstrapModal" Title="@($"Edit downloads of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
     <Content>
-
-        <EditForm EditContext="editContext" Model="editProductionFiles" OnValidSubmit="OnValidSubmit">
+        <EditForm Model="editProductionFiles" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="row">
@@ -50,7 +49,6 @@
 
     private EditProductionFiles editProductionFiles = new EditProductionFiles();
     private BootstrapModal bootstrapModal;
-    private EditContext editContext;
     private string fileErrorMessage = string.Empty;
     private List<IFileListEntry> uploadedFiles = new List<IFileListEntry>();
 
@@ -108,7 +106,7 @@
         editProductionFiles.Files.Remove(file);
     }
 
-    public async Task HandleSelection(IFileListEntry[] files)
+    public void HandleSelection(IFileListEntry[] files)
     {
         // Check Files
         foreach (var file in files)
@@ -126,9 +124,7 @@
                 fileErrorMessage = $"Invalid file {file.Name}, only .Zip-Files are allowed";
                 return;
             }
-
             // Todo: Check the Zip-File
-
         }
 
         uploadedFiles.AddRange(files);

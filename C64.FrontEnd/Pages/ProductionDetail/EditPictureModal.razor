@@ -8,7 +8,7 @@
 <BootstrapModal @ref="bootstrapModal" Title="@($"Edit pictures of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
     <Content>
 
-        <EditForm EditContext="editContext" Model="editProductionPictures" OnValidSubmit="OnValidSubmit">
+        <EditForm Model="editProductionPictures" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="row">
@@ -54,12 +54,8 @@
     public IUnitOfWork unitOfWork { get; set; }
 
     private EditProductionPictures editProductionPictures = new EditProductionPictures();
-
     private BootstrapModal bootstrapModal;
-    private EditContext editContext;
-
     private string fileErrorMessage = string.Empty;
-
     private List<IFileListEntry> uploadedFiles = new List<IFileListEntry>();
 
     protected override void OnInitialized()
