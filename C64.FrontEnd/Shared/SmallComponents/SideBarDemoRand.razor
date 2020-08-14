@@ -71,7 +71,10 @@
 
     public void Dispose()
     {
-        timer.Elapsed -= OnTimerElapsed;
-        timer.Dispose();
+        if (timer != null)
+        {
+            timer.Elapsed -= OnTimerElapsed;
+            timer.Dispose();
+        }
     }
 }
