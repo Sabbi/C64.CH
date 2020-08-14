@@ -509,3 +509,11 @@ img.active {
     border-radius: .2rem;
 }
 
+.blazored-toast-container
+{
+    z-index:100000;
+}
+
+.blazored-toast-body .blazored-toast-header h5 {
+    font-size: 1rem;
+}

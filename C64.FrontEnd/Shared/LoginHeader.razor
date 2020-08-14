@@ -7,7 +7,7 @@
     <Authorized>
         <div class="row">
             <div class="col" style="padding:12px 12px">
-                <a class="text-dark" href="manage" title="Manage">
+                <a class="text-dark" href="/account" title="Manage your account">
                     <i class="fas fa-users-cog" title="Settings"></i>
                     @httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Name)
                 </a>

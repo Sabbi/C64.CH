@@ -1,4 +1,5 @@
 ﻿using C64.Data.Entities;
+using C64.FrontEnd.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace C64.FrontEnd.Controllers
@@ -17,13 +17,15 @@ namespace C64.FrontEnd.Controllers
         private readonly ILogger<UserController> logger;
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
+        private readonly HttpContextAccessor httpContextAccessor;
 
-        public UserController(IConfiguration configuration, ILogger<UserController> logger, UserManager<User> userManager, SignInManager<User> signInManager)
+        public UserController(IConfiguration configuration, ILogger<UserController> logger, UserManager<User> userManager, SignInManager<User> signInManager, HttpContextAccessor httpContextAccessor)
         {
             this.configuration = configuration;
             this.logger = logger;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost]
@@ -53,12 +55,7 @@ namespace C64.FrontEnd.Controllers
                     IsPersistent = persistent
                 };
 
-                var additionalClaims = new[]
-                {
-                    new Claim(ClaimTypes.Email, user.Email)
-                };
-
-                await signInManager.SignInWithClaimsAsync(user, authProperties, additionalClaims);
+                await signInManager.SignInAsync(user, authProperties);
 
                 user.LastLogin = DateTime.Now;
                 await userManager.UpdateAsync(user);
@@ -76,6 +73,33 @@ namespace C64.FrontEnd.Controllers
         {
             await signInManager.SignOutAsync();
             return LocalRedirect(Url.Content("~/"));
+        }
+
+        public async Task<IActionResult> Relogin(string returnUrl)
+        {
+            var user = await userManager.FindByIdAsync(httpContextAccessor.HttpContext.GetUserId());
+            await signInManager.SignOutAsync();
+
+            await signInManager.SignInAsync(user, true);
+            return LocalRedirect(returnUrl ?? "/");
+        }
+
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+                return RedirectToPage("/");
+
+            code = code.Replace(" ", "+");
+
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new InvalidOperationException($"Unable to load user with ID '{userId}'.");
+
+            var result = await userManager.ConfirmEmailAsync(user, code);
+            if (!result.Succeeded)
+                throw new InvalidOperationException($"Error confirming email for user with ID '{userId}':");
+
+            return Redirect("/account/?confirmed=true");
         }
 
         [HttpPost]
