@@ -78,9 +78,8 @@ namespace C64.FrontEnd.Controllers
         public async Task<IActionResult> Relogin(string returnUrl)
         {
             var user = await userManager.FindByIdAsync(httpContextAccessor.HttpContext.GetUserId());
-            await signInManager.SignOutAsync();
+            await signInManager.RefreshSignInAsync(user);
 
-            await signInManager.SignInAsync(user, true);
             return LocalRedirect(returnUrl ?? "/");
         }
 
