@@ -1,0 +1,129 @@
+﻿@page "/programming/math"
+
+<Box MarginBottom="4">
+    <Title>Programming - Move Commands and other basics</Title>
+    <Content>
+        <h3>Math and Logical Commands</h3>
+        <p>
+            Now, let's see how we can alter the bit 'n' bytes instead of just moving 'em around. The math/arithmetic commands lets you calculate and manipulate the bytes, either directly in the memory, or in the registers. For instance, in the first example we had a command called <b>INC $D020</b> which made the border color flicker. This command means "increment $D020" and as you might have guessed, it adds 1 to the given address. If the content of the address has reached maximum ($FF/255) it just restarts from 0. A related command is <b>DEC</b>, which works the same way, just other way around, which means it decrements the value by 1, and restarts from $FF if the value was allready 0. Let's have another color flicker example...
+        </p>
+        <samp>
+            <b>
+                INC $D020
+                <br>
+                DEC $D020
+                <br>
+                JMP $2000
+            </b>
+        </samp>
+        <p>
+            This time it just flickers between two colors, since it first adds 1 and then subtracts 1.
+        </p>
+        <p>
+            You can also inc/dec the X and Y registers (but not A for some strange reason.) This is done with these commands: <b>INX, DEX, INY, </b> and <b>DEY</b>. So we could also make color flicker this way...
+        </p>
+        <p>
+            <samp>
+                <b>
+                    LDX $D020
+                    <br>
+                    INX
+                    <br>
+                    STX $D020
+                    <br>
+                    JMP $2000
+                </b>
+            </samp>
+        </p>
+        <p>
+            This just looks a bit different since it's slower first to move the color value into the X register, then increment it, and then move it back to the memory address.
+        </p>
+        <p>
+            Ok, say you want to increment a byte by 27. Then you could ofcuz just write an INC command 27 times. But a smarter way would be to use the command <b>ADC</b> (<i>add with carry</i>) which can add any given number to the accumulator. The following piece of code adds 27 to the address $0400, which by the way is the char in the upper left corner of the screen, so you should see some kind of change there...
+        </p>
+        <p>
+            <samp>
+                <b>
+                    LDA $0400
+                    <br>
+                    CLC
+                    <br>
+                    ADC #$1B
+                    <br>
+                    STA $0400
+                    <br>
+                    BRK
+                </b>
+            </samp>
+        </p>
+        <p>
+            As you might have guessed <b>1B</b> is the hex value for 27. What you might not have guessed is that <b>CLC</b> means <b>clear carry flag</b>. We will get into flags later, but intil now you just have to remember to <b>clear carry before adding</b>, and <b>set carry before subtracting</b>. Here's an example of the latter...
+        </p>
+        <p>
+            <samp>
+                <b>
+                    LDA $0400
+                    <br>
+                    SEC
+                    <br>
+                    SBC #$1B
+                    <br>
+                    STA $0400
+                    <br>
+                    BRK
+                </b>
+            </samp>
+        </p>
+        <p>
+            <b>SEC</b> means <b>set carry</b> and SBC means <b>subtract with carry</b>. Like most other commands ADC and SBC has lots of different addressing modes. For example <b>ADC $1234</b> which means <i>add the value found in address $1234 to A</i>. So it does not affect the address, only A. To make it affect the address you must STA it afterwards. Remember the relative addressing mode? It also works for ADC/SBC - eg. <b>ADC $1234,X</b>
+        </p>
+        <p>
+            If we can add and subtract, can we then multiply and divide too? Not quite, I'm afraid. It's only a C64, you know! But we can push all the bits in a byte left or right, which is alsmost the same as multiplying or dividing by 2. For instance <font size=+1><b><tt>LSR $0400</tt></b></font> shifts the bits in address $0400 to the right, so if you had the value 6 there it will now be 3. However, if you LSR it again it will now be 1, because the rightmost bit is thrown away. <font size=+1><b><tt>ASL $0400</tt></b></font> will shift them left which is the same as multiplying by 2. So the original value was 100 it will now be 200. This trick also has its limitations since a byte can only be 255 at max, so if you try to ASL a value greater than 127 (hex 7F) you will not get a correct result. You can ASL/LSR as many times as you want, and thereby multiply/divide by 2,4,8,16...
+        </p>
+        <p>
+            If you wanna multiply/divide by other values it's a bit trickier. The following code uses a combination of ASL and ADC to multiply by 3...
+        </p>
+        <p>
+            <samp>
+                <b>
+                    LDA $5000
+                    <br>
+                    ASL
+                    <br>
+                    CLC
+                    <br>
+                    ADC $5000
+                    <br>
+                    STA $5000
+                    <br>
+                    BRK
+                </b>
+            </samp>
+        </p>
+        <p>
+            As you can see we can also just type <b>ASL</b> without any address. This means that it's A that's shifted left. I think I'll explain the previous example a bit more so it's clear what happens for everyone. Let's say the value of $5000 is 4, and then let's see what happens with the accumulator...
+        </p>
+        <p>
+            <samp>
+                <b>
+                    LDA $5000 <i><font color="#11bb11">A=4</font></i>
+                    <br>
+                    ASL &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><font color="#11bb11">A=8</font></i>
+                    <br>
+                    CLC
+                    <br>
+                    ADC $5000 <i><font color="#11bb11">A=12 (or $0C in hex)</font></i>
+                    <br>
+                    STA $5000
+                    <br>
+                    BRK
+                </b>
+            </samp>
+        </p>
+        <p>
+            If you want to play around with this some more you can use the mon command <b>M</b> which lets you view the content of the memory. For example <b>M 5000</b> lists the 8 bytes from $5000 to $5007. Then you can change the values, and after pressing return it will take effect. For example you can change the value of $5000 to 04, then run the previous piece of code, and then type <b>M 5000</b> again to see if it has changed to 0C.
+        </p>
+        <p>For any Comments or Questions please <a href="/help/feedback">contact us</a>.</p>
+        <p><a href="/programming/tutorial">Back to the TOC</a></p>
+    </Content>
+</Box>

@@ -1,0 +1,256 @@
+﻿@page "/programming/tadocs"
+
+<Box MarginBottom="4">
+    <Title>Programming - Turbo Assembler Documentation</Title>
+    <Content>
+        <p>
+            <font face="Courier New" size=2>
+                Load Turbo Assembler like this
+                LOAD"TURBO-ASM. V6.0",8,1<br>and start it with (if not packed) SYS(9*4096) or
+                SYS 36864
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                "{" is the backarrow key in
+                document.
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                CURSOR
+                MOVEMENT<br>---------------
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                CRSR LEFT/RIGHT&nbsp; - move left/right one
+                position in line<br>CRSR UP/DOWN&nbsp;&nbsp;&nbsp;&nbsp; - go up/down a
+                line<br>RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
+                insert a line (if insert line mode) and go to this
+                line<br>SHIFT+RETURN&nbsp;&nbsp;&nbsp;&nbsp; - jump to next
+                line<br>F1/F7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - scroll 20 lines
+                up/down<br>F2/F8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - jump to source-code start/end<br>{CRSR UP/DOWN&nbsp;&nbsp;&nbsp; - scroll 200
+                lines
+                up/down<br>{Q&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - goto to beginning of
+                line<br>{N&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - goto line
+                #<br>{Y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - goto bottom
+                line<br>DEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - delete character left
+                cursor<br>INST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - auto insert char mode
+                on/off<br>{DEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - delete actual
+                line<br>{INST&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - auto insert line mode
+                on/off<br>{RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - insert
+                a line from cursor position
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                NOTE: after you leave line TURBO-ASM
+                automatically checks its syntax.
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                SETTING
+                TABULATORS<br>------------------<br>{7&nbsp; - set cursor tab (e.g. where cursor
+                jump to after RETURN)<br>{8&nbsp; - set sourcecode tab (max.11)
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                LINE
+                OPERATIONS<br>---------------<br>{2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - writes
+                ';---------------------------------------'
+                line<br>{/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - delete from cursor to end of
+                line<br>{SPACE&nbsp; - fill up line with
+                SPACE<br>{^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (up arrow) copy
+                line<br>{=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - cut
+                line<br>{~&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (pound) paste
+                line<br>{Z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - undo line (imediately after {2, {/,
+                {SPACE, {~)
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                BLOCK AND MARK
+                OPERATIONS<br>-------------------------<br>{M&nbsp; - set mark (#0-9), blocks
+                start (#s) or block end (#e)<br>{G&nbsp; - goto mark (#0-9)<br>{;&nbsp; - kill
+                mark (0-9)<br>{:&nbsp; - list all marks<br>{B&nbsp; - block operations: write
+                (to ASCII SEQ file), kill, copy.<br>{E&nbsp; - insert (IMPORT ASCII SEQ) file
+                from disk to current position
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                NOTE: never mark first line of source-code as
+                block start
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                SEARCH &amp;
+                REPLACE<br>----------------<br>{F&nbsp;&nbsp; - search a
+                string<br>{H&nbsp;&nbsp; - search next occurance<br>{R&nbsp;&nbsp; - replace
+                string1 with string2, search first ocurrance<br>{T&nbsp;&nbsp; - replace &amp;
+                search next replace<br>{Y&nbsp;&nbsp; - replace all occurances
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                FUNCTION KEY
+                PROGRAMMING<br>------------------------<br>{F1&nbsp; - Reset funcion keys
+                (F3=.word, F4=assemble&amp;run, F5=.byte, F6=del line)<br>{A&nbsp;&nbsp; - Input
+                all characters (exit with "{"); to get "{" press "{"
+                twice;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; useful when define
+                F-keys<br>{K&nbsp;&nbsp; - press F-key (F3-F6) to redefine
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                DISK
+                OPERATIONS<br>---------------<br>{*&nbsp; - disk directory<br>{@@&nbsp; - disk
+                status<br>{D&nbsp; - disk command<br>{P&nbsp; - set EOR-code for coding
+                source-code<br>{W&nbsp; - writes all source-code to ASCII SEQ file
+                (EXPORT)<br>{L&nbsp; - load source-code<br>{S&nbsp; - save source-code (possible
+                overwrite with @@: prefix)
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                NOTE: 1. TURBO-ASM&nbsp; loads&nbsp;
+                its&nbsp; source from top ($8FEB) to
+                bottom<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ($0800)&nbsp; of
+                memory and crunches its opcodes, numbers by
+                own<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (like BASIC
+                tokens).
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. By&nbsp;
+                saving&nbsp; and&nbsp; loading&nbsp; source-code TURBO-ASM. also
+                saves<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and loads
+                configurations like colors, F-keys, marks
+                and<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; actual cursor
+                position.
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                MEMORY
+                OPERATIONS<br>-----------------<br>{6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - converts memory block between addr's to source-code
+                data<br>{J&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - dump memory block between
+                addr's<br>{SHIFT+F&nbsp; - fill memory block between addr's with
+                code<br>{SHIFT+L&nbsp; - load to memory addr<br>{SHIFT+S&nbsp; - save memory
+                block between addr's
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                ASSEMBLING<br>----------<br>{3&nbsp; -
+                assemble to memory<br>{4&nbsp; - list assembled file to: ?=printer, *=screen,
+                filename=file<br>{5&nbsp; - assemble to object (executable) file<br>{U&nbsp; -
+                list labels to: ?=printer, *=screen, filename=file
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                MISCELLANEOUS<br>-------------<br>{C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - cold start (init TURBO-ASM. and clears
+                source-code)<br>{I&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - init TURBO-ASM
+                &amp; clear unused memory<br>{+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - add
+                two hex numbers<br>{-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - subtract two
+                hex numbers<br>{V&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - display memory
+                usage: - free blocks, + used
+                blocks<br>{O&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - change
+                colors<br>{SHIFT+K&nbsp; - keyclick
+                on/off<br>{1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - exit from TURBO-ASM.
+                (SYS 36864 or SYS 333 to restart)
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                NOTE: {V works incorrectly in range
+                $E000-$FFFF, b'coz reads I/O &amp; KERNAL<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                (with Action Replay's crashes quite nicely)
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                EXPRESSIONS<br>-----------<br>The
+                assembler works with 8 and 16 bit numbers with following
+                notations:<br>$&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - for hex
+                numbers<br>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
+                for binary numbers<br>! (or none)&nbsp; - for decimal
+                numbers<br>"x"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - for
+                characters
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                Allowed operations in expressions (in
+                high-to-low hierarcy order):<br>(
+                )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - brackets<br>*
+                /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - multiple, divide<br>+
+                -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - plus, minus<br>: &amp;
+                .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - EOR, AND, OR operations
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                Special
+                operations:<br>&lt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - lower byte of 16 bit
+                expression<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - higher byte of 16 bit
+                expression<br>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - actual assembling addr or define object-code start (*=start)
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                NOTE: 1. Never use label after label=* or
+                likewise combination.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. Don't use area
+                between $E000-$FFFF (reserved for TURBO-ASM labels).
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                Labels:<br>The first 8 characters recognized
+                and all remain truncated.
+            </font>
+        </p>
+        <p>
+            <font face="Courier New" size=2>
+                PSEUDO OPS<br>----------<br>.OFFS
+                addr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - set object-code displacement (by adding addr)<br>.BYTE
+                byte1,byte2,...&nbsp;&nbsp;&nbsp;&nbsp; - convert bytes<br>.WORD
+                word1,word2,...&nbsp;&nbsp;&nbsp;&nbsp; - convert words<br>.TEXT
+                "text1","text2",... - convert text
+                strings<br>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                - comments following
+            </font>
+        </p>
+        <p>
+            <br><font face="Courier New" size=2>
+                Some bugs removed by me:<br>1. Some
+                versions of TURBO-ASM. (V6.0 tronic/rizing) fails with command {G.<br>2. {V now
+                patched for Action Replays.
+            </font>
+        </p>
+        <p>For any Comments or Questions please <a href="/help/feedback">contact us</a>.</p>
+        <p><a href="/programming/tutorial">Back to the TOC</a></p>
+    </Content>
+</Box>

@@ -1,0 +1,356 @@
+﻿@page "/programming/intro"
+
+<Box MarginBottom="4">
+    <Title>Programming - Intro</Title>
+    <Content>
+        <h3>Intro</h3>
+        <p>
+            This tutorial is intented for newbies who wanna code c64 assembler for the first time,
+            aswell as oldies who want to get it freshened up after years of lameness...
+            I will try to write it as softcore/easy as possible, so everyone should have a
+            chance to try out the magical world of C64 machine code/assembler.
+        </p>
+        <p>
+            <img src="/programming/bible.jpg" alt="The Bible">
+        </p>
+        <p>
+            If you get hooked and want to learn more I can recommend the chapter "Basic to Machine Language"
+            from the good old C64 Programmers Reference Guide, which can be found online
+            right <a target="_blank" href="/programming/c64prg10.txt">here</a> on C64.CH
+        </p>
+        <p>
+            First of all, to give the newbies an idea of what machine code is, let me
+            quote the mentioned C64PRG. (You can skip it if you think you know what it's about)...
+        </p>
+
+        <h3>What is Machine Language?</h3>
+        <p>
+            At the heart of every microcomputer, is a central microprocessor. It's a very special microchip which is the "brain" of the computer. The Commodore 64 is no exception. Every microprocessor understands its own language of instructions. These instructions are called machine language instructions. To put it more precisely, machine language is the ONLY programming language that your Commodore 64 understands. It is the NATIVE language of the machine.
+        </p>
+        <p>
+            If machine language is the only language that the Commodore 64 understands, then how does it understand the CBM BASIC programming language? CBM BASIC is NOT the machine language of the Commodore 64. What, then, makes the Commodore 64 understand CBM BASIC instructions like PRINT and GOTO? To answer this question, you must first see what happens inside your Commodore 64. Apart from the microprocessor which is the brain of the Commodore 64, there is a machine language program which is stored in a special type of memory so that it can't be changed. And, more importantly, it does not disappear when the Commodore 64 is turned off, unlike a program that you may have written. This machine language program is called the OPERATING SYSTEM of the Commodore 64. Your Commodore 64 knows what to do when it's turned on because its OPERATING SYSTEM (program) is automatically "RUN."
+        </p>
+        <p>
+            The OPERATING SYSTEM is in charge of "organizing" all the memory in your machine for various tasks. It also looks at what characters you type on the keyboard and puts them onto the screen, plus a whole number of other functions. The OPERATING SYSTEM can be thought of as the
+            "intelligence and personality" of the Commodore 64 (or any computer for that matter). So when you turn on your Commodore 64, the OPERATING SYSTEM takes control of your machine, and after it has done its housework, it then says:
+        </p>
+        <p>
+            <b>READY.</b>
+        </p>
+        <p>
+            The OPERATING SYSTEM of the Commodore 64 then allows you to type on the keyboard, and use the built-in SCREEN EDITOR on the Commodore 64. The SCREEN EDITOR allows you to move the cursor, DELete, INSert, etc., and is, in fact, only one part of the operating system that is built in for your convenience. All of the commands that are available in CBM BASIC are simply recognized by another huge machine language program built into your Commodore 64. This huge program "RUNS" the appropriate piece of machine language depending on which CBM BASIC command is being executed. This program is called the BASIC INTERPRETER, because it interprets each
+            command, one by one, unless it encounters a command it does not understand, and then the familiar message appears:
+        </p>
+        <p>
+            <b>?SYNTAX ERROR</b>
+        </p>
+        <p>
+            <b>READY.</b>
+        </p>
+        <p>
+            Okay, so now you know that... But how do we type in the code? There's basicly these alternatives: A <b>machine code monitor</b>, an <b>assembler</b> and a <b>cross-assembler</b>. A machine code monitor is a little program built into cartridges like The Final Cardridge and Action Replay which lets you write machine code and examine code from other programs, like demos. An assembler is like a machine code monitor, just with some extra features which makes it much easier to write big programs. The disadvantage is that it eats up quite a few valuable bytes in the computer (typically about half the mem) so it's not ideal for memory intesive effects. A solution for this problem is to use a cross-assembler which is placed in another computer (a PC for example) which is connected to the c64 via a special cable to transfer the raw machine code.
+        </p>
+        <h3>Machine Code Monitors</h3>
+        <p>
+            This is IMHO the best way to learn machine code, since you can easily see what's going on in the machine. The first thing you need to get started is a cartridge with an MC-mon (I use The Final Cartridge 3.) If you're using an emulator all you need to do is download a cardridge file, and attach it to the emu. For example in Vice select <b>file -> attach cartridge image -> CRT file</b>, and select the file... You can download The Final Cartridge 3 <a target="_blank" href="/programming/tfc3.zip">here</a>. Remember to reset the emu to make it work (alt-r in Vice).
+        </p>
+        <p>
+            Now, let's begin the fun by typing <b>MON</b>. Then some strange stuff appears, and you're ready to go. Okay, time for our 1st piece of code (finally!) Type this:
+        </p>
+        <p>
+            <samp>
+                <b>
+                    .A2000 INC $D020
+                    <br>
+                    .A2003 JMP $2000
+                </b>
+            </samp>
+        </p>
+        <p>
+            "A2000" means "Assemble from address 2000 (hex)". All addresses and numbers are hex numbers, but more about that in a little while. The address could have been any other from $0000 to $FFFF, but be careful, cuz some of them are reserved for other purposes, so until further notice we better stay within $1000-$9FFF. After you press return on each line some weird numbers and letters appear on the line, and the code you entered is moved to the right. Don't worry, that's the way it s'posed to be! ".A2003" should also appear automaticly, so there's no need to type that yourself. After the last line ".A2006" appears, just press return here to exit the assembly mode, and type the magic command <b>G2000</b> (means "goto address 2000") to start... If everything went well you have now made your first machine code program: <b>flickering border color</b> ... Woah!...
+        </p>
+        <p>
+            <img src="/programming/flicker.gif">
+        </p>
+        <p>
+            Whenever you feel you have enjoyed it enuff, you can stop it by pressing <b>Run/Stop+Restore</b> or if you're on emulator it's <b>Esc+Page Up</b> (atleast on Vice.) Alternatively you can also reset the computer. Remember to start the mon again.
+        </p>
+        <h3>Hex Numbers</h3>
+        <p>
+            Okie dokie, time to explain a bit of what's going on. The weird numbers in the MC-mon are called hex numbers, and the advantage of 'em is that it's easy to translate between binary numbers (0's and 1's) and hex numbers, since a hex digit equals 4 bits. While normal numbers (aka decimal numbers) are based on 10 digits (0-9), hex numbers have 16 (<b>0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f</b>). This means that the numbers from <b>a-f</b> have the values from 10-15, and 10 in hex means 16. Confused? Then you can play around with the numbers in the mon by typing any 4-digit hex number like <b>$C74F</b> or <b>$0003</b> and get the corresponding decimal number, and vice verca. Remember to preceed hex numbers by a $-sign and decimal numbers by a #. You can also play with 'em in the windows calculator, in scientific mode. Here you don't need $'s and #'s, you can just press <b>hex</b> and <b>dec</b>. Also note that you don't need $-signs before hex numbers in mon-commands like <b>A2000</b>, <b>G2000</b>, etc.
+        </p>
+        <p>
+            Here's a little table that might clear things up a bit...
+        </p>
+        <p>
+            <table class="table table-striped table-responsive">
+                <tr>
+                    <td>
+                        <b>Decimal</b>
+                    </td>
+                    <td>
+                        <b>Hex</b>
+                    </td>
+                    <td>
+                        <b>Binary</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        0
+                    </td>
+                    <td>
+                        00
+                    </td>
+                    <td>
+                        00000000
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        1
+                    </td>
+                    <td>
+                        01
+                    </td>
+                    <td>
+                        00000001
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        2
+                    </td>
+                    <td>
+                        02
+                    </td>
+                    <td>
+                        00000010
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        3
+                    </td>
+                    <td>
+                        03
+                    </td>
+                    <td>
+                        00000011
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        4
+                    </td>
+                    <td>
+                        04
+                    </td>
+                    <td>
+                        00000100
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        5
+                    </td>
+                    <td>
+                        05
+                    </td>
+                    <td>
+                        00000101
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        6
+                    </td>
+                    <td>
+                        06
+                    </td>
+                    <td>
+                        00000110
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        7
+                    </td>
+                    <td>
+                        07
+                    </td>
+                    <td>
+                        00000111
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        8
+                    </td>
+                    <td>
+                        08
+                    </td>
+                    <td>
+                        00001000
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        9
+                    </td>
+                    <td>
+                        09
+                    </td>
+                    <td>
+                        00001001
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        10
+                    </td>
+                    <td>
+                        0A
+                    </td>
+                    <td>
+                        00001010
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        11
+                    </td>
+                    <td>
+                        0B
+                    </td>
+                    <td>
+                        00001011
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        12
+                    </td>
+                    <td>
+                        0C
+                    </td>
+                    <td>
+                        00001100
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        13
+                    </td>
+                    <td>
+                        0D
+                    </td>
+                    <td>
+                        00001101
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        14
+                    </td>
+                    <td>
+                        0E
+                    </td>
+                    <td>
+                        00001110
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        15
+                    </td>
+                    <td>
+                        0F
+                    </td>
+                    <td>
+                        00001111
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        16
+                    </td>
+                    <td>
+                        10
+                    </td>
+                    <td>
+                        00010000
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        17
+                    </td>
+                    <td>
+                        11
+                    </td>
+                    <td>
+                        00010001
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        18
+                    </td>
+                    <td>
+                        12
+                    </td>
+                    <td>
+                        00010010
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        32
+                    </td>
+                    <td>
+                        20
+                    </td>
+                    <td>
+                        00100000
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        64
+                    </td>
+                    <td>
+                        40
+                    </td>
+                    <td>
+                        01000000
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        128
+                    </td>
+                    <td>
+                        80
+                    </td>
+                    <td>
+                        10000000
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        255
+                    </td>
+                    <td>
+                        FF
+                    </td>
+                    <td>
+                        11111111
+                    </td>
+                </tr>
+            </table>
+        </p>
+        <p>For any Comments or Questions please <a href="/help/feedback">contact us</a>.</p>
+        <p><a href="/programming/tutorial">Back to the TOC</a></p>
+    </Content>
+</Box>

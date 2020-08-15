@@ -1,0 +1,81 @@
+﻿@page "/programming/move"
+
+<Box MarginBottom="4">
+    <Title>Programming - Move Commands and other basics</Title>
+    <Content>
+        <h3>Move Commands and other basics</h3>
+        <p>
+            Time for some commands, which gives you the power to command the commodore to do anything you want it to. The first ones we're going to look at are in the category "move commands", since they can move data. On other platforms you often have a command called move or mov, but on a c64 they're called other things like <b>LDA</b>, <b>STA</b>, etc. The principle of move commands on c64 is that either you move something into a processor register, or you move from a register to a memory address. The registers are called <b>A</b> (accumulator), <b>X</b> and <b>Y</b>. They can each hold a byte, which is a number from <b>0</b> to <b>255</b>, or in hex <b>00</b> to <b>FF</b>, or in binary <b>00000000</b> to <b>11111111</b>. Let's have a little example, which you can type in and test like the previous piece of code... (Remember to type .A2000 before the 1st line and all that!)
+        </p>
+        <p>
+            <samp>
+                <b>
+                    LDA #$07
+                    <br>
+                    STA $D021
+                    <br>
+                    BRK
+                </b>
+            </samp>
+        </p>
+        <p>
+            Again, start it with <b>G2000</b>, and the amazing result should be a yellow screen.
+        </p>
+        <p>
+            <b><i>Explaination:</i></b>
+        </p>
+        <p>
+            <b>LDA #$07</b> means <i>"load accumulator with the value 7"</i> and moves the number 7 (the color code for yellow) into the accumulator (aka the A register.)
+        </p>
+        <p>
+            <b>STA $D021</b> means <i>"store the value of the accumulator into the memory address $D021"</i>, which is where the background color is located.
+        </p>
+        <p>
+            <b>BRK</b> breaks out of the program so you return to the mon. This is necessary because the code doesn't loop forever like in the flicker example.
+        </p>
+        <p>
+            Instead of <b>LDA #$07</b> we could also write <b>LDA $07</b>, which would mean that it was the content of the address $0007 we were moving into the accumulator. That's ofcuz a whole another story, so please notice that there's a big difference between <b>LDA value</b> and <b>LDA address</b>. Always remember the number sign (<b><tt>#</tt></b>) when it's a value you wanna LDA! If you try this...
+        </p>
+        <p>
+            <samp>
+                <b>
+                    LDA $D021
+                    <br>
+                    STA $D020
+                    <br>
+                    BRK
+                </b>
+            </samp>
+        </p>
+        <p>
+            ... it moves the background color to the border. Or maybe "move" is the wrong word since it doesn't change the source address, it just copies it. As you might have guessed $D020 and $D021 controls the border/background color. Everything that has to do with graphics is controlled by the addresses that start with $D0, but more about that later.
+        </p>
+        <p>
+            Time to see what we can use the <b>X and Y registers</b> for. Every time we write LDA or STA we could just aswell have used <b>LDX</b>/<b>STX</b> or <b>LDY</b>/<b>STY</b>. That would have resulted in the same effect, the only difference is that it's the X and Y registers that are used instead of A. But these registers can also be used for some more purposes. Let's try this...
+        </p>
+        <p>
+            <samp>
+                <b>
+                    LDX #$21
+                    <br>
+                    LDA #$0B
+                    <br>
+                    STA $D000,X
+                    <br>
+                    BRK
+                </b>
+            </samp>
+        </p>
+        <p>
+            This is an example of socalled <b>relative</b> addressing. The first line loads X with the value $21, in the next line A gets the value $00, and in the 3rd line the value of A is moved to the address <b>$D000+X</b>, which means $D021 in this case. (The background color again... I'm really original, huh?)... Y can also be used for realive addressing (<b>STA $1234,Y</b>), and you can also LDA relaive (<b>LDA $1234,X</b>)... The relative addressing modes are very useful in loops, but more about that in the Compare/Branch section.
+        </p>
+        <p>
+            Another type of move commands is called <i>transfer commands</i>, and they move data within the registers. An example is <b>TXA</b> which means <i>transfer X to A</i>. So if X held the value $DF, A is now $DF. As in other move commands the source (X in this case) is not affected, so they both holds the value $DF now. Here's some more transfer commands is: <b>TXA</b>, <b>TYA</b>, <b>TAX</b> and <b>TAY</b>. They all transfer the 1st register to the 2nd - eg. TAY means A -> Y.
+        </p>
+        <p>
+            Well, we haven't really covered all of the move commands, but I guess it's time to move on, so it doesn't get too boring...
+        </p>
+        <p>For any Comments or Questions please <a href="/help/feedback">contact us</a>.</p>
+        <p><a href="/programming/tutorial">Back to the TOC</a></p>
+    </Content>
+</Box>
