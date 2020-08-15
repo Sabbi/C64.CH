@@ -1,0 +1,163 @@
+﻿@page "/guestbook"
+
+@inject IUnitOfWork unitOfWork
+@inject IJSRuntime jsRuntime
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+
+<Box MarginBottom="4">
+    <Title>Guestbook - feel free to add something to it!</Title>
+    <Content>
+        @if (showForm)
+        {
+            <EditForm Model="addGuestbookModel" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group">
+                    <InputText class="form-control" @bind-Value="addGuestbookModel.Name" placeholder="Name" />
+                    <ValidationMessage For="@(() => addGuestbookModel.Name)" />
+                </div>
+                <div class="form-group">
+                    <InputText class="form-control" @bind-Value="addGuestbookModel.Email" placeholder="EMail (optional)" />
+                    <ValidationMessage For="@(() => addGuestbookModel.Email)" />
+                </div>
+                <div class="form-group">
+                    <InputTextArea rows="5" class="form-control" @bind-Value="addGuestbookModel.Comment" placeholder="Your comment" />
+                    <ValidationMessage For="@(() => addGuestbookModel.Comment)" />
+                </div>
+                <div class="form-group">
+                    <InputText class="form-control" @bind-Value="addGuestbookModel.Homepage" placeholder="https://your.homepa.ge (optional)" />
+                    <ValidationMessage For="@(() => addGuestbookModel.Homepage)" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Add your entry</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <h4>Thank you for your entry!</h4>
+        }
+    </Content>
+</Box>
+<span id="guestbookTop" />
+<Box>
+    <Title>Out guestbook (@entries entries)</Title>
+    <Content>
+        <ul class="list-unstyled">
+            @if (paginatedResult != null)
+            {
+                @foreach (var info in paginatedResult.Data)
+                {
+
+                    <li class="media my-2">
+                        <div class="media-body">
+                            <p class="mt-0 mb-1">
+                                @info.Comment
+                            </p>
+                            <div class="float-right small">
+                                @if (!string.IsNullOrEmpty(info.Homepage) && !info.Homepage.Equals("http://"))
+                                {
+                                    <p>Visit his homepage: <a href="@info.Homepage" target="_blank">@info.Homepage</a></p>
+                                }
+                            </div>
+                            <div class="float-left small">
+
+                                @info.EmailFixed @@  @info.WrittenAt
+                            </div>
+                            <div class="clearfix"></div>
+                            <hr />
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+        <Paginator CurrentPage="@paginatedResult.CurrentPage" TotalAmountPages="@paginatedResult.NumberOfPages" SelectedPage="OnSelectPage" />
+        <PaginatorRecordInfo CurrentPage="@paginatedResult.CurrentPage" PageSize="@pageSize" TotalNumberOfRecords="@paginatedResult.TotalNumberOfRecords" />
+    </Content>
+</Box>
+
+@code {
+
+    private int page = 1;
+    private int pageSize = 20;
+
+    private int entries = -1;
+    private bool showForm = true;
+
+    private PaginatedResult<GuestbookEntry> paginatedResult = new PaginatedResult<GuestbookEntry>();
+
+    private AddGuestbookModel addGuestbookModel = new AddGuestbookModel();
+
+    protected async Task OnValidSubmit()
+    {
+        await jsRuntime.SetInLocalStorage("GuestbookEntry", DateTime.Now.ToString());
+
+        unitOfWork.GuestbookEntries.Add(new GuestbookEntry
+        {
+            Comment = addGuestbookModel.Comment,
+            Email = addGuestbookModel.Email,
+            Homepage = addGuestbookModel.Homepage,
+            Ip = httpContextAccessor.HttpContext.RemoteIp(),
+            Name = addGuestbookModel.Name,
+            UserId = httpContextAccessor.HttpContext.GetUserId(),
+            WrittenAt = DateTime.Now
+        });
+
+        await unitOfWork.Commit();
+
+        showForm = false;
+
+        await Load(1);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        addGuestbookModel.Name = httpContextAccessor.HttpContext.GetUserName();
+
+        if (!string.IsNullOrEmpty(addGuestbookModel.Name))
+        {
+            var user = await userManager.FindByIdAsync(httpContextAccessor.HttpContext.GetUserId());
+            addGuestbookModel.Email = user.Email;
+            addGuestbookModel.Homepage = user.Homepage;
+        }
+
+        await Load(1);
+
+        string lastFeedback;
+        try
+        {
+            lastFeedback = await jsRuntime.GetFromLocalStorage("GuestbookEntry");
+        }
+        catch (InvalidOperationException)
+        {
+            return;
+        }
+
+        if (lastFeedback != null)
+        {
+            showForm = false;
+
+            if (DateTime.TryParse(lastFeedback, out var result))
+            {
+                var span = DateTime.Now.Subtract(result);
+
+                if (span > TimeSpan.FromMinutes(1440))
+                    showForm = true;
+            }
+        }
+    }
+
+    private async Task OnSelectPage(int selectedPage)
+    {
+        await Load(selectedPage);
+        await jsRuntime.ScrollToElementId("guestbookTop");
+    }
+
+    private async Task Load(int selectedPage)
+    {
+        paginatedResult = await unitOfWork.GuestbookEntries.FindPaginated(p => true, "GuestbookEntryId", false, selectedPage, pageSize);
+        page = selectedPage;
+        entries = paginatedResult.TotalNumberOfRecords;
+    }
+}

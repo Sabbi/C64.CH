@@ -31,5 +31,10 @@ namespace C64.FrontEnd.Extensions
             => js.InvokeAsync<object>(
                 "localStorage.removeItem",
                 key);
+
+        public static ValueTask<bool> ScrollToElementId(this IJSRuntime js, string elementId)
+        {
+            return js.InvokeAsync<bool>("scrollToElementId", elementId);
+        }
     }
 }

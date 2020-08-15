@@ -6,7 +6,7 @@ namespace C64.Data.Models
     public class PaginatedResult<T>
     {
         public int TotalNumberOfRecords { get; set; }
-        public int PageSize { get; set; }
+        public int PageSize { get; set; } = 10;
         public int CurrentPage { get; set; }
 
         public int NumberOfPages => ((TotalNumberOfRecords - 1) / PageSize) + 1;
