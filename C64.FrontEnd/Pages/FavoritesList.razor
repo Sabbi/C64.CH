@@ -1,0 +1,59 @@
+﻿@page "/favorites/{userId}"
+
+@inject IUnitOfWork unitOfWork
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
+
+<Box>
+    <Title>@title</Title>
+    <Content>
+        @if (!allowed)
+        {
+            <h4>Sorry, these favorites are private</h4>
+        }
+        @if (productionIds != null)
+        {
+            @if (productionIds.Any())
+            {
+                <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" />
+            }
+            else
+            {
+                <h4>Sorry, no favorites found.</h4>
+            }
+        }
+    </Content>
+</Box>
+
+@code {
+
+    [Parameter]
+    public string userId { get; set; }
+
+    private ICollection<int> productionIds;
+
+    private string username;
+
+    private bool allowed = true;
+
+    private string baseUrl => $"favorites/{userId}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await unitOfWork.Users.GetWithFavorites(userId);
+
+        if (user == null)
+            throw new NullReferenceException("User not found");
+
+        username = user.UserName;
+
+        if (!user.PublicFavorites && httpContextAccessor.HttpContext.GetUserId() != userId)
+        {
+            allowed = false;
+            return;
+        }
+
+        productionIds = user.Favorites.Select(p => p.ProductionId).ToList();
+    }
+
+    private string title => $"Favorites of {username}";
+}

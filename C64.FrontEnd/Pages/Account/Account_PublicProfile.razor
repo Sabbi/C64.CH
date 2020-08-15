@@ -1,0 +1,111 @@
+﻿@page "/account/publicprofile"
+
+@layout AccountLayout
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IUnitOfWork unitOfWork
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+@inject IToastService toastService
+
+<h4>Public Profile</h4>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-12">
+        <EditForm Model="editPublicProfileModel" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            @*<ServerSideValidator @ref="serverSideValidator" />*@
+            <div class="form-group">
+                <label>Username:</label>
+                <div>
+                    <input class="form-control" value="@httpContext.HttpContext.GetUserName()" disabled readonly />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Your Birthday:</label>
+                <div>
+                    <InputPartialDate @bind-Value="@editPublicProfileModel.Birthday" StartingYear="1900" EndingYear="DateTime.Now.Year" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Real name:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.RealName" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.RealName)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Homepage:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.Homepage" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.Homepage)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ICQ:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.Icq" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.Icq)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Country:</label>
+                <div>
+                    <InputSelect class="form-control" @bind-Value="@editPublicProfileModel.CountryId">
+                        <option value="">Select Country:</option>
+                        @foreach (var country in countries)
+                        {
+                            <option value="@country.CountryId">@country.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => editPublicProfileModel.Icq)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Occupation:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.Occupation" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.Occupation)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Watching Demos on...</label>
+                <div>
+                    <InputTextArea rows="5" class="form-control" @bind-Value="@editPublicProfileModel.Watching" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.Watching)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Just tell us something (aka Blabla):</label>
+                <div>
+                    <InputTextArea rows="5" class="form-control" @bind-Value="@editPublicProfileModel.Blabla" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.Blabla)" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Update public profile</button>
+        </EditForm>
+    </div>
+</div>
+@code{
+    private EditPublicProfileModel editPublicProfileModel = new EditPublicProfileModel();
+
+    private IEnumerable<Country> countries = new List<Country>();
+
+    private User user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        countries = unitOfWork.Countries.Find(p => p.Selectable).OrderBy(p => p.Name);
+        user = await userManager.FindByIdAsync(httpContext.HttpContext.GetUserId());
+
+        editPublicProfileModel.Load(user);
+
+    }
+
+    private async Task OnValidSubmit()
+    {
+        editPublicProfileModel.Update(user);
+        await userManager.UpdateAsync(user);
+        toastService.ShowSuccess("Profile successfully updated");
+    }
+
+}

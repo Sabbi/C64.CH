@@ -1,0 +1,64 @@
+﻿@inherits LayoutComponentBase
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
+
+<Header />
+<div class="container-fluid" style="max-width:1400px">
+    <main role="main" class="pb-3">
+        <div class="row">
+            <div class="col-12" style="padding-left:5px; padding-right:5px">
+                <AuthorizeView>
+                    <Authorized>
+                        <Box>
+                            <Title>Manage your account</Title>
+                            <Content>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <ul class="nav nav-pills flex-column">
+                                            <li class="nav-item">
+                                                <NavLink class="nav-link" href="/account" Match="NavLinkMatch.All">
+                                                    User
+                                                </NavLink>
+                                            </li>
+                                            <li class="nav-item">
+                                                <NavLink class="nav-link" href="/account/password" Match="NavLinkMatch.All">
+                                                    Password
+                                                </NavLink>
+                                            </li>
+                                            <li class="nav-item">
+                                                <NavLink class="nav-link" href="/account/publicprofile" Match="NavLinkMatch.All">
+                                                    Public Profile
+                                                </NavLink>
+                                            </li>
+                                            <li class="nav-item">
+                                                <NavLink class="nav-link" href="/account/settings" Match="NavLinkMatch.All">
+                                                    Notifications / Settings
+                                                </NavLink>
+                                            </li>
+                                            <li class="nav-item">
+                                                <NavLink class="nav-link" href="@href" Match="NavLinkMatch.All">
+                                                    Your favorites
+                                                </NavLink>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-9">
+                                        @Body
+                                    </div>
+                                </div>
+                            </Content>
+                        </Box>
+                    </Authorized>
+                    <NotAuthorized>
+                        <p>ShowSomeSortOfLogin</p>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </main>
+</div>
+<Footer />
+
+@code {
+     private string href  => "/favorites/" + httpContextAccessor.HttpContext.GetUserId();
+}

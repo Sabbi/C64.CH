@@ -1,0 +1,70 @@
+﻿@page "/account/settings"
+
+@layout AccountLayout
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IUnitOfWork unitOfWork
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+@inject IToastService toastService
+
+<EditForm Model="editSettingsModel" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <h4>Manage Notifications (under construction)</h4>
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-check">
+                        <InputCheckbox class="form-check-input" id="Newsletter" @bind-Value="editSettingsModel.Newsletter" />
+                        <label class="form-check-label" for="Newsletter">Newsletter</label>
+                        <br /><i>Get general news about c64.ch, f.ex. when new features are added. This newsletter will not be sent very often (in fact, we've never sent a single one in the last 21 years. But hey, one can never know ;))</i>
+                    </div>
+                    <div class="form-check">
+                        <InputCheckbox class="form-check-input" id="Digest" @bind-Value="editSettingsModel.Digest" />
+                        <label class="form-check-label" for="Digest">Digest</label>
+                        <br /><i>Get a not-more-than-weekly digest of the current activity on c64.ch as f.ex. an overview of newly added productions, events and news.</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h4 class="mt-2">Settings</h4>
+    <div class="row">
+        <div class="col-12">
+            <div class="row pb-2">
+                <div class="col-12">
+                    <div class="form-check">
+                        <InputCheckbox class="form-check-input" id="PublicRatings" @bind-Value="editSettingsModel.PublicRatings" />
+                        <label class="form-check-label" for="PublicRatings">PublicRatings</label>
+                        <br /><i>Whether you want your given ratings to be shown in public or not. Please note that's a global setting, you cannot just cast a single rating to be public.</i>
+                    </div>
+                    <div class="form-check">
+                        <InputCheckbox class="form-check-input" id="PublicFavorites" @bind-Value="editSettingsModel.PublicFavorites" />
+                        <label class="form-check-label" for="PublicFavorites">PublicFavorites</label>
+                        <br /><i>Whether you want share your favorites in public or not. </i>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </div>
+</EditForm>
+@code{
+    private EditSettingsModel editSettingsModel = new EditSettingsModel();
+
+    private User user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await userManager.FindByIdAsync(httpContext.HttpContext.GetUserId());
+        editSettingsModel.Load(user);
+    }
+
+    private async Task OnValidSubmit()
+    {
+        editSettingsModel.Update(user);
+        await userManager.UpdateAsync(user);
+        toastService.ShowSuccess("Profile successfully updated");
+    }
+
+}

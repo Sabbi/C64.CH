@@ -1,0 +1,120 @@
+﻿@page "/account"
+
+@layout AccountLayout
+@using Microsoft.AspNetCore.Identity
+@using C64.FrontEnd.Validators
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<Account> logger
+@inject UserManager<User> userManager
+@inject NavigationManager navigationManager
+@inject IToastService toastService
+@inject IEmailSender emailSender
+<h4>User</h4>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-12">
+        <EditForm Model="editAccountModel" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ServerSideValidator @ref="serverSideValidator" />
+            <div class="form-group">
+                <label>Username:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editAccountModel.Username" />
+                    <ValidationMessage For="@(() => editAccountModel.Username)" />
+                </div>
+            </div>
+            @if (httpContext.HttpContext.GetRoles().Any())
+            {
+                <div class="form-group">
+                    <span>@(string.Join(", ", httpContext.HttpContext.GetRoles()))</span>
+                </div>
+            }
+            <div class="form-group">
+                <label>EMail:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editAccountModel.Email" />
+                    <ValidationMessage For="@(() => editAccountModel.Email)" />
+                    @if (!emailConfirmed && !confirmationMailSent)
+                    {
+                        <a href="" @onclick:preventDefault @onclick="ConfirmEmail">Send verification email</a>
+                    }
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+
+    private EditAccountModel editAccountModel = new EditAccountModel();
+    private ServerSideValidator serverSideValidator;
+
+    private bool emailConfirmed = true;
+    private bool confirmationMailSent = false;
+
+    private User user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await userManager.FindByIdAsync(httpContext.HttpContext.GetUserId());
+        editAccountModel.Username = user.UserName;
+        editAccountModel.Email = user.Email;
+        emailConfirmed = user.EmailConfirmed;
+
+        var justConfirmed = navigationManager.GetFromQueryString<string>("confirmed");
+
+        if (!string.IsNullOrEmpty(justConfirmed) && user.EmailConfirmed)
+            toastService.ShowSuccess("EMail successfully confirmed!");
+
+    }
+
+    private async Task ConfirmEmail()
+    {
+        var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        logger.LogWarning("Code: {code}", code);
+
+        var callbackUrl = navigationManager.BaseUri + $"User/ConfirmEmail/?userId={user.Id}&code={code}";
+
+        var encoded = System.Text.Encodings.Web.HtmlEncoder.Default.Encode(callbackUrl);
+
+        await emailSender.SendUserEmailAsync(new MailAddress(user.Email), "Confirm your email", $"Please confirm your account by <a href='{encoded}'>clicking here</a>.");
+
+        confirmationMailSent = true;
+
+        toastService.ShowSuccess("Verification-Mail was sent! Please check your inbox");
+    }
+
+    private async Task OnValidSubmit()
+    {
+        var errors = new Dictionary<string, List<string>>();
+
+        var existingUser = await userManager.FindByNameAsync(editAccountModel.Username);
+
+        if (existingUser != null && existingUser.Id != httpContext.HttpContext.GetUserId())
+            errors.Add("Username", new List<string> { "Username already taken" });
+
+        var existingEmail = await userManager.FindByEmailAsync(editAccountModel.Email);
+
+        if (existingEmail != null && existingEmail.Id != httpContext.HttpContext.GetUserId())
+            errors.Add("Email", new List<string> { "EMail already taken" });
+
+        if (errors.Any())
+            serverSideValidator.DisplayErrors(errors);
+        else
+        {
+            if (editAccountModel.Email != user.Email || editAccountModel.Username != user.UserName)
+            {
+                user.EmailConfirmed = editAccountModel.Email == user.Email ? user.EmailConfirmed : false;
+                user.Email = editAccountModel.Email;
+                user.UserName = editAccountModel.Username;
+
+                await userManager.UpdateAsync(user);
+
+                navigationManager.NavigateTo("/user/relogin/?returnurl=/account", true);
+            }
+        }
+    }
+}

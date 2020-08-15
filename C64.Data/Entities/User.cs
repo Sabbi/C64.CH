@@ -28,6 +28,7 @@ namespace C64.Data.Entities
         public string Icq { get; set; }
 
         public DateTime Birthday { get; set; } = DateTime.MinValue;
+        public DateType BirthdayType { get; set; } = DateType.None;
 
         [MaxLength(255)]
         public string Location { get; set; }

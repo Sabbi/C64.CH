@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -27,11 +28,6 @@ namespace C64.FrontEnd.Extensions
             return httpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString();
         }
 
-        public static string GetUserEmail(this HttpContext httpContext)
-        {
-            return httpContext.User.FindFirstValue(ClaimTypes.Email);
-        }
-
         public static string GetUserName(this HttpContext httpContext)
         {
             return httpContext.User.FindFirstValue(ClaimTypes.Name);
@@ -40,6 +36,11 @@ namespace C64.FrontEnd.Extensions
         public static bool CanEdit(this HttpContext httpContext)
         {
             return httpContext.User.IsInRole("Moderator") || httpContext.User.IsInRole("Editor");
+        }
+
+        public static IEnumerable<string> GetRoles(this HttpContext httpContext)
+        {
+            return httpContext.User.Claims.Where(p => p.Type == ClaimTypes.Role).Select(p => p.Value);
         }
     }
 }
