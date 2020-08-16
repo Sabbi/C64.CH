@@ -11,6 +11,7 @@
 @inject NavigationManager navigationManager
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IModalService Modal
+@inject IToastService toastService
 
 @if (production != null)
 {
@@ -18,7 +19,16 @@
         <Title>
             @production.Name<br />
             by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
-
+            <div class="float-right pr-3 position-absolute" style="right:180px; top:5px">
+                @if (isFavorite)
+                {
+                    <a title="Remove from favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(false))"><i class="fas fa-heart red" title="Remove from favorites"></i></a>
+                }
+                else
+                {
+                    <a title="Add to favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(true))"><i class="far fa-heart red"></i></a>
+                }
+            </div>
             <div class="float-right pr-3 position-absolute" style="right:0; top:5px">
                 <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
                     <option value="0">Edit Production</option>
@@ -205,6 +215,21 @@
 
     private IUnitOfWork unitOfWork;
 
+    private bool isFavorite = false;
+
+    private async Task SetFavorite(bool value)
+    {
+        isFavorite = value;
+
+        unitOfWork.Users.SetFavorite(httpContext.HttpContext.GetUserId(), production.ProductionId, value);
+        await unitOfWork.Commit();
+
+        if (value)
+            toastService.ShowSuccess($"{production.Name} added to your favorites!", "Added to favorites");
+        else
+            toastService.ShowWarning($"{production.Name} removed from your favorites!", "Removed from favorites");
+    }
+
     private async Task OnSelectEdit(ChangeEventArgs args)
     {
         if (httpContext.HttpContext.GetUserId() == null)
@@ -277,7 +302,6 @@
         {
             await OnCommented(result.Data as string);
         }
-
     }
 
     private async Task OnCommented(string comment)
@@ -302,7 +326,6 @@
         logger.LogInformation("OnInitAsync");
         navigationManager.LocationChanged += OnLocationChanged;
         await LoadProd(ProductionId);
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -355,6 +378,8 @@
         else
             CommentsBlocked = false;
 
+        isFavorite = await unitOfWork.Users.IsFavorite(httpContext.HttpContext.GetUserId(), ProductionId);
+
         StateHasChanged();
     }
 
@@ -390,7 +415,6 @@
         await unitOfWork.Commit();
 
         await ratingChart.Update();
-
     }
 
     public void Dispose()
