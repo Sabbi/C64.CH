@@ -33,7 +33,7 @@ namespace C64.Data.Repositories
 
         public IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
         {
-            return context.Set<T>().Where(predicate);
+            return context.Set<T>().Where(predicate).ToList();
         }
 
         public async Task<T> Get(int id)
