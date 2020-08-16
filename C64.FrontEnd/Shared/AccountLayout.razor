@@ -50,7 +50,7 @@
                         </Box>
                     </Authorized>
                     <NotAuthorized>
-                        <p>ShowSomeSortOfLogin</p>
+                        <LoginModal />
                     </NotAuthorized>
                 </AuthorizeView>
             </div>
@@ -60,5 +60,5 @@
 <Footer />
 
 @code {
-     private string href  => "/favorites/" + httpContextAccessor.HttpContext.GetUserId();
+    private string href => "/favorites/" + httpContextAccessor.HttpContext.GetUserId();
 }

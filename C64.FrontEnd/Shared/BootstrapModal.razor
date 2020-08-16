@@ -1,4 +1,6 @@
-﻿<div class="modal-backdrop fade show" @onclick="Cancel"></div>
+﻿@inject NavigationManager navigationManager
+
+<div class="modal-backdrop fade show" @onclick="Cancel"></div>
 <div class="modal fade show d-block" style="pointer-events: none;" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-scrollable @sizeClass" role="document">
         <div class="modal-content">
@@ -60,12 +62,19 @@
 
     public async Task Close()
     {
-        await BlazoredModal.Close();
+        if (BlazoredModal != null)
+            await BlazoredModal.Close();
+        else
+            navigationManager.NavigateTo("/");
+
     }
 
     public async Task Cancel()
     {
-        await BlazoredModal.Cancel();
+        if (BlazoredModal != null)
+            await BlazoredModal.Cancel();
+        else
+            navigationManager.NavigateTo("/");
     }
 
     public enum ModalSize
