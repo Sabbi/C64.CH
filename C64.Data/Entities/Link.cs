@@ -15,7 +15,7 @@ namespace C64.Data.Entities
 
         public int LinkCategoryId { get; set; }
         public virtual LinkCategory LinkCategory { get; set; }
-        public DateTime Added { get; set; }
+        public DateTime Added { get; set; } = DateTime.Now;
         public int Hits { get; set; }
     }
 }

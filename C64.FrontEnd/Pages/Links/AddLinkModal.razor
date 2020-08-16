@@ -1,0 +1,65 @@
+﻿@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+@inject IUnitOfWork unitOfWork;
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Add Link")" Size="BootstrapModal.ModalSize.Default">
+    <Content>
+        <EditForm Model="addLinkModel" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label>Category:</label>
+                <div>
+                    <InputSelect @bind-Value="@addLinkModel.CategoryId" class="form-control">
+                        @foreach (var item in linkCategories)
+                        {
+                            <option value="@item.LinkCategoryId">@item.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Link Title:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@addLinkModel.Title" />
+                    <ValidationMessage For="@(() => addLinkModel.Title)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Address:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@addLinkModel.Url" placeholder="https://interest.ing/link" />
+                    <ValidationMessage For="@(() => addLinkModel.Url)" />
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Add Link</button>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    [Parameter]
+    public EventCallback<Link> OnAddLink { get; set; }
+
+    private BootstrapModal bootstrapModal;
+    private AddLinkModel addLinkModel = new AddLinkModel();
+
+    private List<LinkCategory> linkCategories = new List<LinkCategory>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        linkCategories = (await unitOfWork.Links.GetCategories()).ToList();
+        addLinkModel.CategoryId = CategoryId.ToString();
+    }
+
+    private async Task OnValidSubmit()
+    {
+        await bootstrapModal.BlazoredModal.Close(ModalResult.Ok(new Link { LinkCategoryId = int.Parse(addLinkModel.CategoryId), Name = addLinkModel.Title, Url = addLinkModel.Url }));
+    }
+}

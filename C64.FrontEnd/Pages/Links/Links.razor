@@ -1,0 +1,154 @@
+﻿@page "/links"
+@page "/links/{CategoryId:int}"
+
+@inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+@inject IUnitOfWork unitOfWork
+@inject IModalService Modal
+@inject IToastService toastService
+<Box>
+    <Title>Links - Select category</Title>
+    <Content>
+        <div class="row">
+            @foreach (var category in linkCategories)
+            {
+                <div class="col-6 col-sm-4 col-md-2 text-center pb-2"><a href="/Links/@category.LinkCategoryId" class="btn btn-outline-primary  @(CategoryId == category.LinkCategoryId ? "active btn-primary" : "")">@category.Name</a></div>
+            }
+        </div>
+        <div class="row pt-4">
+            <div class="col text-center">
+                <AuthorizeView>
+                    <Authorized>
+                        @if (canAddLink)
+                        {
+                            <h5><a class="badge badge-success" href="" @onclick="AddLink" @onclick:preventDefault>Add a new link</a></h5>
+                        }
+                        else
+                        {
+                            <h5><span class="badge badge-success">Thank you for your contribution!</span></h5>
+                        }
+                    </Authorized>
+                    <NotAuthorized>
+                        <h5>
+                            <LoginLink class="badge badge-warning">
+                                <Content>Login to a add a new link</Content>
+                            </LoginLink>
+                        </h5>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </Content>
+</Box>
+
+<Box>
+    <Title>@title</Title>
+    <Content>
+        <ul class="list-unstyled">
+            @foreach (var link in links)
+            {
+                <li class="media my-2">
+                    <div class="media-body">
+                        <p class="mt-0 mb-1">
+                            <a target="_blank" @onclick="@(() => Follow(link.LinkId))" @onclick:preventDefault href="" class="normal">@link.Name</a>
+                        </p>
+                        <div class="float-left">
+                            <a target="_blank" @onclick="@(() => Follow(link.LinkId))" @onclick:preventDefault href="">@link.Url</a>
+                        </div>
+                        <div class="float-right small">@link.Added.ToLongDateString()</div>
+                        <div class="clearfix"></div>
+                        <hr>
+                    </div>
+                </li>
+            }
+        </ul>
+    </Content>
+</Box>
+
+@code {
+    [Parameter]
+    public int CategoryId { get; set; } = 1;
+
+    private IEnumerable<LinkCategory> linkCategories = new HashSet<LinkCategory>();
+
+    private IEnumerable<Link> links = new HashSet<Link>();
+
+    private bool canAddLink = true;
+
+    private string title;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CategoryId == 0)
+            CategoryId = 1;
+
+        linkCategories = await unitOfWork.Links.GetCategories();
+        await UpdateCanAddLink();
+    }
+
+    private async Task UpdateCanAddLink()
+    {
+        string lastFeedback;
+        try
+        {
+            lastFeedback = await jsRuntime.GetFromLocalStorage("Link");
+        }
+        catch (InvalidOperationException)
+        {
+            return;
+        }
+
+        if (lastFeedback != null)
+        {
+            canAddLink = false;
+
+            if (DateTime.TryParse(lastFeedback, out var result))
+            {
+                var span = DateTime.Now.Subtract(result);
+
+                if (span > TimeSpan.FromMinutes(10))
+                    canAddLink = true;
+            }
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        links = unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId).OrderByDescending(p => p.Added);
+        title = $"{linkCategories.FirstOrDefault(p => p.LinkCategoryId == CategoryId).Name} ({links.Count()} links found)";
+    }
+
+    private async Task AddLink()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(AddLinkModel.CategoryId), CategoryId);
+        var add = Modal.Show<AddLinkModal>("", parameters);
+        var result = await add.Result;
+
+        if (!result.Cancelled)
+        {
+            var newLink = (Link)result.Data;
+            unitOfWork.Links.Add(newLink);
+            await unitOfWork.Commit();
+
+            CategoryId = newLink.LinkCategoryId;
+            links = unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId).OrderByDescending(p => p.Added);
+
+            toastService.ShowSuccess("Your link was added!");
+            await jsRuntime.SetInLocalStorage("Link", DateTime.Now.ToString());
+            await UpdateCanAddLink();
+        }
+    }
+
+    private async Task Follow(int linkId)
+    {
+        var link = await unitOfWork.Links.Get(linkId);
+        link.Hits++;
+        await unitOfWork.Commit();
+
+        if (!link.Url.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            link.Url = "http://" + link.Url;
+
+        await jsRuntime.InvokeAsync<object>("open", link.Url, "_blank");
+    }
+}
