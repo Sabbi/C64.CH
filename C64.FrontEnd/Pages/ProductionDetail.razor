@@ -18,28 +18,18 @@
         <Title>
             @production.Name<br />
             by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
-            <AuthorizeView>
-                <Authorized>
-                    <div class="float-right pr-3 position-absolute" style="right:0; top:5px">
-                        <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
-                            <option value="0">Edit Production</option>
-                            <option value="general">- General</option>
-                            <option value="additional">- Additional info</option>
-                            <option value="pictures">- Screenshots</option>
-                            <option value="videos">- Videos</option>
-                            <option value="downloads">- Downloads</option>
-                            <option value="credits">- Credits</option>
-                        </select>
-                    </div>
-                </Authorized>
-                <NotAuthorized>
-                    <LoginLink>
-                        <Content>
-                            Login to edit
-                        </Content>
-                    </LoginLink>
-                </NotAuthorized>
-            </AuthorizeView>
+
+            <div class="float-right pr-3 position-absolute" style="right:0; top:5px">
+                <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
+                    <option value="0">Edit Production</option>
+                    <option value="general">- General</option>
+                    <option value="additional">- Additional info</option>
+                    <option value="pictures">- Screenshots</option>
+                    <option value="videos">- Videos</option>
+                    <option value="downloads">- Downloads</option>
+                    <option value="credits">- Credits</option>
+                </select>
+            </div>
         </Title>
         <Content>
             <div class="row">
@@ -217,7 +207,11 @@
 
     private async Task OnSelectEdit(ChangeEventArgs args)
     {
-
+        if (httpContext.HttpContext.GetUserId() == null)
+        {
+            Modal.Show<LoginModal>();
+            return;
+        }
         IModalReference reference;
 
         if (args.Value.ToString() == "general")
