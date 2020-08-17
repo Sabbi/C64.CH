@@ -1,0 +1,113 @@
+﻿@page "/account/register"
+
+@using System.ComponentModel.DataAnnotations
+@using C64.FrontEnd.Validators
+
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
+
+<Box>
+    <Title>Register as a new user</Title>
+    <Content>
+        <EditForm Model="accountRegisterModel" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ServerSideValidator @ref="serverSideValidator" />
+            <div class="form-group">
+                <label>Email:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@accountRegisterModel.Email" />
+                    <ValidationMessage For="@(() => accountRegisterModel.Email)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Username:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@accountRegisterModel.Username" />
+                    <ValidationMessage For="@(() => accountRegisterModel.Username)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <div>
+                    <InputPassword class="form-control" @bind-Value="@accountRegisterModel.Password" />
+                    <ValidationMessage For="@(() => accountRegisterModel.Password)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Password (Repeat):</label>
+                <div>
+                    <InputPassword class="form-control" @bind-Value="@accountRegisterModel.PasswordRepeat" />
+                    <ValidationMessage For="@(() => accountRegisterModel.PasswordRepeat)" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+        <form method="post" id="registerForm" action="/user/register">
+            <input type="hidden" name="username" value="@accountRegisterModel.Username" />
+            <input type="hidden" name="email" value="@accountRegisterModel.Email" />
+            <input type="hidden" name="password" value="@accountRegisterModel.Password" />
+        </form>
+    </Content>
+</Box>
+@code {
+
+    private AccountRegisterModel accountRegisterModel = new AccountRegisterModel();
+    private ServerSideValidator serverSideValidator;
+
+    private class AccountRegisterModel
+    {
+        [EmailAddress]
+        [Required]
+        [MaxLength(255)]
+        public string Email { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        [MinLength(3)]
+        public string Username { get; set; }
+
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; }
+
+        [Required]
+        [MinLength(6)]
+        public string PasswordRepeat { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        if (httpContextAccessor.HttpContext.GetUserId() != null)
+            navigationManager.NavigateTo("/account");
+    }
+
+    private async Task OnValidSubmit()
+    {
+        var user = new User { UserName = accountRegisterModel.Username, Email = accountRegisterModel.Email };
+
+        var errors = new Dictionary<string, List<string>>();
+        var existingMail = await userManager.FindByEmailAsync(accountRegisterModel.Email);
+        var existingUser = await userManager.FindByNameAsync(accountRegisterModel.Username);
+
+        if (existingMail != null)
+        {
+            errors.Add("Email", new List<string>() { "EMail is already in use" });
+        }
+
+        if (existingUser != null)
+        {
+            errors.Add("Username", new List<string>() { "Username is already in use" });
+        }
+
+        if (errors.Any())
+        {
+            serverSideValidator.DisplayErrors(errors);
+            return;
+        }
+
+        await jsRuntime.InvokeVoidAsync("submitForm", "registerForm");
+        return;
+    }
+}

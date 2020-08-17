@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace C64.FrontEnd.Controllers
@@ -67,6 +69,31 @@ namespace C64.FrontEnd.Controllers
             logger.LogWarning("User {User} cannot login (Phase 2), {passwordIsCorrect} {canSignIn}", user.UserName, passwordIsCorrect, canSignIn);
 
             throw new Exception("Invalid Login");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(string username, string email, string password)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(email))
+                throw new InvalidEnumArgumentException();
+
+            try
+            {
+                await signInManager.SignOutAsync();
+            }
+            catch { }
+
+            var user = new User() { UserName = username, Email = email };
+
+            var result = await userManager.CreateAsync(user, password);
+
+            if (result.Succeeded)
+            {
+                await signInManager.SignInAsync(user, false);
+                return LocalRedirect("/account");
+            }
+
+            throw new Exception(string.Join(" - ", result.Errors.Select(p => p.Description)));
         }
 
         public async Task<IActionResult> Logout()

@@ -66,6 +66,10 @@ window.bindCarousel = () => {
 function submitLogin() {
     document.getElementById('headerLoginForm').submit();
 }
+function submitForm(id) {
+    console.log("Subtmit " + id);
+    document.getElementById(id).submit();
+}
 
 function saveAsFile(filename, bytesBase64) {
     var link = document.createElement('a');
