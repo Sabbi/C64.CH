@@ -39,6 +39,17 @@
                 </div>
             </div>
             <div class="form-group">
+                <label>Platform:</label>
+                <div>
+                    <InputSelect @bind-Value="editProductionGeneral.Platform" class="form-control">
+                        @foreach (var item in Enum.GetValues(typeof(Platform)))
+                        {
+                            <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="form-group">
                 <label>Category:</label>
                 <div>
                     <InputSelect @bind-Value="editProductionGeneral.SubCategory" class="form-control">
@@ -131,6 +142,7 @@
         productionHistory.AddHistory(ProductionEditProperty.Name, editProductionGeneral.Name);
         productionHistory.AddHistory(ProductionEditProperty.Aka, editProductionGeneral.Aka);
         productionHistory.AddHistory(ProductionEditProperty.SubCategory, editProductionGeneral.SubCategory);
+        productionHistory.AddHistory(ProductionEditProperty.Platform, editProductionGeneral.Platform);
 
         productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
         productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData { PartyId = editProductionGeneral.Party?.PartyId ?? 0, Category = editProductionGeneral.PartyCategory, Rank = editProductionGeneral.PartyRank });
@@ -155,6 +167,7 @@
         editProductionGeneral.ReleasedOn = new PartialDate(Production.ReleaseDate, Production.ReleaseDateType);
         editProductionGeneral.TopCategory = Production.TopCategory;
         editProductionGeneral.SubCategory = Production.SubCategory;
+        editProductionGeneral.Platform = Production.Platform;
         editProductionGeneral.SelectedGroups = Production.ProductionsGroups.Select(p => p.Group).ToList();
 
         editProductionGeneral.Party = Production.ProductionsParties.FirstOrDefault()?.Party;

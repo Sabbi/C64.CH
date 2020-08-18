@@ -14,6 +14,8 @@ namespace C64.FrontEnd.Models
 
         public PartialDate ReleasedOn { get; set; }
 
+        public Platform Platform { get; set; }
+
         public TopCategory TopCategory { get; set; }
         public SubCategory SubCategory { get; set; }
 
