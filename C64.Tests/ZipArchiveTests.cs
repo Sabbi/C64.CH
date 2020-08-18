@@ -1,7 +1,6 @@
 ﻿using C64.Data.Archive;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.IO;
 using Xunit;
 
 namespace C64.Tests
@@ -12,7 +11,7 @@ namespace C64.Tests
 
         public ZipArchiveTests()
         {
-            var testbytes = File.ReadAllBytes("../../../../TestFiles/test.zip");
+            var testbytes = TestResources.test_zip;
             var mockLogger = new Mock<ILogger<SharpZipArchiveService>>();
 
             service = new SharpZipArchiveService(mockLogger.Object);
