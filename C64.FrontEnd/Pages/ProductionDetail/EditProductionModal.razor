@@ -92,8 +92,13 @@
                             <ValidationMessage For="@(() => editProductionGeneral.PartyRank)" />
                         </div>
                         <div class="col-6">
-                            <InputText class="form-control" @bind-Value="@editProductionGeneral.PartyCategory" placeholder="Category" />
-                            <ValidationMessage For="@(() => editProductionGeneral.PartyCategory)" />
+                            <InputSelect @bind-Value="editProductionGeneral.PartyCategoryId" class="form-control">
+                                <option value="0">unknown / no competition</option>
+                                @foreach (var item in partyCategories.OrderBy(p => p.Name))
+                                    {
+                                    <option value="@item.PartyCategoryId.ToString()">@item.Name</option>
+                                    }
+                            </InputSelect>
                         </div>
                     </div>
                 </div>
@@ -118,6 +123,8 @@
     private EditProductionGeneral editProductionGeneral = new EditProductionGeneral();
 
     private string searchText = string.Empty;
+
+    private IEnumerable<PartyCategory> partyCategories { get; set; } = new List<PartyCategory>();
 
     private async Task<IEnumerable<Party>> SearchParty(string searchPartyText)
     {
@@ -145,7 +152,10 @@
         productionHistory.AddHistory(ProductionEditProperty.Platform, editProductionGeneral.Platform);
 
         productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
-        productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData { PartyId = editProductionGeneral.Party?.PartyId ?? 0, Category = editProductionGeneral.PartyCategory, Rank = editProductionGeneral.PartyRank });
+
+        int? partyCategory = editProductionGeneral.PartyCategoryId == "0" ? null : (int?)int.Parse(editProductionGeneral.PartyCategoryId);
+
+        productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData { PartyId = editProductionGeneral.Party?.PartyId ?? 0, CategoryId = partyCategory, Rank = editProductionGeneral.PartyRank });
         productionHistory.AddHistory(ProductionEditProperty.Groups, editProductionGeneral.SelectedGroups);
 
         productionHistory.Apply();
@@ -158,8 +168,9 @@
 
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        partyCategories = await unitOfWork.Parties.GetCategories();
 
         editProductionGeneral = new EditProductionGeneral();
         editProductionGeneral.Name = Production.Name;
@@ -174,12 +185,13 @@
 
         if (editProductionGeneral != null)
         {
-            editProductionGeneral.PartyCategory = Production.ProductionsParties.FirstOrDefault()?.Category;
+            if (Production.ProductionsParties.Any() && Production.ProductionsParties.FirstOrDefault().PartyCategoryId > 0)
+                editProductionGeneral.PartyCategoryId = Production.ProductionsParties.FirstOrDefault().PartyCategoryId.ToString();
+            else
+                editProductionGeneral.PartyCategoryId = "0";
 
             var rank = Production.ProductionsParties.FirstOrDefault()?.Rank;
             editProductionGeneral.PartyRank = rank.GetValueOrDefault();
         }
-
     }
-
 }

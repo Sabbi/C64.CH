@@ -45,6 +45,8 @@ namespace C64.Data
         public virtual DbSet<PartiesGroups> PartiesGroups { get; set; }
         public virtual DbSet<PartiesSceners> PartiesSceners { get; set; }
 
+        public virtual DbSet<PartyCategory> PartyCategories { get; set; }
+
         public virtual DbSet<ProductionsParties> ProductionsParties { get; set; }
 
         public virtual DbSet<Rating> Ratings { get; set; }

@@ -26,6 +26,6 @@ namespace C64.FrontEnd.Models
         [Range(0, 99, ErrorMessage = "Must be between 0 (unknown) and 99")]
         public int PartyRank { get; set; }
 
-        public string PartyCategory { get; set; }
+        public string PartyCategoryId { get; set; }
     }
 }

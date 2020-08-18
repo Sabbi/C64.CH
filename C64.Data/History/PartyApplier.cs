@@ -21,11 +21,11 @@ namespace C64.Data.History
             if (prodParty != null)
             {
                 prodParty.PartyId = newValue.PartyId;
-                prodParty.Category = newValue.Category;
+                prodParty.PartyCategoryId = newValue.CategoryId;
                 prodParty.Rank = newValue.Rank;
             }
             else
-                production.ProductionsParties.Add(new ProductionsParties { PartyId = newValue.PartyId, Category = newValue.Category, Rank = newValue.Rank });
+                production.ProductionsParties.Add(new ProductionsParties { PartyId = newValue.PartyId, PartyCategoryId = newValue.CategoryId, Rank = newValue.Rank });
         }
 
         public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
@@ -35,7 +35,7 @@ namespace C64.Data.History
             var oldValues = new PartyApplierData
             {
                 PartyId = production.ProductionsParties.FirstOrDefault()?.PartyId ?? 0,
-                Category = production.ProductionsParties.FirstOrDefault()?.Category,
+                CategoryId = production.ProductionsParties.FirstOrDefault()?.PartyCategoryId ?? null,
                 Rank = production.ProductionsParties.FirstOrDefault()?.Rank ?? 0,
             };
 
@@ -57,6 +57,6 @@ namespace C64.Data.History
     {
         public int PartyId { get; set; }
         public int Rank { get; set; }
-        public string Category { get; set; }
+        public int? CategoryId { get; set; }
     }
 }

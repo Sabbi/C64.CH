@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace C64.Data.Entities
 {
@@ -13,8 +12,8 @@ namespace C64.Data.Entities
 
         public int Rank { get; set; }
 
-        [MaxLength(255)]
-        public string Category { get; set; }
+        public int? PartyCategoryId { get; set; }
+        public virtual PartyCategory PartyCategory { get; set; }
 
         public string GetAchievementText
         {
@@ -27,24 +26,11 @@ namespace C64.Data.Entities
                     return $"Ranked {RankWithEnding}";
 
                 if (!HasRank() && HasCategory())
-                    return $"Released at the {Category}-Competition";
+                    return $"Released at the {PartyCategory.Name}-Competition";
 
-                return ($"Ranked {RankWithEnding} at the {Category}-Competition");
+                return ($"Ranked {RankWithEnding} at the {PartyCategory.Name}-Competition");
             }
         }
-
-        //public override bool Equals(object obj)
-        //{
-        //    if ((obj == null) || !GetType().Equals(obj.GetType()))
-        //        return false;
-
-        //    var compare = (ProductionsParties)obj;
-
-        //    if (compare.Category != Category || compare.PartyId != PartyId || compare.Rank != Rank || compare.ProductionId != ProductionId)
-        //        return false;
-
-        //    return true;
-        //}
 
         private bool HasRank()
         {
@@ -53,7 +39,7 @@ namespace C64.Data.Entities
 
         private bool HasCategory()
         {
-            return !string.IsNullOrEmpty(Category);
+            return PartyCategoryId > 0;
         }
 
         private string RankWithEnding
