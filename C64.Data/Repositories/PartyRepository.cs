@@ -1,6 +1,7 @@
 ﻿using C64.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace C64.Data.Repositories
@@ -9,6 +10,11 @@ namespace C64.Data.Repositories
     {
         public PartyRepository(DbContext context, ILogger logger) : base(context, logger)
         {
+        }
+
+        public async Task<ICollection<PartyCategory>> GetCategories()
+        {
+            return await context.Set<PartyCategory>().ToListAsync();
         }
 
         public Task<Party> GetWithProductions(int partyId)

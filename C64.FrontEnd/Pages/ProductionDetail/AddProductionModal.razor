@@ -81,8 +81,14 @@
                             <ValidationMessage For="@(() => editProductionGeneral.PartyRank)" />
                         </div>
                         <div class="col-6">
-                            <InputText class="form-control" @bind-Value="@editProductionGeneral.PartyCategory" placeholder="Category" />
-                            <ValidationMessage For="@(() => editProductionGeneral.PartyCategory)" />
+                            <InputSelect @bind-Value="editProductionGeneral.PartyCategoryId" class="form-control">
+                                <option value="0">unknown / no competition</option>
+                                @foreach (var item in partyCategories.OrderBy(p => p.Name))
+                                    {
+                                    <option value="@item.PartyCategoryId.ToString()">@item.Name</option>
+                                    }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editProductionGeneral.PartyCategoryId)" />
                         </div>
                     </div>
                 </div>
@@ -107,6 +113,8 @@
     private EditProductionGeneral editProductionGeneral = new EditProductionGeneral();
 
     private string searchText = string.Empty;
+
+    private IEnumerable<PartyCategory> partyCategories { get; set; } = new List<PartyCategory>();
 
     private async Task<IEnumerable<Party>> SearchParty(string searchPartyText)
     {
@@ -139,7 +147,15 @@
             Production.ProductionsGroups.Add(new ProductionsGroups { GroupId = selectedGroup.GroupId });
 
         if (editProductionGeneral.Party != null)
-            Production.ProductionsParties.Add(new ProductionsParties { PartyId = editProductionGeneral.Party.PartyId, Category = editProductionGeneral.PartyCategory, Rank = editProductionGeneral.PartyRank });
+        {
+            int? categoryId = null;
+            int.TryParse(editProductionGeneral.PartyCategoryId, out var categoryParsed);
+
+            if (categoryParsed != 0)
+                categoryId = categoryParsed;
+
+            Production.ProductionsParties.Add(new ProductionsParties { PartyId = editProductionGeneral.Party.PartyId, PartyCategoryId = categoryId, Rank = editProductionGeneral.PartyRank });
+        }
 
         Production.SubmitterUserId = httpContext.HttpContext.GetUserId();
         Production.UserId = httpContext.HttpContext.GetUserId();
@@ -160,8 +176,10 @@
 
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+
+        partyCategories = await unitOfWork.Parties.GetCategories();
 
         editProductionGeneral = new EditProductionGeneral();
         editProductionGeneral.Name = Production.Name;
@@ -175,7 +193,7 @@
 
         if (editProductionGeneral != null)
         {
-            editProductionGeneral.PartyCategory = Production.ProductionsParties.FirstOrDefault()?.Category;
+            editProductionGeneral.PartyCategoryId = Production.ProductionsParties.FirstOrDefault()?.PartyCategory.PartyCategoryId.ToString() ?? null;
 
             var rank = Production.ProductionsParties.FirstOrDefault()?.Rank;
             editProductionGeneral.PartyRank = rank.GetValueOrDefault();

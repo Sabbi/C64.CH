@@ -25,6 +25,14 @@
     <Compile Remove="Migrations\20200805143637_DownloadsIndexFix.Designer.cs" />
     <Compile Remove="Migrations\20200805144038_DownloadsIndexFix.cs" />
     <Compile Remove="Migrations\20200805144038_DownloadsIndexFix.Designer.cs" />
+    <Compile Remove="Migrations\20200818181811_PartyCategory.cs" />
+    <Compile Remove="Migrations\20200818181811_PartyCategory.Designer.cs" />
+    <Compile Remove="Migrations\20200818182056_PartyCategory.cs" />
+    <Compile Remove="Migrations\20200818182056_PartyCategory.Designer.cs" />
+    <Compile Remove="Migrations\20200818182205_PartyCategory.cs" />
+    <Compile Remove="Migrations\20200818182205_PartyCategory.Designer.cs" />
+    <Compile Remove="Migrations\20200818182838_PartyCategory.cs" />
+    <Compile Remove="Migrations\20200818182838_PartyCategory.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

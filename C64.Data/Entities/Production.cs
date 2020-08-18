@@ -37,6 +37,8 @@ namespace C64.Data.Entities
         public string SubmitterUserId { get; set; }
         public virtual User SubmitterUser { get; set; }
 
+        public Platform Platform { get; set; } = Platform.C64;
+
         public TopCategory TopCategory { get; set; } = TopCategory.Demos;
         public SubCategory SubCategory { get; set; } = SubCategory.Demo;
 

@@ -44,6 +44,7 @@ namespace OldDataImporter
 
             var services = new ServiceCollection();
 
+            services.AddSingleton<IConfiguration>(_configuration);
             services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_configuration.GetConnectionString("DefaultConnection")), contextLifetime: ServiceLifetime.Transient);
             services.AddDbContext<OldApplicationDbContext>(options => options.UseMySql(_configuration.GetConnectionString("OldConnection")), contextLifetime: ServiceLifetime.Transient);
 
@@ -63,6 +64,7 @@ namespace OldDataImporter
             services.AddLogging(options => options.AddDebug());
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            services.AddScoped<C64.Data.Archive.IArchiveService, C64.Data.Archive.SharpZipArchiveService>();
             services.AddScoped<IFileStorageService, DbFileStorageService>();
 
             _serviceProvider = services.BuildServiceProvider();
@@ -568,8 +570,10 @@ namespace OldDataImporter
         public async Task<bool> ImportDemoParty()
         {
             var links = _oldDbContext.OldPartyLinks;
-
             var parties = _unitOfWork.Parties.GetAll();
+
+            // Add all partycategories to db
+            _dbContext.PartyCategories.AddRange(PartyCategories);
 
             foreach (var link in links)
             {
@@ -580,7 +584,7 @@ namespace OldDataImporter
                         ProductionId = link.DemoId,
                         PartyId = link.PartyId,
                         Rank = link.Ranking.GetValueOrDefault(),
-                        Category = link.Category
+                        PartyCategoryId = PartyCategoryLookup(link.Category)
                     };
                     _dbContext.ProductionsParties.Add(demoParty);
                 }
@@ -588,6 +592,97 @@ namespace OldDataImporter
             }
             await _dbContext.SaveChangesAsync();
             return true;
+        }
+
+        private List<PartyCategory> PartyCategories = new List<PartyCategory>
+        {
+            new PartyCategory { PartyCategoryId = 1, Name= "256b Intro", Selectable = true},
+            new PartyCategory { PartyCategoryId = 2, Name= "4kb Intro", Selectable = true},
+            new PartyCategory { PartyCategoryId = 3, Name= "Alternative Demo", Selectable = true},
+            new PartyCategory { PartyCategoryId = 4, Name= "Coop-demo", Selectable = true},
+            new PartyCategory { PartyCategoryId = 5, Name= "Demo", Selectable = true},
+            new PartyCategory { PartyCategoryId = 6, Name= "Fast Intro", Selectable = true},
+            new PartyCategory { PartyCategoryId = 7, Name= "Fastcompo", Selectable = true},
+            new PartyCategory { PartyCategoryId = 8, Name= "Game", Selectable = true},
+            new PartyCategory { PartyCategoryId = 9, Name= "Graphics", Selectable = true},
+            new PartyCategory { PartyCategoryId = 10, Name= "Intro", Selectable = true},
+            new PartyCategory { PartyCategoryId = 11, Name= "Logo", Selectable = true},
+            new PartyCategory { PartyCategoryId = 12, Name= "Mixed", Selectable = true},
+            new PartyCategory { PartyCategoryId = 13, Name= "Music", Selectable = true},
+            new PartyCategory { PartyCategoryId = 14, Name= "Oldschool Demo", Selectable = true},
+            new PartyCategory { PartyCategoryId = 15, Name= "PC", Selectable = true},
+            new PartyCategory { PartyCategoryId = 16, Name= "Realtime", Selectable = true},
+            new PartyCategory { PartyCategoryId = 17, Name= "Wild", Selectable = true},
+        };
+
+        private int? PartyCategoryLookup(string category)
+        {
+            switch (category)
+            {
+                case "256b Intro":
+                    return 1;
+
+                case "4k":
+                case "4k Intro":
+                case "4kb Demo Comp.":
+                case "4kb Intro":
+                    return 2;
+
+                case "Alternative Demo":
+                    return 3;
+
+                case "Coop-demo":
+                    return 4;
+
+                case "Demo":
+                case "Democompo":
+                    return 5;
+
+                case "Fast Intro":
+                case "Fast Intro Competition":
+                    return 6;
+
+                case "Fastcompo":
+                    return 7;
+
+                case "Game":
+                    return 8;
+
+                case "Gfx":
+                case "Graphics":
+                    return 9;
+
+                case "Intro":
+                    return 10;
+
+                case "Logo":
+                    return 11;
+
+                case "Mixed":
+                case "Mixed Demo":
+                case "Mixed Demo Competiton":
+                    return 12;
+
+                case "Music":
+                    return 13;
+
+                case "Oldschool Demo":
+                    return 14;
+
+                case "PC-Compo":
+                    return 15;
+
+                case "Realtime Compo":
+                    return 16;
+
+                case "Wild":
+                case "Wild Compo":
+                case "Wild-Compo":
+                    return 17;
+
+                default:
+                    return null;
+            }
         }
 
         public async Task<bool> ImportVotes()

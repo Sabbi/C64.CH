@@ -3,14 +3,16 @@ using System;
 using C64.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace C64.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200818170149_AddPlatform")]
+    partial class AddPlatform
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1938,29 +1940,6 @@ namespace C64.Data.Migrations
                     b.ToTable("Parties");
                 });
 
-            modelBuilder.Entity("C64.Data.Entities.PartyCategory", b =>
-                {
-                    b.Property<int>("PartyCategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("varchar(1024) CHARACTER SET utf8mb4")
-                        .HasMaxLength(1024);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
-
-                    b.Property<bool>("Selectable")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("PartyCategoryId");
-
-                    b.ToTable("PartyCategories");
-                });
-
             modelBuilder.Entity("C64.Data.Entities.Production", b =>
                 {
                     b.Property<int>("ProductionId")
@@ -2191,15 +2170,14 @@ namespace C64.Data.Migrations
                     b.Property<int>("PartyId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PartyCategoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("Category")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
+                        .HasMaxLength(255);
 
                     b.Property<int>("Rank")
                         .HasColumnType("int");
 
                     b.HasKey("ProductionId", "PartyId");
-
-                    b.HasIndex("PartyCategoryId");
 
                     b.HasIndex("PartyId");
 
@@ -2856,10 +2834,6 @@ namespace C64.Data.Migrations
 
             modelBuilder.Entity("C64.Data.Entities.ProductionsParties", b =>
                 {
-                    b.HasOne("C64.Data.Entities.PartyCategory", "PartyCategory")
-                        .WithMany()
-                        .HasForeignKey("PartyCategoryId");
-
                     b.HasOne("C64.Data.Entities.Party", "Party")
                         .WithMany("ProductionsParties")
                         .HasForeignKey("PartyId")

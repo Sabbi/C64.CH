@@ -26,6 +26,7 @@ namespace C64.Data.Repositories
                 .Include(p => p.HiddenParts)
                 .Include(p => p.ProductionVideos)
                 .Include(p => p.ProductionsParties).ThenInclude(p => p.Party)
+                .Include(p => p.ProductionsParties).ThenInclude(p => p.PartyCategory)
                 .Include(p => p.User)
                 .Include(p => p.SubmitterUser)
                 .FirstOrDefaultAsync(p => p.ProductionId == productionId);
