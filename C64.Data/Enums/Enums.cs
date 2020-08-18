@@ -2,6 +2,12 @@
 
 namespace C64.Data
 {
+    public enum Platform
+    {
+        C64 = 0,
+        C128 = 10
+    }
+
     public enum TopCategory
     {
         [Display(Name = "C64 Demo")]
