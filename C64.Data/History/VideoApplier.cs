@@ -38,7 +38,8 @@ namespace C64.Data.History
                 NewValue = newStrippedValues == null ? null : JsonConvert.SerializeObject(newStrippedValues.OrderBy(p => p.ProductionVideoId)),
                 OldValue = oldStrippedValues == null ? null : JsonConvert.SerializeObject(oldStrippedValues.OrderBy(p => p.ProductionVideoId)),
                 Status = status,
-                Type = newValue.GetType().FullName
+                Type = newValue.GetType().FullName,
+                Version = 1M
             };
 
             return dbhistory;

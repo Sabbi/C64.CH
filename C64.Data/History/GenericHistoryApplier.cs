@@ -37,6 +37,7 @@ namespace C64.Data.History
                 OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValue),
                 Status = status,
                 Type = propInfo.PropertyType.FullName,
+                Version = 1M
             };
             return dbhistory;
         }

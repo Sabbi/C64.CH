@@ -37,7 +37,8 @@ namespace C64.Data.History
                 NewValue = toStore == null ? null : JsonConvert.SerializeObject(toStore),
                 OldValue = oldValues == null ? null : JsonConvert.SerializeObject(oldValues),
                 Status = status,
-                Type = typeof(IEnumerable<int>).FullName
+                Type = typeof(IEnumerable<int>).FullName,
+                Version = 1M
             };
 
             return dbhistory;

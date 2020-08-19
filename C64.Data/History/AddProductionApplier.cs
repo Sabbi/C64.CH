@@ -19,7 +19,8 @@ namespace C64.Data.History
                 NewValue = newValue == null ? null : JsonConvert.SerializeObject(newValue, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }),
                 OldValue = null,
                 Status = status,
-                Type = production.GetType().FullName
+                Type = production.GetType().FullName,
+                Version = 1M
             };
 
             return dbhistory;

@@ -25,6 +25,7 @@ namespace C64.Data.Entities
         public DateTime? Applied { get; set; }
         public DateTime? Undid { get; set; }
 
+        public decimal Version { get; set; }
         public HistoryStatus Status { get; set; }
 
         public HistoryRating Rating { get; set; }
