@@ -88,28 +88,7 @@
 
     private async Task UpdateCanAddLink()
     {
-        string lastFeedback;
-        try
-        {
-            lastFeedback = await jsRuntime.GetFromLocalStorage("Link");
-        }
-        catch (InvalidOperationException)
-        {
-            return;
-        }
-
-        if (lastFeedback != null)
-        {
-            canAddLink = false;
-
-            if (DateTime.TryParse(lastFeedback, out var result))
-            {
-                var span = DateTime.Now.Subtract(result);
-
-                if (span > TimeSpan.FromMinutes(10))
-                    canAddLink = true;
-            }
-        }
+        canAddLink = await jsRuntime.CanRedoAction("Link", TimeSpan.FromMinutes(10));
     }
 
     protected override void OnParametersSet()
@@ -135,7 +114,7 @@
             links = unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId).OrderByDescending(p => p.Added);
 
             toastService.ShowSuccess("Your link was added!");
-            await jsRuntime.SetInLocalStorage("Link", DateTime.Now.ToString());
+            await jsRuntime.SetRedoTrigger("Link");
             await UpdateCanAddLink();
         }
     }

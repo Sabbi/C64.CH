@@ -64,31 +64,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        string lastFeedback;
-        try
-        {
-            lastFeedback = await jsRuntime.GetFromLocalStorage("Contribution");
-        }
-        catch (InvalidOperationException)
-        {
-            return;
-        }
+        showForm = await jsRuntime.CanRedoAction("Contribution", TimeSpan.FromMinutes(10));
 
-        if (lastFeedback != null)
-        {
-            showForm = false;
+        if (!showForm)
+            message = "We've already received your contribution some minutes ago, Thank you! Please wait some minutes until you can try again.s";
 
-            if (DateTime.TryParse(lastFeedback, out var result))
-            {
-                var span = DateTime.Now.Subtract(result);
-
-                if (span > TimeSpan.FromMinutes(10))
-                    showForm = true;
-                else
-                    message = "We've already received your contribution some minutes ago, Thank you! Please wait some minutes until you can try again.s";
-
-            }
-        }
     }
 
     private void RemoveUploadedFile(IFileListEntry file)
@@ -103,7 +83,7 @@
 
     private async Task OnValidSubmit()
     {
-        await jsRuntime.SetInLocalStorage("Contribution", DateTime.Now.ToString());
+        await jsRuntime.SetRedoTrigger("Contribution");
 
         var mailAttachments = new List<MailAttachment>();
 

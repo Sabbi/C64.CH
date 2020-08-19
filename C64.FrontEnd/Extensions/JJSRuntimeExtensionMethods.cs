@@ -1,4 +1,5 @@
 ﻿using Microsoft.JSInterop;
+using System;
 using System.Threading.Tasks;
 
 namespace C64.FrontEnd.Extensions
@@ -35,6 +36,34 @@ namespace C64.FrontEnd.Extensions
         public static ValueTask<bool> ScrollToElementId(this IJSRuntime js, string elementId)
         {
             return js.InvokeAsync<bool>("scrollToElementId", elementId);
+        }
+
+        public static ValueTask<object> SetRedoTrigger(this IJSRuntime js, string trigger)
+        {
+            return js.SetInLocalStorage(trigger, DateTime.Now.ToString());
+        }
+
+        public static async ValueTask<bool> CanRedoAction(this IJSRuntime js, string trigger, TimeSpan minimumInterval)
+        {
+            string created;
+            try
+            {
+                created = await js.GetFromLocalStorage(trigger);
+            }
+            catch (InvalidOperationException)
+            {
+                return true;
+            }
+
+            if (DateTime.TryParse(created, out var result))
+            {
+                var span = DateTime.Now.Subtract(result);
+
+                if (span > minimumInterval)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

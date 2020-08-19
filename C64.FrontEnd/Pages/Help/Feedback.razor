@@ -46,35 +46,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        string lastFeedback;
-        try
-        {
-            lastFeedback = await jsRuntime.GetFromLocalStorage("Feedback");
-        }
-        catch (InvalidOperationException)
-        {
-            return;
-        }
+        showForm = await jsRuntime.CanRedoAction("Feedback", TimeSpan.FromMinutes(30));
 
-        if (lastFeedback != null)
-        {
-            showForm = false;
-
-            if (DateTime.TryParse(lastFeedback, out var result))
-            {
-                var span = DateTime.Now.Subtract(result);
-
-                if (span > TimeSpan.FromMinutes(30))
-                    showForm = true;
-                else
-                    message = "We've already received your feedback some minutes ago, Thank you!";
-            }
-        }
+        if (!showForm)
+            message = "We've already received your feedback some minutes ago, Thank you!";
     }
 
     private async Task OnValidSubmit()
     {
-        await jsRuntime.SetInLocalStorage("Feedback", DateTime.Now.ToString());
+        await jsRuntime.SetRedoTrigger("Feedback");
 
         buttonDisabled = true;
         await InvokeAsync(StateHasChanged);

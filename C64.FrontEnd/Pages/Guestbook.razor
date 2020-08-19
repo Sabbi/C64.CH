@@ -36,7 +36,7 @@
         }
         else
         {
-            <h4>Thank you for your entry!</h4>
+            <p>Thank you for your entry!</p>
         }
     </Content>
 </Box>
@@ -91,7 +91,7 @@
 
     protected async Task OnValidSubmit()
     {
-        await jsRuntime.SetInLocalStorage("GuestbookEntry", DateTime.Now.ToString());
+        await jsRuntime.SetRedoTrigger("GuestbookEntry");
 
         unitOfWork.GuestbookEntries.Add(new GuestbookEntry
         {
@@ -124,28 +124,7 @@
 
         await Load(1);
 
-        string lastFeedback;
-        try
-        {
-            lastFeedback = await jsRuntime.GetFromLocalStorage("GuestbookEntry");
-        }
-        catch (InvalidOperationException)
-        {
-            return;
-        }
-
-        if (lastFeedback != null)
-        {
-            showForm = false;
-
-            if (DateTime.TryParse(lastFeedback, out var result))
-            {
-                var span = DateTime.Now.Subtract(result);
-
-                if (span > TimeSpan.FromMinutes(1440))
-                    showForm = true;
-            }
-        }
+        showForm = await jsRuntime.CanRedoAction("GuestbookEntry", TimeSpan.FromMinutes(1440));
     }
 
     private async Task OnSelectPage(int selectedPage)
