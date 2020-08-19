@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Sinks.Email;
+using System;
 using System.Net;
 
 namespace C64.FrontEnd
@@ -12,24 +13,29 @@ namespace C64.FrontEnd
         public static void Main(string[] args)
         {
             var loggerConfig = new ConfigurationBuilder()
-                .AddJsonFile("loggersettings.json")
+                // .AddJsonFile("loggersettings.json")
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true)
                 .Build();
 
             var emailConf = new EmailConnectionInfo
             {
-                FromEmail = loggerConfig.GetValue<string>("Mailer:FromEmail"),
-                ToEmail = loggerConfig.GetValue<string>("Mailer:ToEmail"),
-                MailServer = loggerConfig.GetValue<string>("Mailer:MailServer"),
-                EmailSubject = loggerConfig.GetValue<string>("Mailer:EmailSubject"),
-                Port = loggerConfig.GetValue<int>("Mailer:Port"),
-                EnableSsl = loggerConfig.GetValue<bool>("Mailer:EnableSsl"),
-                NetworkCredentials = new NetworkCredential(loggerConfig.GetValue<string>("Mailer:UserName"), loggerConfig.GetValue<string>("Mailer:Password"))
+                FromEmail = loggerConfig.GetValue<string>("EmailSettings:Logger_SenderEmail"),
+                ToEmail = loggerConfig.GetValue<string>("EmailSettings:Logger_RecipientEmail"),
+                EmailSubject = loggerConfig.GetValue<string>("EmailSettings:Logger_MailSubject"),
+                MailServer = loggerConfig.GetValue<string>("EmailSettings:MailServer"),
+                Port = loggerConfig.GetValue<int>("EmailSettings:MailPort"),
+                EnableSsl = loggerConfig.GetValue<bool>("EmailSettings:EnableSsl"),
+                NetworkCredentials = new NetworkCredential(loggerConfig.GetValue<string>("EmailSettings:SmtpName"), loggerConfig.GetValue<string>("EmailSettings:SmtpPassword"))
             };
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(loggerConfig)
                 .WriteTo.Email(emailConf, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error)
                 .CreateLogger();
+
+            // Uncomment to see Serilogs' own log in the console (f.ex. to debug emails)
+            //Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
             var builder = CreateHostBuilder(args);
             builder.Build().Run();
