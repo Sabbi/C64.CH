@@ -2,6 +2,7 @@
 using C64.Data.Entities;
 using C64.Data.History;
 using Moq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,30 +47,38 @@ namespace C64.Tests
                 ProductionFiles = new List<ProductionFile>() { new ProductionFile { ProductionId = 1, ProductionFileId = 1, Filename = "Test" } },
                 ProductionCredits = new List<ProductionCredit>() { new ProductionCredit { ProductionCreditId = 1, ProductionId = 1, ScenerId = 1, Scener = new Scener { ScenerId = 1, Handle = "Hande", ScenersGroups = new List<ScenersGroups>() } } }
             };
+
+            unitOfWorkMock = new Mock<IUnitOfWork>();
+
+            var addedHistory = new HistoryProduction();
+
+            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>())).Callback<HistoryProduction>(p => AddHistoryMock(p));
+        }
+
+        private Mock<IUnitOfWork> unitOfWorkMock;
+        private List<HistoryProduction> addedHistoriesMock = new List<HistoryProduction>();
+
+        private void AddHistoryMock(HistoryProduction addedHistory)
+        {
+            addedHistoriesMock.Add(addedHistory);
         }
 
         [Fact]
         public void ChangeProductionName()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Name, "NewName");
             historyHandler.Apply();
 
+            Assert.Equal("TestProduction", JsonConvert.DeserializeObject<string>(addedHistoriesMock.FirstOrDefault().OldValue));
+            Assert.Equal("NewName", JsonConvert.DeserializeObject<string>(addedHistoriesMock.FirstOrDefault().NewValue));
             Assert.Equal("NewName", productionUnderTest.Name);
         }
 
         [Fact]
         public void ChangeAka()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Aka, "NewAka");
@@ -81,15 +90,12 @@ namespace C64.Tests
         [Fact]
         public void ChangeReleaseDate()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = new DateTime(1980, 1, 1), Type = DateType.Year });
             historyHandler.Apply();
 
+            Assert.Single(addedHistoriesMock);
             Assert.Equal(new DateTime(1980, 1, 1), productionUnderTest.ReleaseDate);
             Assert.Equal(DateType.Year, productionUnderTest.ReleaseDateType);
         }
@@ -97,10 +103,6 @@ namespace C64.Tests
         [Fact]
         public void ChangePlatform()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Platform, Platform.C128);
@@ -112,10 +114,6 @@ namespace C64.Tests
         [Fact]
         public void ChangeSubCategory()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.SubCategory, SubCategory.Magazine);
@@ -127,9 +125,6 @@ namespace C64.Tests
         [Fact]
         public void AddParty()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Party, new PartyApplierData { CategoryId = 1, PartyId = 2, Rank = 3 });
@@ -143,9 +138,6 @@ namespace C64.Tests
         [Fact]
         public void RemoveParty()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Party, new PartyApplierData { PartyId = 0 });
@@ -157,9 +149,6 @@ namespace C64.Tests
         [Fact]
         public void EditParty()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Party, new PartyApplierData { CategoryId = 4, PartyId = 5, Rank = 6 });
@@ -173,9 +162,6 @@ namespace C64.Tests
         [Fact]
         public void AddGroups()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Groups, new List<Group>() { new Group { GroupId = 1 }, new Group { GroupId = 2 } });
@@ -187,9 +173,6 @@ namespace C64.Tests
         [Fact]
         public void RemoveGroups()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Groups, new List<Group>() { });
@@ -201,9 +184,6 @@ namespace C64.Tests
         [Fact]
         public void EditGroups()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Groups, new List<Group>() { new Group { GroupId = 5 }, new Group { GroupId = 2 }, new Group { GroupId = 4 } });
@@ -217,9 +197,6 @@ namespace C64.Tests
         [Fact]
         public void AddRemark()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.Remarks, "NewRemark");
@@ -231,9 +208,6 @@ namespace C64.Tests
         [Fact]
         public void AddHiddenPart()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             var newHiddenPart = new List<HiddenPart>();
@@ -249,9 +223,6 @@ namespace C64.Tests
         [Fact]
         public void RemoveHiddenPart()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var newHiddenPart = new List<HiddenPart>();
@@ -265,9 +236,6 @@ namespace C64.Tests
         [Fact]
         public void EditHiddenPart()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var newHiddenPart = productionWithRelations.HiddenParts;
@@ -283,10 +251,6 @@ namespace C64.Tests
         [Fact]
         public void ChangeVideoType()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.VideoType, VideoType.Ntsc);
@@ -298,10 +262,6 @@ namespace C64.Tests
         [Fact]
         public void EditVideos()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var videos = new List<ProductionVideo>();
@@ -317,10 +277,6 @@ namespace C64.Tests
         [Fact]
         public void RemoveVideos()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var videos = new List<ProductionVideo>();
@@ -334,10 +290,6 @@ namespace C64.Tests
         [Fact]
         public void EditPictures()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var pictures = new List<ProductionPicture>();
@@ -353,10 +305,6 @@ namespace C64.Tests
         [Fact]
         public void RemovePicture()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var pictures = new List<ProductionPicture>();
@@ -370,10 +318,6 @@ namespace C64.Tests
         [Fact]
         public void EditFiles()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var files = new List<ProductionFile>();
@@ -389,10 +333,6 @@ namespace C64.Tests
         [Fact]
         public void RemoveFiles()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var files = new List<ProductionFile>();
@@ -406,10 +346,6 @@ namespace C64.Tests
         [Fact]
         public void AddCredits()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
             var credits = new List<EditCredit>();
@@ -425,10 +361,6 @@ namespace C64.Tests
         [Fact]
         public void ReplaceCredit()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var credits = new List<EditCredit>();
@@ -448,10 +380,6 @@ namespace C64.Tests
         [Fact]
         public void RemoveCredits()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             var credits = new List<EditCredit>();
@@ -469,10 +397,6 @@ namespace C64.Tests
         [Fact]
         public void AddProduction()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>()));
-
             var historyHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
 
             historyHandler.AddHistory(ProductionEditProperty.AddProduction, null);
