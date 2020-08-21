@@ -1,5 +1,4 @@
 ﻿using C64.Data.Entities;
-using C64.Data.Models;
 using Newtonsoft.Json;
 using System.Linq;
 
@@ -52,11 +51,6 @@ namespace C64.Data.History
             };
 
             return dbhistory;
-        }
-
-        public HistoryUndoResult Undo(Production production, HistoryProduction historyProduction, bool force = true)
-        {
-            throw new System.NotImplementedException();
         }
     }
 

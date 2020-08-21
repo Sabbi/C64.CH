@@ -1,5 +1,4 @@
 ﻿using C64.Data.Entities;
-using C64.Data.Models;
 using Newtonsoft.Json;
 using System;
 
@@ -46,11 +45,6 @@ namespace C64.Data.History
                 Version = 1M
             };
             return dbhistory;
-        }
-
-        public HistoryUndoResult Undo(Production production, HistoryProduction historyProduction, bool force = true)
-        {
-            throw new NotImplementedException();
         }
     }
 

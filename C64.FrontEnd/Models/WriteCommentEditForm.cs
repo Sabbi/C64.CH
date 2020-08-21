@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace C64.FrontEnd.Helpers
+namespace C64.FrontEnd.Models
 {
     public class WriteCommentEditForm
     {
