@@ -1,6 +1,7 @@
 ﻿using C64.Data.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace C64.Data.History
 {
@@ -37,6 +38,8 @@ namespace C64.Data.History
 
         public void Apply()
         {
+            var transactionId = Guid.NewGuid().ToString();
+
             foreach (var hist in history)
             {
                 if (hist.Status != HistoryStatus.Applied)
@@ -46,15 +49,32 @@ namespace C64.Data.History
 
                     hist.Status = HistoryStatus.Applied;
                     hist.Applied = DateTime.Now;
-
+                    hist.TransactionId = transactionId;
                     unitOfWork.Productions.AddHistory(hist);
                 }
             };
         }
 
-        public void Undo(HistoryProduction hist)
+        public void Undo(IEnumerable<HistoryProduction> historiesToUndo)
         {
-            throw new NotImplementedException();
+            var transactionId = Guid.NewGuid().ToString();
+            foreach (var toUndo in historiesToUndo.OrderByDescending(p => p.Applied))
+            {
+                history.Add(new HistoryProduction
+                {
+                    AffectedId = toUndo.AffectedId,
+                    Applied = DateTime.Now,
+                    NewValue = toUndo.OldValue,
+                    OldValue = toUndo.NewValue,
+                    Property = toUndo.Property,
+                    Type = toUndo.Type,
+                    TransactionId = transactionId,
+                    UserId = userId,
+                    IpAdress = userIp,
+                });
+                toUndo.Undid = DateTime.Now;
+                toUndo.Status = HistoryStatus.Undid;
+            }
         }
     }
 
@@ -63,7 +83,6 @@ namespace C64.Data.History
         Name,
         Aka,
         ReleaseDate,
-        ReleaseDateType,
         Platform,
         SubCategory,
         Party,

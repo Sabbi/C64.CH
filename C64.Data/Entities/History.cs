@@ -5,6 +5,11 @@ namespace C64.Data.Entities
 {
     public abstract class History<T>
     {
+        [Required]
+        [MaxLength(36)]
+        [MinLength(36)]
+        public string TransactionId { get; set; }
+
         public int AffectedId { get; set; }
         public virtual T Affected { get; set; }
 
