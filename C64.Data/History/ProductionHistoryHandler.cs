@@ -37,6 +37,8 @@ namespace C64.Data.History
 
         public void Apply()
         {
+            var transactionId = Guid.NewGuid().ToString();
+
             foreach (var hist in history)
             {
                 if (hist.Status != HistoryStatus.Applied)
@@ -46,13 +48,13 @@ namespace C64.Data.History
 
                     hist.Status = HistoryStatus.Applied;
                     hist.Applied = DateTime.Now;
-
+                    hist.TransactionId = transactionId;
                     unitOfWork.Productions.AddHistory(hist);
                 }
             };
         }
 
-        public void Undo(HistoryProduction hist)
+        public void Undo(IEnumerable<HistoryProduction> historiesToUndo)
         {
             throw new NotImplementedException();
         }

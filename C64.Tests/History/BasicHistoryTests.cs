@@ -8,14 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace C64.Tests
+namespace C64.Tests.History
 {
-    public class HistoryTests
+    public class BasicHistoryTests
     {
         private Production productionUnderTest;
         private Production productionWithRelations;
 
-        public HistoryTests()
+        public BasicHistoryTests()
         {
             productionUnderTest = new Production
             {
