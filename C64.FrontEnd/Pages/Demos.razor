@@ -52,7 +52,7 @@
 
     private void DoSearch()
     {
-        if (string.IsNullOrEmpty(term))
+        if (string.IsNullOrEmpty(simpleSearchTerm))
             return;
 
         navigationManager.NavigateTo($"/search/?search={simpleSearchTerm}");
