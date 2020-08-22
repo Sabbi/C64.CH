@@ -10,7 +10,9 @@
             <label for="search" class="col-sm-3 col-form-label">Search:</label>
             <div class="col-sm-9">
                 <div class="input-group">
-                    <input type="text" name="search" class="form-control" /><button class="btn btn-primary">Go</button>
+                    <input class="form-control" placeholder="Search" @onkeypress="TestForEnter" @bind-value:event="oninput" @bind-value="@simpleSearchTerm" />
+                    &nbsp;
+                    <button class="btn btn-primary" @onclick="DoSearch"><i class="fas fa-search"></i></button>
                 </div>
             </div>
             <hr />
@@ -40,6 +42,22 @@
     private string selectedGroup;
     private string selectedYear;
 
+    private string simpleSearchTerm;
+
+    private void TestForEnter(KeyboardEventArgs keyboardEventArgs)
+    {
+        if (keyboardEventArgs.Key == "Enter")
+            DoSearch();
+    }
+
+    private void DoSearch()
+    {
+        if (string.IsNullOrEmpty(term))
+            return;
+
+        navigationManager.NavigateTo($"/search/?search={simpleSearchTerm}");
+    }
+
     private void GroupSelect(string group)
     {
         selectedGroup = group;
@@ -47,6 +65,7 @@
 
     private void YearSelect(string year)
     {
+        logger.LogInformation("YearSelect: {year}", year);
         selectedYear = year;
     }
 
@@ -65,6 +84,8 @@
             yearData.Add(i.ToString(), i.ToString());
         }
 
+        YearSelect("1982");
+
     }
 
     private void ShowByGroup()
@@ -78,6 +99,7 @@
 
     private void ShowByYear()
     {
+        logger.LogInformation("Show demos for year {year}", selectedYear);
         if (selectedYear != null && selectedYear != "0")
         {
 

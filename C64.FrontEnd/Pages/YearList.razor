@@ -1,0 +1,29 @@
+﻿@page "/years/{Id:int}"
+
+@inject IUnitOfWork unitOfWork
+<Box>
+    <Title>@title</Title>
+    <Content>
+        @if (productionIds != null)
+        {
+            <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" />
+        }
+    </Content>
+</Box>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private ICollection<int> productionIds;
+
+    private string baseUrl => $"years/{Id}";
+
+    protected override void OnInitialized()
+    {
+        productionIds = unitOfWork.Productions.Find(p => p.ReleaseDate.Year == Id).Select(p => p.ProductionId).ToList();
+    }
+
+    private string title => $"Productions released in {Id}";
+}
