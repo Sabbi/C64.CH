@@ -1,0 +1,30 @@
+﻿@inject NavigationManager navigationManager
+@inject ILogger<SearchHeader> logger
+<div class="input-group flex-nowrap">
+    <input class="form-control" placeholder="Search" @onkeypress="TestForEnter" @bind-value:event="oninput" @bind-value="@term" />
+    <div class="input-group-append">
+        <button class="btn btn-primary" @onclick="DoSearch"><i class="fas fa-search"></i></button>
+    </div>
+</div>
+@code {
+    private string term;
+
+    protected override void OnParametersSet()
+    {
+        term = navigationManager.GetFromQueryString<string>("search");
+    }
+
+    private void TestForEnter(KeyboardEventArgs keyboardEventArgs)
+    {
+        if (keyboardEventArgs.Key == "Enter")
+            DoSearch();
+    }
+
+    private void DoSearch()
+    {
+        if (string.IsNullOrEmpty(term))
+            return;
+
+        navigationManager.NavigateTo($"/search/?search={term}");
+    }
+} 

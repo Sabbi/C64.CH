@@ -1,0 +1,75 @@
+﻿@page "/search"
+
+@implements IDisposable
+
+@inject IUnitOfWork unitOfWork
+@inject NavigationManager navigationManager
+@inject ILogger<SimpleSearch> logger
+
+<Box>
+    <Title>@title</Title>
+    <Content>
+        @if (productionIds != null)
+        {
+            <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" />
+        }
+    </Content>
+</Box>
+
+@code {
+
+    private string Search { get; set; }
+
+    private ICollection<int> productionIds;
+
+    private string baseUrl => $"search";
+
+    private string title => $"Searchresults for {Search}";
+
+    protected override void OnInitialized()
+    {
+        navigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+
+        var term = navigationManager.GetFromQueryString<string>("search");
+        logger.LogInformation("Location Changed, search is now {search}", term);
+
+        if (term != Search)
+        {
+            Search = term;
+            await Load();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var term = navigationManager.GetFromQueryString<string>("search");
+        Search = term;
+        await Load();
+    }
+
+    private async Task Load()
+    {
+        var prodIds = unitOfWork.Productions.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase)).Select(p => p.ProductionId).ToList();
+        var groups = unitOfWork.Groups.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+
+        foreach (var group in groups.Take(10))
+        {
+            var groupProdsIds = (await unitOfWork.Groups.GetWithProductions(group.GroupId)).ProductionsGroups.Select(p => p.ProductionId);
+            prodIds.AddRange(groupProdsIds);
+        }
+
+        productionIds = prodIds;
+
+        logger.LogInformation("Found Ids for {Search}: {@productionIds}", Search, productionIds);
+    }
+
+    public void Dispose()
+    {
+        navigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

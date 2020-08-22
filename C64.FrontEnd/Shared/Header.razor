@@ -12,14 +12,7 @@
                     <LoginHeader />
                 </div>
                 <div class="grid-search mb-1">
-                    <form asp-controller="productions" asp-action="search" asp-area="" method="get" class="header-search-grid form-inline my-0 my-md-0">
-                        <div class="input-group flex-nowrap">
-                            <input class="form-control" type="text" name="search" placeholder="Search" aria-label="Search" value="ViewBag.Search">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
-                            </div>
-                        </div>
-                    </form>
+                    <SearchHeader />
                     <div class="header-hamburger d-block d-md-none" onclick="openNav()">
 
                         <i class="fas fa-bars"></i>

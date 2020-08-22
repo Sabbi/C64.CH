@@ -97,19 +97,27 @@
 
     private void NavigateTo()
     {
-        navigationManager.NavigateTo($"/{BaseUrl}?currentPage={currentPage}&sortCol={sorterData.CurrentSortColumn}&sortDir={sorterData.IsSortedAscending}");
+
+        var navigateToUrl = $"/{BaseUrl}?currentPage={currentPage}&sortCol={sorterData.CurrentSortColumn}&sortDir={sorterData.IsSortedAscending}";
+
+        if (!string.IsNullOrEmpty(navigationManager.GetFromQueryString<string>("search")))
+            navigateToUrl += $"&search={navigationManager.GetFromQueryString<string>("search")}";
+
+        logger.LogInformation("NavigateTo Fired, we're going to {url}", navigateToUrl);
+
+        navigationManager.NavigateTo(navigateToUrl);
     }
 
     private async Task LoadProductions()
     {
-        logger.LogWarning("Load Production for {@productionIds}", ProductionIds);
+        logger.LogInformation("Load Production for {@productionIds}", ProductionIds);
 
         var paginatedResult = await unitOfWork.Productions.GetPaginatedWithGroups(p => ProductionIds.Contains(p.ProductionId), sorterData.CurrentSortColumn, sorterData.IsSortedAscending, currentPage, pageSize);
         productions = paginatedResult.Data;
         currentPage = paginatedResult.CurrentPage;
         totalNumberOfPages = paginatedResult.NumberOfPages;
         totalNumberOfRecords = paginatedResult.TotalNumberOfRecords;
-        logger.LogWarning("Loaded {total}", totalNumberOfRecords);
+        logger.LogInformation("Loaded {total} Number of Production", totalNumberOfRecords);
     }
 
     public void Dispose()
