@@ -73,9 +73,6 @@
     private async Task ConfirmEmail()
     {
         var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-
-        logger.LogWarning("Code: {code}", code);
-
         var callbackUrl = navigationManager.BaseUri + $"User/ConfirmEmail/?userId={user.Id}&code={code}";
 
         var encoded = System.Text.Encodings.Web.HtmlEncoder.Default.Encode(callbackUrl);
