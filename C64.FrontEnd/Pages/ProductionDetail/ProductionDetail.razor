@@ -6,7 +6,7 @@
 
 @implements IDisposable
 @inject NotifierService notifier
-@inject ILogger<Index> logger
+@inject ILogger<ProductionDetail> logger
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
@@ -33,11 +33,11 @@
                 <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
                     <option value="0">Edit Production</option>
                     <option value="general">- General</option>
-                    <option value="additional">- Additional info</option>
                     <option value="pictures">- Screenshots</option>
                     <option value="videos">- Videos</option>
                     <option value="downloads">- Downloads</option>
                     <option value="credits">- Credits</option>
+                    <option value="additional">- Additional info</option>
                 </select>
             </div>
         </Title>
