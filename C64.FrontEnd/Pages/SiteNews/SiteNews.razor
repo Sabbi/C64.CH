@@ -3,14 +3,14 @@
 @using C64.Data.Models
 
 @inject IUnitOfWork unitOfWork
+@inject ILogger<SiteNews> logger
 
 @if (paginatedResult?.Data != null)
 {
     <ul class="list-unstyled">
         @foreach (var info in paginatedResult.Data)
         {
-
-            <SiteNewsDetail SiteInfo="@info" />
+            <SiteNewsDetail SiteInfo="@info" OnEdited="OnEdited" />
         }
     </ul>
     <Paginator CurrentPage="@paginatedResult.CurrentPage" TotalAmountPages="@paginatedResult.NumberOfPages" SelectedPage="OnSelectPage" />
@@ -26,6 +26,7 @@
     protected override async Task OnInitializedAsync()
     {
         await Load(1);
+
     }
 
     private async Task OnSelectPage(int selectedPage)
@@ -33,10 +34,15 @@
         await Load(selectedPage);
     }
 
-    private async Task Load(int selectedPage)
+    private void OnEdited(SiteInfo info)
     {
-        paginatedResult = await unitOfWork.SiteInfos.FindPaginated(p => p.Show, "PublishedAt", false, selectedPage, pageSize);
-        page = selectedPage;
+        // TODO: is this safe?
+        unitOfWork.Commit();
     }
 
+    private async Task Load(int selectedPage)
+    {
+        paginatedResult = await unitOfWork.SiteInfos.GetPaginatedWithUser(p => true, "PublishedAt", false, selectedPage, pageSize);
+        page = selectedPage;
+    }
 }

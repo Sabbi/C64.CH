@@ -1,18 +1,129 @@
 ﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
+
 <li class="my-1">
     <div class="row">
-        <div class="col-12">
-            <h4 class="d-inline">@SiteInfo.Title</h4>
-        </div>
-        <div class="col-12">
-            <RenderMarkdown MarkdownContent="@SiteInfo.Text" />
-            <div class="small float-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
-            <hr>
-        </div>
+        @if (!showEdit)
+        {
+            if (SiteInfo.Show)
+            {
+                <div class="col-12 mb-2">
+
+                    <h4 class="d-inline">
+                        @SiteInfo.Title
+                    </h4>
+                    <AuthorizeView Roles="Moderator">
+                        <Authorized>
+                            <div class="float-right">
+                                <a href="" @onclick:preventDefault @onclick="(() => StartEdit())" class="badge badge-success">Edit @SiteInfo.Title</a>
+                            </div>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+                <div class="col-12">
+                    <RenderMarkdown MarkdownContent="@SiteInfo.Text.Replace("<br>", "\n")" />
+                    <div class="small float-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
+                    <hr>
+                </div>
+            }
+            else
+            {
+                <AuthorizeView Roles="Moderator">
+                    <Authorized>
+                        <div class="col-12 mb-2" style="background-color:#808080">
+                            <h4 class="d-inline">
+                                <small><del>@SiteInfo.Title</del></small>
+                            </h4>
+                            <div class="float-right">
+                                <a href="" @onclick:preventDefault @onclick="(() => StartEdit())" class="badge badge-success">Edit @SiteInfo.Title</a>
+                            </div>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            }
+        }
+        else
+        {
+            <div class="col-12 mb-2">
+                <EditForm Model="SiteInfo" OnValidSubmit="OnValidSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@SiteInfo.Title" />
+                            <ValidationMessage For="@(() => SiteInfo.Title)" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Content (Markdown is ok):</label>
+                        <div>
+                            <InputTextArea rows="5" class="form-control" @bind-Value="@SiteInfo.Text" />
+                            <ValidationMessage For="@(() => SiteInfo.Text)" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Show:</label>
+                        <div>
+                            <InputCheckbox @bind-Value="@SiteInfo.Show" id="showInfo" />
+                            <label for="showInfo">Show News</label>
+                        </div>
+                    </div>
+                    <div class="float-right">
+                        <button class="btn btn-warning" type="button" @onclick="Cancel">Cancel</button>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Update News</button>
+
+                    <div class="form-group mt-4">
+                        <label>Preview:</label>
+                        <div>
+                            <RenderMarkdown MarkdownContent="@SiteInfo.Text"></RenderMarkdown>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+
+        }
     </div>
 </li>
 
 @code {
     [Parameter]
     public SiteInfo SiteInfo { get; set; }
+
+    [Parameter]
+    public EventCallback<SiteInfo> OnEdited { get; set; }
+
+    private bool showEdit = false;
+
+    private SiteInfo back = new SiteInfo();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private void StartEdit()
+    {
+        back.Title = SiteInfo.Title;
+        back.Text = SiteInfo.Text;
+        back.Show = SiteInfo.Show;
+
+        showEdit = true;
+    }
+
+    private void Cancel()
+    {
+        SiteInfo.Title = back.Title;
+        SiteInfo.Text = back.Text;
+        SiteInfo.Show = back.Show;
+        showEdit = false;
+    }
+
+    private async Task OnValidSubmit()
+    {
+        await OnEdited.InvokeAsync(SiteInfo);
+        showEdit = false;
+    }
+
 }

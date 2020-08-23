@@ -51,6 +51,11 @@
                                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Add</a>
                                     <div class="dropdown-menu">
                                         <AddProductionLink class="dropdown-item"><Content>Add Production</Content></AddProductionLink>
+                                        <AuthorizeView Roles="Moderator">
+                                            <Authorized Context="InnerContext">
+                                                <AddNewsLink class="dropdown-item"><Content>Add News</Content></AddNewsLink>
+                                            </Authorized>
+                                        </AuthorizeView>
                                     </div>
                                 </li>
                             </Authorized>
@@ -75,10 +80,6 @@
                                 <a class="dropdown-item" href="/help/about">About</a>
                                 <a class="dropdown-item" href="/help/technical">Technical</a>
                             </div>
-                        </li>
-
-                        <li class="nav-item ml-auto">
-                            <a class="nav-link" asp-area="Admin" asp-action="Index" asp-controller="Home"><i>Administration</i></a>
                         </li>
                     </ul>
                 </div>

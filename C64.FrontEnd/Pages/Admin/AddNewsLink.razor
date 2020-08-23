@@ -1,0 +1,20 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject IModalService Modal
+
+<a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddNewsModal" @onclick:preventDefault>
+    @Content
+</a>
+
+@code{
+    [Parameter]
+    public RenderFragment Content { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private void OpenAddNewsModal()
+    {
+        Modal.Show<AddNewsModal>();
+    }
+}

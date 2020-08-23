@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -41,6 +42,11 @@ namespace C64.FrontEnd.Extensions
         public static IEnumerable<string> GetRoles(this HttpContext httpContext)
         {
             return httpContext.User.Claims.Where(p => p.Type == ClaimTypes.Role).Select(p => p.Value);
+        }
+
+        public static bool CheckRole(this HttpContext httpContext, string role)
+        {
+            return httpContext.GetRoles().Any(p => p.Equals(role, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
