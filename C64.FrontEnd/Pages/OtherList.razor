@@ -1,0 +1,113 @@
+﻿@page "/productions/{ProdType}/{ListBy}/{StartLetter}"
+@page "/productions/{ProdType}/{ListBy}"
+
+@inject IUnitOfWork unitOfWork
+<Box>
+    <Title>@title</Title>
+    <Content>
+        @if (productionIds != null)
+        {
+            <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" DefaultSortColumn="@defaultSortColumn" DefaultIsSortedAscending="@defaultSortedAscending" />
+        }
+    </Content>
+</Box>
+
+@code {
+
+    [Parameter]
+    public string ProdType { get; set; }
+
+    [Parameter]
+    public string ListBy { get; set; }
+
+    [Parameter]
+    public string StartLetter { get; set; }
+
+    private ICollection<int> productionIds;
+
+    private string baseUrl
+    {
+        get
+        {
+            return $"productions/{ProdType}/{ListBy}/{StartLetter}";
+        }
+    }
+
+    private string title;
+
+    private string defaultSortColumn = "Name";
+    private bool defaultSortedAscending = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        switch (ListBy)
+        {
+            case "latestadded":
+                productionIds = unitOfWork.Productions.Find(p => true).Select(p => p.ProductionId).ToList();
+                defaultSortColumn = "Added";
+                defaultSortedAscending = false;
+                title = "Latest added demos";
+                break;
+            case "latestreleased":
+                productionIds = unitOfWork.Productions.Find(p => true).Select(p => p.ProductionId).ToList();
+                defaultSortColumn = "ReleaseDate";
+                defaultSortedAscending = false;
+                title = "Latest released demo";
+                break;
+            case "toprated":
+                productionIds = unitOfWork.Productions.Find(p => true).Select(p => p.ProductionId).ToList();
+                defaultSortColumn = "AverageRating";
+                defaultSortedAscending = false;
+                title = "Top rated demos";
+                break;
+            case "topdownloaded":
+                productionIds = unitOfWork.Productions.Find(p => true).Select(p => p.ProductionId).ToList();
+                defaultSortColumn = "Downloads";
+                defaultSortedAscending = false;
+                title = "Top downloaded demos";
+                break;
+            case "namestart":
+                if (StartLetter.Equals("other", StringComparison.OrdinalIgnoreCase))
+                {
+                    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    productionIds = unitOfWork.Productions.Find(p => !letters.Contains(p.Name.Substring(0, 1))).Select(p => p.ProductionId).ToList();
+                    title = $"Demos not starting with a letter";
+                }
+                else
+                {
+                    productionIds = unitOfWork.Productions.Find(p => p.Name.StartsWith(StartLetter, StringComparison.OrdinalIgnoreCase)).Select(p => p.ProductionId).ToList();
+                    title = $"Demos starting with {StartLetter}";
+                }
+                break;
+            case "groupstart":
+                var groups = new List<Group>();
+
+                if (StartLetter.Equals("other", StringComparison.OrdinalIgnoreCase))
+                {
+                    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    groups = unitOfWork.Groups.Find(p => !letters.Contains(p.Name.Substring(0, 1))).ToList();
+                    title = "Demos from groups not starting with a letter";
+                }
+                else
+                {
+                    groups = unitOfWork.Groups.Find(p => p.Name.StartsWith(StartLetter, StringComparison.OrdinalIgnoreCase)).ToList();
+                    title = $"Demos from groups starting with {StartLetter}";
+                }
+
+                var prodIds = new List<int>();
+
+                foreach (var group in groups.Take(10))
+                {
+                    var groupProdsIds = (await unitOfWork.Groups.GetWithProductions(group.GroupId)).ProductionsGroups.Select(p => p.ProductionId);
+                    prodIds.AddRange(groupProdsIds);
+                }
+                productionIds = prodIds;
+
+                break;
+            default:
+                throw new Exception("Invalid ListBy-Parameter");
+        }
+
+    }
+
+}

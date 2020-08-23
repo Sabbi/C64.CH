@@ -3,7 +3,7 @@
 @inject ILogger<Demos> logger
 
 @page "/productions/demos"
-<Box>
+<Box MarginBottom="4">
     <Title>Demos - Search, choose and decide!</Title>
     <Content>
         <div class="form-group row">
@@ -33,6 +33,121 @@
         </div>
     </Content>
 </Box>
+<Box MarginBottom="4">
+    <Title>Full Lists</Title>
+    <Content>
+        <div class="text-center">
+            <h5>Show demos by name</h5>
+            <h5>
+                <a class="badge badge-primary" href="/productions/demos/namestart/other">#</a>
+                @for (int i = 65; i < 91; i++)
+                {
+                    <span>&nbsp;</span>
+                    <a class="badge badge-primary" href="/productions/demos/namestart/@((char)i)">@((char)i)</a>
+                }
+            </h5>
+            <h5>Show demos by group</h5>
+            <h5>
+                <a class="badge badge-primary" href="/productions/demos/groupstart/other">#</a>
+                @for (int i = 65; i < 91; i++)
+                {
+                    <span>&nbsp;</span>
+                    <a class="badge badge-primary" href="/productions/demos/groupstart/@((char)i)">@((char)i)</a>
+                }
+            </h5>
+        </div>
+    </Content>
+</Box>
+<Box MarginBottom="4">
+    <Title>All time top lists</Title>
+    <Content>
+        <div class="row">
+            <div class="col-md-3">
+                <a href="/productions/demos/toprated">
+                    <h5>Top rated demos</h5>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/productions/demos/topdownloaded">
+                    <h5>Top downloaded demos</h5>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/productions/demos/latestadded">
+                    <h5>Latest added</h5>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/productions/demos/latestreleased">
+                    <h5>Latest released</h5>
+                </a>
+            </div>
+        </div>
+    </Content>
+</Box>
+
+<Box>
+    <Title>More top lists</Title>
+    <Content>
+        <div class="row">
+            <div class="col-sm-6">
+                <h5 class="text-center">Most Active Groups</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Group</th>
+                            <th class="text-right">Releases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < 10; i++)
+                        {
+                            var currentGroup = groups.OrderByDescending(p => p.NumberOfReleases).ElementAt(i);
+                            <tr>
+                                <td>@(i+1)</td>
+                                <td>
+                                    <a href="/groups/@currentGroup.GroupId/@currentGroup.Name.UrlEncode()">
+                                        @currentGroup.Name
+                                    </a>
+                                </td>
+                                <td class="text-right">@currentGroup.NumberOfReleases</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <h5 class="text-center">Top Rated Groups (20 ratings min.)</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Group</th>
+                            <th class="text-right">Rating</th>
+                            <th class="text-right">No. of Ratings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < 10; i++)
+                        {
+                            <tr>
+                                <td>@(i+1)</td>
+                                <td>
+                                    <a href="/groups/@topRatedGroups.ElementAt(i).GroupId/@topRatedGroups.ElementAt(i).Name.UrlEncode()">
+                                        @topRatedGroups.ElementAt(i).Name
+                                    </a>
+                                </td>
+                                <td class="text-right">@topRatedGroups.ElementAt(i).AverageRating.ToString("0.##")</td>
+                                <td class="text-right">@topRatedGroups.ElementAt(i).NumberOfRatings</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </Content>
+</Box>
 
 @code {
 
@@ -43,6 +158,10 @@
     private string selectedYear;
 
     private string simpleSearchTerm;
+
+    private List<Group> groups;
+
+    private List<Group> topRatedGroups;
 
     private void TestForEnter(KeyboardEventArgs keyboardEventArgs)
     {
@@ -72,12 +191,14 @@
     protected override void OnInitialized()
     {
 
-        var groups = unitOfWork.Groups.GetAll().OrderBy(p => p.Name);
+        groups = unitOfWork.Groups.GetAll().OrderBy(p => p.Name).ToList();
 
         foreach (var group in groups)
         {
             groupData.Add(group.GroupId.ToString(), group.Name);
         }
+
+        topRatedGroups = groups.OrderByDescending(p => p.AverageRating).Where(p => p.NumberOfRatings > 20).Take(10).ToList();
 
         for (var i = 1982; i <= DateTime.Now.Year; i++)
         {

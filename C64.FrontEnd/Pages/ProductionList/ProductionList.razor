@@ -30,6 +30,12 @@
     [Parameter]
     public IEnumerable<int> ProductionIds { get; set; }
 
+    [Parameter]
+    public string DefaultSortColumn { get; set; } = "Name";
+
+    [Parameter]
+    public bool DefaultIsSortedAscending { get; set; } = true;
+
     private IEnumerable<Production> productions;
 
     // Pagination
@@ -46,8 +52,9 @@
         navigationManager.LocationChanged += OnLocationChanged;
 
         // Init Sorter
-        sorterData.CurrentSortColumn = "Name";
-        sorterData.IsSortedAscending = true;
+        sorterData.CurrentSortColumn = DefaultSortColumn;
+        sorterData.IsSortedAscending = DefaultIsSortedAscending;
+
         sorterData.SorterItems.Add(new SorterItem("Name", "Name of the Demo", true));
         sorterData.SorterItems.Add(new SorterItem("Downloads", "Downloads", false));
         sorterData.SorterItems.Add(new SorterItem("AverageRating", "Average Rating of the Demo", false));
