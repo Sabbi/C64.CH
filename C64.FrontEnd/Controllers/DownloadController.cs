@@ -1,7 +1,6 @@
 ﻿using C64.Data;
 using C64.Data.Archive;
 using C64.Data.Storage;
-using C64.Services;
 using D64Reader;
 using D64Reader.Renderers;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -36,15 +34,6 @@ namespace C64.FrontEnd.Controllers
             this.unitOfWork = unitOfWork;
             this.fileStorageService = fileStorageService;
             this.logger = logger;
-        }
-
-        [Route("/emailtest")]
-        public async Task<IActionResult> Email([FromServices] IEmailSender mailservice)
-        {
-            var rec = new MailAddress("dtest@c64.ch", "Damian");
-            await mailservice.SendEmailAsync(null, new List<MailAddress> { rec }, "Testmail", "Testcontent");
-            logger.LogInformation("Mail sent");
-            return Content("Sent?");
         }
 
         [Route("/demos/download.php")]
