@@ -17,7 +17,14 @@
         @if (production != null)
         {
             <a @onclick="GoToProduction">
-                <img class="w-100" src="/data/productionpictures/@production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show)?.Filename" />
+                @if (production.ProductionPictures.Any(p => p.Show))
+                {
+                    <img class="w-100" src="/data/productionpictures/@production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show)?.Filename" />
+                }
+                else
+                {
+                    <img class="w-100" src="/images/nopicture.jpg" />
+                }
                 <div class="picture-caption">@production.Name</div>
             </a>
         }
@@ -63,7 +70,6 @@
 
     private async Task LoadRandomProduction()
     {
-
         var unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
         production = await unitOfWork.Productions.GetRandomProduction();
         await InvokeAsync(StateHasChanged);
