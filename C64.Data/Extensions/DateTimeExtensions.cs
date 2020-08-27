@@ -1,7 +1,6 @@
-﻿using C64.Data;
-using System;
+﻿using System;
 
-namespace C64.FrontEnd.Extensions
+namespace C64.Data.Extensions
 {
     public static class DateTimeExtensions
     {

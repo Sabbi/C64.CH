@@ -1,4 +1,5 @@
 ﻿using C64.Data.Entities;
+using C64.Data.Extensions;
 using Newtonsoft.Json;
 using System;
 
@@ -34,6 +35,15 @@ namespace C64.Data.History
 
             oldValues.Type = (DateType)oldValue2;
 
+            //Release date changed from 'January 2020' to 'February 2nd, 2020'"
+            string description;
+            if (newValues.Type == DateType.None)
+                description = "Release date removed";
+            else if (oldValues.Type == DateType.None)
+                description = $"Release date set to '{newValues.Date.ParseDate(newValues.Type)}'";
+            else
+                description = $"Release date changed from '{oldValues.Date.ParseDate(oldValues.Type)}' to '{newValues.Date.ParseDate(newValues.Type)}'";
+
             var dbhistory = new HistoryProduction
             {
                 AffectedId = production.ProductionId,
@@ -42,7 +52,8 @@ namespace C64.Data.History
                 OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValues),
                 Status = status,
                 Type = typeof(PartialDateApplierData).FullName,
-                Version = 1M
+                Version = 1M,
+                Description = description
             };
             return dbhistory;
         }

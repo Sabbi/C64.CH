@@ -20,7 +20,8 @@ namespace C64.Data.History
                 OldValue = null,
                 Status = status,
                 Type = production.GetType().FullName,
-                Version = 1M
+                Version = 1M,
+                Description = $"Added '{production.Name}', a new {production.SubCategory}"
             };
 
             return dbhistory;

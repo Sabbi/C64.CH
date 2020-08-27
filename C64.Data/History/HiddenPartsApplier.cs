@@ -1,4 +1,5 @@
 ﻿using C64.Data.Entities;
+using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,36 @@ namespace C64.Data.History
             foreach (var oldPart in oldParts.Where(p => p.Description != string.Empty))
                 oldValues.Add(oldPart.HiddenPartId, oldPart.Description);
 
+            string description = null;
+
+            if (oldParts.Any() && !newParts.Any())
+                description = "Hiddenparts removed";
+            else if (!oldParts.Any() && newParts.Any())
+            {
+                var newList = new List<string>();
+
+                foreach (var part in newParts)
+                {
+                    var partString = part.Description.Length > 15 ? part.Description.Substring(0, 15) + "..." : part.Description;
+                    newList.Add($"'{partString}'");
+                }
+
+                description = "Hiddenparts added: " + string.Join(", ", newList);
+            }
+            else if (oldParts.Count == newParts.Count)
+            {
+                var changed = false;
+
+                for (int i = 0; i < oldParts.Count; i++)
+                {
+                    if (oldParts.ElementAt(i).Description != newParts.ElementAt(i).Description)
+                        changed = true;
+                }
+
+                if (changed)
+                    description = "Hiddenparts updated";
+            }
+
             var dbhistory = new HistoryProduction
             {
                 AffectedId = production.ProductionId,
@@ -43,7 +74,8 @@ namespace C64.Data.History
                 OldValue = oldValues == null ? null : JsonConvert.SerializeObject(oldValues),
                 Status = status,
                 Type = newValues.GetType().FullName,
-                Version = 1M
+                Version = 1M,
+                Description = description
             };
 
             return dbhistory;

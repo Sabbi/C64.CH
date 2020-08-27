@@ -34,6 +34,9 @@ namespace C64.Data.Entities
         public HistoryStatus Status { get; set; }
 
         public HistoryRating Rating { get; set; }
+
+        [MaxLength(4096)]
+        public string Description { get; set; }
     }
 
     public class HistoryProduction : History<Production>

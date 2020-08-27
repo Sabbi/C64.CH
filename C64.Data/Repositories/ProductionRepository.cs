@@ -144,7 +144,7 @@ namespace C64.Data.Repositories
 
         public async Task<IEnumerable<HistoryProduction>> GetHistory(int productionId)
         {
-            return await context.Set<HistoryProduction>().Where(p => p.AffectedId == productionId).ToListAsync();
+            return await context.Set<HistoryProduction>().Where(p => p.AffectedId == productionId).Include(p => p.User).ToListAsync();
         }
 
         public void AddHistory(HistoryProduction historyProduction)

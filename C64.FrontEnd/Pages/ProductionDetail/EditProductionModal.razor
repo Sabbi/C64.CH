@@ -154,8 +154,16 @@
         productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
 
         int? partyCategory = editProductionGeneral.PartyCategoryId == "0" ? null : (int?)int.Parse(editProductionGeneral.PartyCategoryId);
+        string partyCategoryName = partyCategories.FirstOrDefault(p => p.PartyCategoryId == partyCategory)?.Name;
 
-        productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData { PartyId = editProductionGeneral.Party?.PartyId ?? 0, CategoryId = partyCategory, Rank = editProductionGeneral.PartyRank });
+        productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData
+        {
+            PartyId = editProductionGeneral.Party?.PartyId ?? 0,
+            PartyName = editProductionGeneral.Party?.Name,
+            CategoryId = partyCategory,
+            CategoryName = partyCategoryName,
+            Rank = editProductionGeneral.PartyRank
+        });
         productionHistory.AddHistory(ProductionEditProperty.Groups, editProductionGeneral.SelectedGroups);
 
         productionHistory.Apply();

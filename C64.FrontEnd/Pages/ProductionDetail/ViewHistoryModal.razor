@@ -1,0 +1,48 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IJSRuntime jsRuntime
+@inject IUnitOfWork unitOfWork
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"History of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        @Production.Name
+        <ul class="list-unstyled">
+            @foreach (var history in histories)
+            {
+                <li>
+                    <div class="row">
+                        <div class="col-6">@history.User.UserName</div>
+                        <div class="col-6">@history.Property</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">@history.OldValue</div>
+                        <div class="col-6">@history.NewValue</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">@Parsed(history)</div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private IEnumerable<HistoryProduction> histories = new HashSet<HistoryProduction>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        histories = (await unitOfWork.Productions.GetHistory(Production.ProductionId)).OrderByDescending(p => p.Applied);
+    }
+
+    private string Parsed(HistoryProduction history)
+    {
+        return history.Description;
+    }
+}

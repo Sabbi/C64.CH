@@ -38,6 +38,7 @@
                     <option value="downloads">- Downloads</option>
                     <option value="credits">- Credits</option>
                     <option value="additional">- Additional info</option>
+                    <option value="viewHistory">View history</option>
                 </select>
             </div>
         </Title>
@@ -232,7 +233,7 @@
 
     private async Task OnSelectEdit(ChangeEventArgs args)
     {
-        if (httpContext.HttpContext.GetUserId() == null)
+        if (httpContext.HttpContext.GetUserId() == null && args.Value.ToString() != "viewHistory")
         {
             Modal.Show<LoginModal>();
             return;
@@ -285,6 +286,13 @@
             parameters.Add(nameof(EditRemarksModal.Production), production);
             parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditCreditsModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "viewHistory")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditRemarksModal.Production), production);
+            reference = Modal.Show<ViewHistoryModal>("", parameters);
             await reference.Result;
         }
         StateHasChanged();

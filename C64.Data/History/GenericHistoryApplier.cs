@@ -37,9 +37,46 @@ namespace C64.Data.History
                 OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValue),
                 Status = status,
                 Type = propInfo.PropertyType.FullName,
-                Version = 1M
+                Version = 1M,
+                Description = GenerateHistoryDescription(property, production, newValue)
             };
             return dbhistory;
+        }
+
+        public static string GenerateHistoryDescription(ProductionEditProperty property, Production production, object newValue, decimal version = 1M)
+        {
+            switch (property)
+            {
+                case ProductionEditProperty.Platform:
+                    return $"Platform changed from '{production.Platform}' to '{newValue}'";
+
+                case ProductionEditProperty.Name:
+                    return $"Name changed from '{production.Name}' to '{newValue}'";
+
+                case ProductionEditProperty.Aka:
+                    if (string.IsNullOrEmpty(production.Aka))
+                        return $"Aka set to '{newValue}'";
+                    else if (string.IsNullOrEmpty(newValue.ToString()))
+                        return $"Removed Aka '{production.Aka}'";
+                    else
+                        return $"Aka changed from '{production.Aka}' to '{newValue}'";
+
+                case ProductionEditProperty.SubCategory:
+                    return $"Subcategory changed from '{production.SubCategory}' to '{newValue}'";
+
+                case ProductionEditProperty.Remarks:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Remark removed";
+
+                    var display = newValue.ToString().Length > 15 ? newValue.ToString().Substring(0, 15) + "..." : newValue.ToString();
+                    return $"Remark changed to '{display}'";
+
+                case ProductionEditProperty.VideoType:
+                    return $"Videotype changed from '{production.VideoType}' to '{newValue}'";
+
+                default:
+                    return "Not Implemented";
+            }
         }
     }
 }

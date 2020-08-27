@@ -39,6 +39,15 @@ namespace C64.Data.History
                 Rank = production.ProductionsParties.FirstOrDefault()?.Rank ?? 0,
             };
 
+            // Old and new
+            string description = null;
+            if (production.ProductionsParties.Any() && newValues.PartyId > 0)
+                description = $"Partyinformation changed from '{production.ProductionsParties.FirstOrDefault().Party.Name}/{production.ProductionsParties.FirstOrDefault().PartyCategory.Name}/{production.ProductionsParties.FirstOrDefault().Rank}' to '{newValues.PartyName}/{newValues.CategoryName}/{newValues.Rank}'";
+            else if (!production.ProductionsParties.Any() && newValues.PartyId > 0)
+                description = $"Partyinformation added: '{newValues.PartyName}/{newValues.CategoryName}/{newValues.Rank}'";
+            else if (production.ProductionsParties.Any() && newValues.PartyId == 0)
+                description = "Partyinformation removed";
+
             var dbhistory = new HistoryProduction
             {
                 AffectedId = production.ProductionId,
@@ -47,7 +56,8 @@ namespace C64.Data.History
                 OldValue = oldValues == null ? null : JsonConvert.SerializeObject(oldValues),
                 Status = status,
                 Type = typeof(PartyApplierData).FullName,
-                Version = 1M
+                Version = 1M,
+                Description = description
             };
 
             return dbhistory;
@@ -57,7 +67,9 @@ namespace C64.Data.History
     public class PartyApplierData
     {
         public int PartyId { get; set; }
+        public string PartyName { get; set; }
         public int Rank { get; set; }
         public int? CategoryId { get; set; }
+        public string CategoryName { get; set; }
     }
 }
