@@ -39,6 +39,11 @@ namespace C64.FrontEnd.Extensions
             return httpContext.User.IsInRole("Moderator") || httpContext.User.IsInRole("Editor");
         }
 
+        public static bool UserIsModerator(this HttpContext httpContext)
+        {
+            return httpContext.User.IsInRole("Moderator") || httpContext.User.IsInRole("Admin");
+        }
+
         public static IEnumerable<string> GetRoles(this HttpContext httpContext)
         {
             return httpContext.User.Claims.Where(p => p.Type == ClaimTypes.Role).Select(p => p.Value);

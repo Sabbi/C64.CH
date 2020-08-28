@@ -1,0 +1,131 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit Group {Group.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <EditForm Model="editGroup" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label>
+                    Group name
+                    :
+                </label>
+                <div>
+                    @if (editGroup.CanEditName)
+                    {
+                        <InputText class="form-control" @bind-Value="@editGroup.Name" />
+                        <ValidationMessage For="@(() => editGroup.Name)" />
+                    }
+                    else
+                    {
+                        <input class="form-control" readonly disabled value="@editGroup.Name" />
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Aka (also known as):</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Aka" />
+                    <ValidationMessage For="@(() => editGroup.Aka)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Founded on:</label>
+                <div>
+                    <InputPartialDate @bind-Value="@editGroup.FoundedDate" StartingYear="1982" EndingYear="DateTime.Now.Year" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Closed on:</label>
+                <div>
+                    <InputPartialDate @bind-Value="@editGroup.ClosedDate" StartingYear="1982" EndingYear="DateTime.Now.Year" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Url / Homepage:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Url" />
+                    <ValidationMessage For="@(() => editGroup.Url)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email / Contact:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Email" />
+                    <ValidationMessage For="@(() => editGroup.Email)" />
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Update Group</button>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Group Group { get; set; }
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private EditGroup editGroup = new EditGroup();
+
+    private async Task OnValidSubmit()
+    {
+        //logger.LogInformation("OnValidSubmit");
+
+        //var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        //productionHistory.AddHistory(ProductionEditProperty.Name, editProductionGeneral.Name);
+        //productionHistory.AddHistory(ProductionEditProperty.Aka, editProductionGeneral.Aka);
+        //productionHistory.AddHistory(ProductionEditProperty.SubCategory, editProductionGeneral.SubCategory);
+        //productionHistory.AddHistory(ProductionEditProperty.Platform, editProductionGeneral.Platform);
+
+        //productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
+
+        //int? partyCategory = editProductionGeneral.PartyCategoryId == "0" ? null : (int?)int.Parse(editProductionGeneral.PartyCategoryId);
+        //string partyCategoryName = partyCategories.FirstOrDefault(p => p.PartyCategoryId == partyCategory)?.Name;
+
+        //productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData
+        //{
+        //    PartyId = editProductionGeneral.Party?.PartyId ?? 0,
+        //    PartyName = editProductionGeneral.Party?.Name,
+        //    CategoryId = partyCategory,
+        //    CategoryName = partyCategoryName,
+        //    Rank = editProductionGeneral.PartyRank
+        //});
+        //productionHistory.AddHistory(ProductionEditProperty.Groups, editProductionGeneral.SelectedGroups);
+
+        //productionHistory.Apply();
+
+        //await unitOfWork.Commit();
+
+        await OnClosed.InvokeAsync(null);
+
+        await bootstrapModal.Close();
+
+    }
+
+    protected override void OnInitialized()
+    {
+        // Can edit name? Only Moderators+ OR if group was just added
+        editGroup.CanEditName = (DateTime.Now - Group.Added).TotalDays < 5 || httpContext.HttpContext.UserIsModerator();
+
+        editGroup.Name = Group.Name;
+        editGroup.Aka = Group.Aka;
+        editGroup.Description = Group.Description;
+        editGroup.Email = Group.Email;
+        editGroup.Url = Group.Url;
+        editGroup.FoundedDate = new PartialDate(Group.FoundedDate, Group.FoundedDateType);
+        editGroup.ClosedDate = new PartialDate(Group.ClosedDate, Group.ClosedDateType);
+    }
+}

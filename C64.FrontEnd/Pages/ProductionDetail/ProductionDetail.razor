@@ -19,7 +19,7 @@
         <Title>
             @production.Name<br />
             by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
-            <div class="float-right pr-3 position-absolute" style="right:180px; top:5px">
+            <div class="float-right pr-3 position-absolute" style="right:220px; top:5px">
                 @if (isFavorite)
                 {
                     <a title="Remove from favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(false))"><i class="fas fa-heart red" title="Remove from favorites"></i></a>
@@ -38,6 +38,13 @@
                     <option value="downloads">- Downloads</option>
                     <option value="credits">- Credits</option>
                     <option value="additional">- Additional info</option>
+                    <option value="0">--------------------------</option>
+                    <option value="0">Edit Group</option>"
+                    @for (var i = 0; i < production.ProductionsGroups.Count(); i++)
+                    {
+                        <option value="group-@i">- Edit @production.ProductionsGroups.ElementAt(i).Group.Name</option>
+                    }
+                    <option value="0">--------------------------</option>
                     <option value="viewHistory">View history</option>
                 </select>
             </div>
@@ -294,6 +301,14 @@
             parameters.Add(nameof(EditRemarksModal.Production), production);
             reference = Modal.Show<ViewHistoryModal>("", parameters);
             await reference.Result;
+        }
+        else if (args.Value.ToString().StartsWith("group-"))
+        {
+            var groupToEdit = production.ProductionsGroups.ElementAt(int.Parse(args.Value.ToString().Split("-")[1])).Group;
+
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditGroupModal.Group), groupToEdit);
+            reference = Modal.Show<EditGroupModal>("", parameters);
         }
         StateHasChanged();
 
