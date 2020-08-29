@@ -84,6 +84,17 @@
     {
         //logger.LogInformation("OnValidSubmit");
 
+        var groupHistory = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWork, Group, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+
+        groupHistory.AddHistory(HistoryEditProperty.Name, editGroup.Name);
+        groupHistory.AddHistory(HistoryEditProperty.Aka, editGroup.Aka);
+        groupHistory.AddHistory(HistoryEditProperty.FoundedDate, new PartialDateApplierData { Date = editGroup.FoundedDate.Date, Type = editGroup.FoundedDate.Type });
+        groupHistory.AddHistory(HistoryEditProperty.ClosedDate, new PartialDateApplierData { Date = editGroup.ClosedDate.Date, Type = editGroup.ClosedDate.Type });
+
+        groupHistory.Apply();
+
+        await unitOfWork.Commit();
+
         //var productionHistory = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
         //productionHistory.AddHistory(HistoryEditProperty.Name, editProductionGeneral.Name);
         //productionHistory.AddHistory(HistoryEditProperty.Aka, editProductionGeneral.Aka);

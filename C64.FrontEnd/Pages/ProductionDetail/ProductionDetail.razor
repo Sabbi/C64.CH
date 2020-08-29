@@ -308,7 +308,9 @@
 
             var parameters = new ModalParameters();
             parameters.Add(nameof(EditGroupModal.Group), groupToEdit);
+            parameters.Add(nameof(EditGroupModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditGroupModal>("", parameters);
+            await reference.Result;
         }
         StateHasChanged();
 

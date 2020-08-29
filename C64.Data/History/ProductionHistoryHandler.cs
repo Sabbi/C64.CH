@@ -176,6 +176,11 @@ namespace C64.Data.History
         ProductionPictures,
         ProductionFiles,
         AddProduction,
-        ProductionCredits
+        ProductionCredits,
+
+        // Groups,
+        FoundedDate,
+
+        ClosedDate
     }
 }

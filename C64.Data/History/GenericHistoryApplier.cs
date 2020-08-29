@@ -6,25 +6,75 @@ namespace C64.Data.History
 {
     public class GenericHistoryApplier : IHistoryApplier
     {
-        public void Apply(object entity, HistoryRecord historyProduction)
+        public void Apply(object entity, HistoryRecord historyRecord)
         {
-            var type = Type.GetType(historyProduction.Type, true);
-            var property = typeof(Production).GetProperty(historyProduction.Property);
-            if (historyProduction.NewValue == null)
+            switch (historyRecord.AffectedEntity)
             {
-                property.SetValue(entity, null);
+                case HistoryEntity.Production:
+                    ApplyProduction((Production)entity, historyRecord);
+                    break;
+
+                case HistoryEntity.Group:
+                    ApplyGroup((Group)entity, historyRecord);
+                    break;
+
+                case HistoryEntity.Scener:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void ApplyProduction(Production production, HistoryRecord historyRecord)
+        {
+            var type = Type.GetType(historyRecord.Type, true);
+            var property = typeof(Production).GetProperty(historyRecord.Property);
+            if (historyRecord.NewValue == null)
+            {
+                property.SetValue(production, null);
             }
             else
             {
-                var des = JsonConvert.DeserializeObject(historyProduction.NewValue, type);
-                property.SetValue(entity, des);
+                var des = JsonConvert.DeserializeObject(historyRecord.NewValue, type);
+                property.SetValue(production, des);
+            }
+        }
+
+        private void ApplyGroup(Group production, HistoryRecord historyRecord)
+        {
+            var type = Type.GetType(historyRecord.Type, true);
+            var property = typeof(Group).GetProperty(historyRecord.Property);
+            if (historyRecord.NewValue == null)
+            {
+                property.SetValue(production, null);
+            }
+            else
+            {
+                var des = JsonConvert.DeserializeObject(historyRecord.NewValue, type);
+                property.SetValue(production, des);
             }
         }
 
         public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
         {
-            var production = (Production)entity;
+            HistoryRecord historyRecord = null;
 
+            switch (historyEntity)
+            {
+                case HistoryEntity.Production:
+                    historyRecord = CreateProductionHistory(property, (Production)entity, newValue, status);
+                    break;
+
+                case HistoryEntity.Group:
+                    historyRecord = CreateGroupHistory(property, (Group)entity, newValue, status);
+                    break;
+
+                case HistoryEntity.Scener:
+                    throw new NotImplementedException();
+            }
+            return historyRecord;
+        }
+
+        private HistoryRecord CreateProductionHistory(HistoryEditProperty property, Production production, object newValue, HistoryStatus status)
+        {
             // Default, Simple Datatype properties
             var propertyName = property.ToString();
 
@@ -34,6 +84,7 @@ namespace C64.Data.History
             var dbhistory = new HistoryRecord
             {
                 AffectedProductionId = production.ProductionId,
+                AffectedEntity = HistoryEntity.Production,
                 Property = propertyName,
                 NewValue = newValue == null ? null : JsonConvert.SerializeObject(newValue),
                 OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValue),
@@ -45,7 +96,30 @@ namespace C64.Data.History
             return dbhistory;
         }
 
-        public static string GenerateHistoryDescription(HistoryEditProperty property, Production production, object newValue, decimal version = 1M)
+        private HistoryRecord CreateGroupHistory(HistoryEditProperty property, Group group, object newValue, HistoryStatus status)
+        {
+            // Default, Simple Datatype properties
+            var propertyName = property.ToString();
+
+            var propInfo = typeof(Group).GetProperty(propertyName);
+            var oldValue = propInfo.GetValue(group);
+
+            var dbhistory = new HistoryRecord
+            {
+                AffectedProductionId = group.GroupId,
+                AffectedEntity = HistoryEntity.Group,
+                Property = propertyName,
+                NewValue = newValue == null ? null : JsonConvert.SerializeObject(newValue),
+                OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValue),
+                Status = status,
+                Type = propInfo.PropertyType.FullName,
+                Version = 1M,
+                Description = GenerateHistoryDescription(property, group, newValue)
+            };
+            return dbhistory;
+        }
+
+        public static string GenerateHistoryDescription(HistoryEditProperty property, dynamic production, object newValue, decimal version = 1M)
         {
             switch (property)
             {

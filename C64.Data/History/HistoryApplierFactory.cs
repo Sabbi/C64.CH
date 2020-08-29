@@ -15,6 +15,8 @@ namespace C64.Data.History
                     return new GroupsApplier();
 
                 case HistoryEditProperty.ReleaseDate:
+                case HistoryEditProperty.FoundedDate:
+                case HistoryEditProperty.ClosedDate:
                     return new PartialDateApplier();
 
                 case HistoryEditProperty.HiddenParts:
