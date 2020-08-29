@@ -7,8 +7,9 @@ namespace C64.Data.History
 {
     public class VideoApplier : IHistoryApplier
     {
-        public void Apply(Production production, HistoryProduction historyProduction)
+        public void Apply(object entity, HistoryRecord historyProduction)
         {
+            var production = (Production)entity;
             var newValues = JsonConvert.DeserializeObject<List<ProductionVideo>>(historyProduction.NewValue);
 
             production.ProductionVideos.Clear();
@@ -20,8 +21,9 @@ namespace C64.Data.History
                 production.ProductionVideos.Add(new ProductionVideo { ProductionId = newValue.ProductionId, ProductionVideoId = newValue.ProductionVideoId, Show = newValue.Show, Sort = newValue.Sort, VideoId = newValue.VideoId, VideoProvider = newValue.VideoProvider });
         }
 
-        public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
         {
+            var production = (Production)entity;
             var newStrippedValues = new List<ProductionVideo>();
             var oldStrippedValues = new List<ProductionVideo>();
 
@@ -31,9 +33,9 @@ namespace C64.Data.History
             foreach (var oldVideo in production.ProductionVideos)
                 oldStrippedValues.Add(new ProductionVideo { ProductionId = oldVideo.ProductionId, ProductionVideoId = oldVideo.ProductionVideoId, Show = oldVideo.Show, Sort = oldVideo.Sort, VideoProvider = oldVideo.VideoProvider, VideoId = oldVideo.VideoId });
 
-            var dbhistory = new HistoryProduction
+            var dbhistory = new HistoryRecord
             {
-                AffectedId = production.ProductionId,
+                AffectedProductionId = production.ProductionId,
                 Property = "ProductionVideos",
                 NewValue = newStrippedValues == null ? null : JsonConvert.SerializeObject(newStrippedValues.OrderBy(p => p.ProductionVideoId)),
                 OldValue = oldStrippedValues == null ? null : JsonConvert.SerializeObject(oldStrippedValues.OrderBy(p => p.ProductionVideoId)),

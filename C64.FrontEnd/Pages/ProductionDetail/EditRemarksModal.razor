@@ -59,19 +59,19 @@
 
     private async Task OnValidSubmit()
     {
-        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        var productionHistory = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
 
         if (string.IsNullOrWhiteSpace(editProductionAdditional.Remarks))
             editProductionAdditional.Remarks = null;
 
-        productionHistory.AddHistory(ProductionEditProperty.Remarks, editProductionAdditional.Remarks);
+        productionHistory.AddHistory(HistoryEditProperty.Remarks, editProductionAdditional.Remarks);
 
         if (!string.IsNullOrWhiteSpace(newHiddenPart))
             editProductionAdditional.HiddenParts.Add(new HiddenPart { Description = newHiddenPart });
 
-        productionHistory.AddHistory(ProductionEditProperty.HiddenParts, editProductionAdditional.HiddenParts);
+        productionHistory.AddHistory(HistoryEditProperty.HiddenParts, editProductionAdditional.HiddenParts);
 
-        productionHistory.AddHistory(ProductionEditProperty.VideoType, editProductionAdditional.VideoType);
+        productionHistory.AddHistory(HistoryEditProperty.VideoType, editProductionAdditional.VideoType);
 
         productionHistory.Apply();
 

@@ -10,19 +10,19 @@
         <ul class="list-unstyled">
             @foreach (var history in histories)
             {
-                <li>
-                    <div class="row">
-                        <div class="col-6">@history.User.UserName</div>
-                        <div class="col-6">@history.Property</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">@history.OldValue</div>
-                        <div class="col-6">@history.NewValue</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">@Parsed(history)</div>
-                    </div>
-                </li>
+            <li>
+                <div class="row">
+                    <div class="col-6">@history.User.UserName</div>
+                    <div class="col-6">@history.Property</div>
+                </div>
+                <div class="row">
+                    <div class="col-6">@history.OldValue</div>
+                    <div class="col-6">@history.NewValue</div>
+                </div>
+                <div class="row">
+                    <div class="col-12">@Parsed(history)</div>
+                </div>
+            </li>
             }
         </ul>
     </Content>
@@ -34,14 +34,14 @@
 
     private BootstrapModal bootstrapModal;
 
-    private IEnumerable<HistoryProduction> histories = new HashSet<HistoryProduction>();
+    private IEnumerable<HistoryRecord> histories = new HashSet<HistoryRecord>();
 
     protected override async Task OnInitializedAsync()
     {
         histories = (await unitOfWork.Productions.GetHistory(Production.ProductionId)).OrderByDescending(p => p.Applied);
     }
 
-    private string Parsed(HistoryProduction history)
+    private string Parsed(HistoryRecord history)
     {
         return history.Description;
     }

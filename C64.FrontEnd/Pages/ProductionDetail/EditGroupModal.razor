@@ -84,18 +84,18 @@
     {
         //logger.LogInformation("OnValidSubmit");
 
-        //var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
-        //productionHistory.AddHistory(ProductionEditProperty.Name, editProductionGeneral.Name);
-        //productionHistory.AddHistory(ProductionEditProperty.Aka, editProductionGeneral.Aka);
-        //productionHistory.AddHistory(ProductionEditProperty.SubCategory, editProductionGeneral.SubCategory);
-        //productionHistory.AddHistory(ProductionEditProperty.Platform, editProductionGeneral.Platform);
+        //var productionHistory = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        //productionHistory.AddHistory(HistoryEditProperty.Name, editProductionGeneral.Name);
+        //productionHistory.AddHistory(HistoryEditProperty.Aka, editProductionGeneral.Aka);
+        //productionHistory.AddHistory(HistoryEditProperty.SubCategory, editProductionGeneral.SubCategory);
+        //productionHistory.AddHistory(HistoryEditProperty.Platform, editProductionGeneral.Platform);
 
-        //productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
+        //productionHistory.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
 
         //int? partyCategory = editProductionGeneral.PartyCategoryId == "0" ? null : (int?)int.Parse(editProductionGeneral.PartyCategoryId);
         //string partyCategoryName = partyCategories.FirstOrDefault(p => p.PartyCategoryId == partyCategory)?.Name;
 
-        //productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData
+        //productionHistory.AddHistory(HistoryEditProperty.Party, new PartyApplierData
         //{
         //    PartyId = editProductionGeneral.Party?.PartyId ?? 0,
         //    PartyName = editProductionGeneral.Party?.Name,
@@ -103,7 +103,7 @@
         //    CategoryName = partyCategoryName,
         //    Rank = editProductionGeneral.PartyRank
         //});
-        //productionHistory.AddHistory(ProductionEditProperty.Groups, editProductionGeneral.SelectedGroups);
+        //productionHistory.AddHistory(HistoryEditProperty.Groups, editProductionGeneral.SelectedGroups);
 
         //productionHistory.Apply();
 

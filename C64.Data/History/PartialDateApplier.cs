@@ -7,8 +7,9 @@ namespace C64.Data.History
 {
     public class PartialDateApplier : IHistoryApplier
     {
-        public void Apply(Production production, HistoryProduction historyProduction)
+        public void Apply(object entity, HistoryRecord historyProduction)
         {
+            var production = (Production)entity;
             var newValues = JsonConvert.DeserializeObject<PartialDateApplierData>(historyProduction.NewValue);
 
             var property = typeof(Production).GetProperty(historyProduction.Property);
@@ -18,8 +19,9 @@ namespace C64.Data.History
             property2.SetValue(production, newValues.Type);
         }
 
-        public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
         {
+            var production = (Production)entity;
             var newValues = (PartialDateApplierData)newValue;
 
             var oldValues = new PartialDateApplierData();
@@ -44,9 +46,10 @@ namespace C64.Data.History
             else
                 description = $"Release date changed from '{oldValues.Date.ParseDate(oldValues.Type)}' to '{newValues.Date.ParseDate(newValues.Type)}'";
 
-            var dbhistory = new HistoryProduction
+            var dbhistory = new HistoryRecord
             {
-                AffectedId = production.ProductionId,
+                AffectedProductionId = production.ProductionId,
+                AffectedEntity = historyEntity,
                 Property = propertyName,
                 NewValue = newValues == null ? null : JsonConvert.SerializeObject(newValues),
                 OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValues),

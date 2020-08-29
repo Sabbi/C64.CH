@@ -7,8 +7,9 @@ namespace C64.Data.History
 {
     public class ProductionCreditsApplier : IHistoryApplier
     {
-        public void Apply(Production production, HistoryProduction historyProduction)
+        public void Apply(object entity, HistoryRecord historyProduction)
         {
+            var production = (Production)entity;
             var newValues = JsonConvert.DeserializeObject<List<EditCredit>>(historyProduction.NewValue);
 
             foreach (var newValue in newValues)
@@ -23,16 +24,17 @@ namespace C64.Data.History
             }
         }
 
-        public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
         {
+            var production = (Production)entity;
             var oldValues = new List<EditCredit>();
 
             foreach (var productionCredit in production.ProductionCredits)
                 oldValues.Add(new EditCredit { Id = productionCredit.ProductionCreditId, Added = false, Deleted = false, Credit = productionCredit.Credit, ScenerId = productionCredit.ScenerId, ScenerHandle = productionCredit.Scener.HandleWithGroups() });
 
-            var dbhistory = new HistoryProduction
+            var dbhistory = new HistoryRecord
             {
-                AffectedId = production.ProductionId,
+                AffectedProductionId = production.ProductionId,
                 Property = "ProductionCredits",
                 NewValue = JsonConvert.SerializeObject(newValue),
                 OldValue = JsonConvert.SerializeObject(oldValues),

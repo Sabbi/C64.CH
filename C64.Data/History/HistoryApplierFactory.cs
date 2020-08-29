@@ -4,35 +4,35 @@ namespace C64.Data.History
 {
     public static class HistoryApplierFactory
     {
-        public static IHistoryApplier Get(ProductionEditProperty editProperty)
+        public static IHistoryApplier Get(HistoryEditProperty editProperty)
         {
             switch (editProperty)
             {
-                case ProductionEditProperty.Party:
+                case HistoryEditProperty.Party:
                     return new PartyApplier();
 
-                case ProductionEditProperty.Groups:
+                case HistoryEditProperty.Groups:
                     return new GroupsApplier();
 
-                case ProductionEditProperty.ReleaseDate:
+                case HistoryEditProperty.ReleaseDate:
                     return new PartialDateApplier();
 
-                case ProductionEditProperty.HiddenParts:
+                case HistoryEditProperty.HiddenParts:
                     return new HiddenPartsApplier();
 
-                case ProductionEditProperty.ProductionVideos:
+                case HistoryEditProperty.ProductionVideos:
                     return new VideoApplier();
 
-                case ProductionEditProperty.ProductionPictures:
+                case HistoryEditProperty.ProductionPictures:
                     return new ProductionPicturesApplier();
 
-                case ProductionEditProperty.ProductionFiles:
+                case HistoryEditProperty.ProductionFiles:
                     return new ProductionFilesApplier();
 
-                case ProductionEditProperty.AddProduction:
+                case HistoryEditProperty.AddProduction:
                     return new AddProductionApplier();
 
-                case ProductionEditProperty.ProductionCredits:
+                case HistoryEditProperty.ProductionCredits:
                     return new ProductionCreditsApplier();
 
                 default:
@@ -42,7 +42,7 @@ namespace C64.Data.History
 
         public static IHistoryApplier Get(string editProperty)
         {
-            var editPropertyEnum = (ProductionEditProperty)Enum.Parse(typeof(ProductionEditProperty), editProperty);
+            var editPropertyEnum = (HistoryEditProperty)Enum.Parse(typeof(HistoryEditProperty), editProperty);
             return Get(editPropertyEnum);
         }
     }

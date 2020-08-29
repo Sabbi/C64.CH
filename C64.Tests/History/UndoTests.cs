@@ -11,13 +11,13 @@ namespace C64.Tests.History
     public class UndoTests
     {
         private Mock<IUnitOfWork> unitOfWorkMock;
-        private List<HistoryProduction> addedHistoriesMock = new List<HistoryProduction>();
+        private List<HistoryRecord> addedHistoriesMock = new List<HistoryRecord>();
 
         public UndoTests()
         {
             unitOfWorkMock = new Mock<IUnitOfWork>();
-            var addedHistory = new HistoryProduction();
-            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryProduction>())).Callback<HistoryProduction>(p => addedHistoriesMock.Add(p));
+            var addedHistory = new HistoryRecord();
+            unitOfWorkMock.Setup(p => p.Productions.AddHistory(It.IsAny<HistoryRecord>())).Callback<HistoryRecord>(p => addedHistoriesMock.Add(p));
         }
 
         [Fact]
@@ -25,14 +25,14 @@ namespace C64.Tests.History
         {
             var production = new Production { Name = "OldName", Aka = null };
 
-            var doHistoryHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, production, "1", "127.0.0.0");
-            doHistoryHandler.AddHistory(ProductionEditProperty.Name, "NewName");
-            doHistoryHandler.AddHistory(ProductionEditProperty.Aka, "NewAka");
+            var doHistoryHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+            doHistoryHandler.AddHistory(HistoryEditProperty.Name, "NewName");
+            doHistoryHandler.AddHistory(HistoryEditProperty.Aka, "NewAka");
             doHistoryHandler.Apply();
 
             Assert.Equal("NewName", production.Name);
 
-            var undoHistoryHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, production, "1", "127.0.0.0");
+            var undoHistoryHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
             undoHistoryHandler.Undo(addedHistoriesMock);
             undoHistoryHandler.Apply();
 
@@ -45,18 +45,18 @@ namespace C64.Tests.History
         {
             var production = new Production { Name = "OldName" };
 
-            var doHistoryHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, production, "1", "127.0.0.0");
-            doHistoryHandler.AddHistory(ProductionEditProperty.Name, "NewName1");
+            var doHistoryHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+            doHistoryHandler.AddHistory(HistoryEditProperty.Name, "NewName1");
             doHistoryHandler.Apply();
 
             Assert.Equal("NewName1", production.Name);
 
-            doHistoryHandler.AddHistory(ProductionEditProperty.Name, "NewName2");
+            doHistoryHandler.AddHistory(HistoryEditProperty.Name, "NewName2");
             doHistoryHandler.Apply();
 
             Assert.Equal("NewName2", production.Name);
 
-            var undoHistoryHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, production, "1", "127.0.0.0");
+            var undoHistoryHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
             undoHistoryHandler.Undo(addedHistoriesMock);
             undoHistoryHandler.Apply();
 
@@ -69,14 +69,14 @@ namespace C64.Tests.History
         {
             var production = new Production { ReleaseDate = new DateTime(2000, 1, 1), ReleaseDateType = DateType.Year };
 
-            var doHistoryHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, production, "1", "127.0.0.0");
-            doHistoryHandler.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = new DateTime(2001, 2, 3), Type = DateType.YearMonthDay });
+            var doHistoryHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+            doHistoryHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData { Date = new DateTime(2001, 2, 3), Type = DateType.YearMonthDay });
             doHistoryHandler.Apply();
 
             Assert.Equal(new DateTime(2001, 2, 3), production.ReleaseDate);
             Assert.Equal(DateType.YearMonthDay, production.ReleaseDateType);
 
-            var undoHistoryHandler = new ProductionHistoryHandler(unitOfWorkMock.Object, production, "1", "127.0.0.0");
+            var undoHistoryHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
             undoHistoryHandler.Undo(addedHistoriesMock);
             undoHistoryHandler.Apply();
 

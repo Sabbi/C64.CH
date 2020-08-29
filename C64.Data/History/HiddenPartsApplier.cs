@@ -8,8 +8,9 @@ namespace C64.Data.History
 {
     public class HiddenPartsApplier : IHistoryApplier
     {
-        public void Apply(Production production, HistoryProduction historyProduction)
+        public void Apply(object entity, HistoryRecord historyProduction)
         {
+            var production = (Production)entity;
             var newValues = JsonConvert.DeserializeObject<Dictionary<int, string>>(historyProduction.NewValue);
 
             production.HiddenParts.Clear();
@@ -21,8 +22,9 @@ namespace C64.Data.History
                 production.HiddenParts.Add(new HiddenPart { HiddenPartId = newValue.Key, Description = newValue.Value });
         }
 
-        public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
         {
+            var production = (Production)entity;
             var newParts = (List<HiddenPart>)newValue;
 
             var oldParts = production.HiddenParts;
@@ -66,9 +68,10 @@ namespace C64.Data.History
                     description = "Hiddenparts updated";
             }
 
-            var dbhistory = new HistoryProduction
+            var dbhistory = new HistoryRecord
             {
-                AffectedId = production.ProductionId,
+                AffectedProductionId = production.ProductionId,
+                AffectedEntity = historyEntity,
                 Property = "HiddenParts",
                 NewValue = newValues == null ? null : JsonConvert.SerializeObject(newValues),
                 OldValue = oldValues == null ? null : JsonConvert.SerializeObject(oldValues),

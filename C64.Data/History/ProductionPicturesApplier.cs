@@ -7,8 +7,9 @@ namespace C64.Data.History
 {
     public class ProductionPicturesApplier : IHistoryApplier
     {
-        public void Apply(Production production, HistoryProduction historyProduction)
+        public void Apply(object entity, HistoryRecord historyProduction)
         {
+            var production = (Production)entity;
             var newValues = JsonConvert.DeserializeObject<List<ProductionPicture>>(historyProduction.NewValue);
 
             production.ProductionPictures.Clear();
@@ -20,8 +21,9 @@ namespace C64.Data.History
                 production.ProductionPictures.Add(new ProductionPicture { ProductionId = newValue.ProductionId, ProductionPictureId = newValue.ProductionPictureId, Show = newValue.Show, Sort = newValue.Sort, Filename = newValue.Filename, Size = newValue.Size });
         }
 
-        public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
         {
+            var production = (Production)entity;
             var newStrippedValues = new List<ProductionPicture>();
             var oldStrippedValues = new List<ProductionPicture>();
 
@@ -31,9 +33,9 @@ namespace C64.Data.History
             foreach (var oldPicture in production.ProductionPictures)
                 oldStrippedValues.Add(new ProductionPicture { ProductionId = oldPicture.ProductionId, ProductionPictureId = oldPicture.ProductionPictureId, Show = oldPicture.Show, Sort = oldPicture.Sort, Filename = oldPicture.Filename, Size = oldPicture.Size });
 
-            var dbhistory = new HistoryProduction
+            var dbhistory = new HistoryRecord
             {
-                AffectedId = production.ProductionId,
+                AffectedProductionId = production.ProductionId,
                 Property = "ProductionPictures",
                 NewValue = newStrippedValues == null ? null : JsonConvert.SerializeObject(newStrippedValues.OrderBy(p => p.ProductionPictureId)),
                 OldValue = oldStrippedValues == null ? null : JsonConvert.SerializeObject(oldStrippedValues.OrderBy(p => p.ProductionPictureId)),
