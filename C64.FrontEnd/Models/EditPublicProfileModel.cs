@@ -1,4 +1,5 @@
 ﻿using C64.Data.Entities;
+using C64.FrontEnd.Helpers;
 using System.ComponentModel.DataAnnotations;
 
 namespace C64.FrontEnd.Models
@@ -10,7 +11,7 @@ namespace C64.FrontEnd.Models
         [MaxLength(255)]
         public string RealName { get; set; }
 
-        [Url]
+        [NotRequiredUrl]
         [MaxLength(1024)]
         public string Homepage { get; set; }
 

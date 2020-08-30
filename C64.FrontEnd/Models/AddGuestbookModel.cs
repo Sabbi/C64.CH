@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using C64.FrontEnd.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace C64.FrontEnd.Models
 {
@@ -9,11 +10,11 @@ namespace C64.FrontEnd.Models
         public string Name { get; set; }
 
         [MaxLength(255)]
-        [EmailAddress]
+        [NotRequiredEmailAddress]
         public string Email { get; set; }
 
         [MaxLength(255)]
-        [Url]
+        [NotRequiredUrl]
         public string Homepage { get; set; }
 
         [MaxLength(65535)]

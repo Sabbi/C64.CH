@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using C64.FrontEnd.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace C64.FrontEnd.Models
 {
@@ -14,10 +15,10 @@ namespace C64.FrontEnd.Models
         public PartialDate FoundedDate { get; set; }
         public PartialDate ClosedDate { get; set; }
 
-        [Url]
+        [NotRequiredUrl]
         public string Url { get; set; }
 
-        [EmailAddress]
+        [NotRequiredEmailAddress]
         public string Email { get; set; }
 
         public bool CanEditName { get; set; } = false;
