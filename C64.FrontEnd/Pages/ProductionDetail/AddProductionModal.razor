@@ -164,8 +164,8 @@
 
         await unitOfWork.Commit();
 
-        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
-        productionHistory.AddHistory(ProductionEditProperty.AddProduction, Production);
+        var productionHistory = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        productionHistory.AddHistory(HistoryEditProperty.AddProduction, Production);
         productionHistory.Apply();
 
         await unitOfWork.Commit();

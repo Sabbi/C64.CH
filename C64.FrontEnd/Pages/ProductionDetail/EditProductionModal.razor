@@ -44,7 +44,7 @@
                     <InputSelect @bind-Value="editProductionGeneral.Platform" class="form-control">
                         @foreach (var item in Enum.GetValues(typeof(Platform)))
                         {
-                            <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
+                        <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
                         }
                     </InputSelect>
                 </div>
@@ -55,7 +55,7 @@
                     <InputSelect @bind-Value="editProductionGeneral.SubCategory" class="form-control">
                         @foreach (var item in Enum.GetValues(typeof(SubCategory)))
                         {
-                            <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
+                        <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
                         }
                     </InputSelect>
                 </div>
@@ -84,24 +84,24 @@
             </div>
             @if (editProductionGeneral.Party != null)
             {
-                <div class="form-group">
-                    <label>Achieved Rank in Category (Set to 0 / leave empty if not applicable or known):</label>
-                    <div class="row">
-                        <div class="col-6">
-                            <InputNumber class="form-control" @bind-Value="@editProductionGeneral.PartyRank" placeholder="Rank" />
-                            <ValidationMessage For="@(() => editProductionGeneral.PartyRank)" />
-                        </div>
-                        <div class="col-6">
-                            <InputSelect @bind-Value="editProductionGeneral.PartyCategoryId" class="form-control">
-                                <option value="0">unknown / no competition</option>
-                                @foreach (var item in partyCategories.OrderBy(p => p.Name))
+            <div class="form-group">
+                <label>Achieved Rank in Category (Set to 0 / leave empty if not applicable or known):</label>
+                <div class="row">
+                    <div class="col-6">
+                        <InputNumber class="form-control" @bind-Value="@editProductionGeneral.PartyRank" placeholder="Rank" />
+                        <ValidationMessage For="@(() => editProductionGeneral.PartyRank)" />
+                    </div>
+                    <div class="col-6">
+                        <InputSelect @bind-Value="editProductionGeneral.PartyCategoryId" class="form-control">
+                            <option value="0">unknown / no competition</option>
+                            @foreach (var item in partyCategories.OrderBy(p => p.Name))
                                     {
-                                    <option value="@item.PartyCategoryId.ToString()">@item.Name</option>
+                            <option value="@item.PartyCategoryId.ToString()">@item.Name</option>
                                     }
-                            </InputSelect>
-                        </div>
+                        </InputSelect>
                     </div>
                 </div>
+            </div>
             }
             <button class="btn btn-primary" type="submit">Update Production</button>
         </EditForm>
@@ -145,18 +145,18 @@
     {
         logger.LogInformation("OnValidSubmit");
 
-        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
-        productionHistory.AddHistory(ProductionEditProperty.Name, editProductionGeneral.Name);
-        productionHistory.AddHistory(ProductionEditProperty.Aka, editProductionGeneral.Aka);
-        productionHistory.AddHistory(ProductionEditProperty.SubCategory, editProductionGeneral.SubCategory);
-        productionHistory.AddHistory(ProductionEditProperty.Platform, editProductionGeneral.Platform);
+        var productionHistory = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        productionHistory.AddHistory(HistoryEditProperty.Name, editProductionGeneral.Name);
+        productionHistory.AddHistory(HistoryEditProperty.Aka, editProductionGeneral.Aka);
+        productionHistory.AddHistory(HistoryEditProperty.SubCategory, editProductionGeneral.SubCategory);
+        productionHistory.AddHistory(HistoryEditProperty.Platform, editProductionGeneral.Platform);
 
-        productionHistory.AddHistory(ProductionEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
+        productionHistory.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
 
         int? partyCategory = editProductionGeneral.PartyCategoryId == "0" ? null : (int?)int.Parse(editProductionGeneral.PartyCategoryId);
         string partyCategoryName = partyCategories.FirstOrDefault(p => p.PartyCategoryId == partyCategory)?.Name;
 
-        productionHistory.AddHistory(ProductionEditProperty.Party, new PartyApplierData
+        productionHistory.AddHistory(HistoryEditProperty.Party, new PartyApplierData
         {
             PartyId = editProductionGeneral.Party?.PartyId ?? 0,
             PartyName = editProductionGeneral.Party?.Name,
@@ -164,7 +164,7 @@
             CategoryName = partyCategoryName,
             Rank = editProductionGeneral.PartyRank
         });
-        productionHistory.AddHistory(ProductionEditProperty.Groups, editProductionGeneral.SelectedGroups);
+        productionHistory.AddHistory(HistoryEditProperty.Groups, editProductionGeneral.SelectedGroups);
 
         productionHistory.Apply();
 

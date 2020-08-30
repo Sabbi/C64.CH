@@ -64,7 +64,7 @@ namespace C64.Data
 
         public virtual DbSet<DbFile> DbFiles { get; set; }
 
-        public virtual DbSet<HistoryProduction> HistoryProductions { get; set; }
+        public virtual DbSet<HistoryRecord> HistoryRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -142,14 +142,14 @@ namespace C64.Data.Repositories
             return await context.Set<Download>().Where(p => p.DownloadedOn > startFrom && allProductionFiles.Contains(p.ProductionFileId)).ToListAsync();
         }
 
-        public async Task<IEnumerable<HistoryProduction>> GetHistory(int productionId)
+        public async Task<IEnumerable<HistoryRecord>> GetHistory(int productionId)
         {
-            return await context.Set<HistoryProduction>().Where(p => p.AffectedId == productionId).Include(p => p.User).ToListAsync();
+            return await context.Set<HistoryRecord>().Where(p => p.AffectedProductionId == productionId).Include(p => p.User).ToListAsync();
         }
 
-        public void AddHistory(HistoryProduction historyProduction)
+        public void AddHistory(HistoryRecord historyProduction)
         {
-            context.Set<HistoryProduction>().Add(historyProduction);
+            context.Set<HistoryRecord>().Add(historyProduction);
         }
     }
 }

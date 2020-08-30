@@ -6,8 +6,9 @@ namespace C64.Data.History
 {
     public class PartyApplier : IHistoryApplier
     {
-        public void Apply(Production production, HistoryProduction historyProduction)
+        public void Apply(object entity, HistoryRecord historyProduction)
         {
+            var production = (Production)entity;
             var newValue = JsonConvert.DeserializeObject<PartyApplierData>(historyProduction.NewValue);
 
             if (newValue == null || newValue.PartyId == 0)
@@ -28,8 +29,9 @@ namespace C64.Data.History
                 production.ProductionsParties.Add(new ProductionsParties { PartyId = newValue.PartyId, PartyCategoryId = newValue.CategoryId, Rank = newValue.Rank });
         }
 
-        public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
         {
+            var production = (Production)entity;
             var newValues = (PartyApplierData)newValue;
 
             var oldValues = new PartyApplierData
@@ -48,9 +50,10 @@ namespace C64.Data.History
             else if (production.ProductionsParties.Any() && newValues.PartyId == 0)
                 description = "Partyinformation removed";
 
-            var dbhistory = new HistoryProduction
+            var dbhistory = new HistoryRecord
             {
-                AffectedId = production.ProductionId,
+                AffectedProductionId = production.ProductionId,
+                AffectedEntity = historyEntity,
                 Property = "Party",
                 NewValue = newValues == null ? null : JsonConvert.SerializeObject(newValues),
                 OldValue = oldValues == null ? null : JsonConvert.SerializeObject(oldValues),

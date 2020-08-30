@@ -7,8 +7,9 @@ namespace C64.Data.History
 {
     public class ProductionFilesApplier : IHistoryApplier
     {
-        public void Apply(Production production, HistoryProduction historyProduction)
+        public void Apply(object entity, HistoryRecord historyProduction)
         {
+            var production = (Production)entity;
             var newValues = JsonConvert.DeserializeObject<List<ProductionFile>>(historyProduction.NewValue);
 
             production.ProductionFiles.Clear();
@@ -20,8 +21,9 @@ namespace C64.Data.History
                 production.ProductionFiles.Add(new ProductionFile { ProductionId = newValue.ProductionId, ProductionFileId = newValue.ProductionFileId, Description = newValue.Description, Downloads = newValue.Downloads, Show = newValue.Show, Sort = newValue.Sort, Filename = newValue.Filename, Size = newValue.Size });
         }
 
-        public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
         {
+            var production = (Production)entity;
             var newStrippedValues = new List<ProductionFile>();
             var oldStrippedValues = new List<ProductionFile>();
 
@@ -31,9 +33,9 @@ namespace C64.Data.History
             foreach (var oldFile in production.ProductionFiles)
                 oldStrippedValues.Add(new ProductionFile { ProductionId = oldFile.ProductionId, Description = oldFile.Description, Downloads = oldFile.Downloads, ProductionFileId = oldFile.ProductionFileId, Show = oldFile.Show, Sort = oldFile.Sort, Filename = oldFile.Filename, Size = oldFile.Size });
 
-            var dbhistory = new HistoryProduction
+            var dbhistory = new HistoryRecord
             {
-                AffectedId = production.ProductionId,
+                AffectedProductionId = production.ProductionId,
                 Property = "ProductionFiles",
                 NewValue = newStrippedValues == null ? null : JsonConvert.SerializeObject(newStrippedValues.OrderBy(p => p.ProductionFileId)),
                 OldValue = oldStrippedValues == null ? null : JsonConvert.SerializeObject(oldStrippedValues.OrderBy(p => p.ProductionFileId)),

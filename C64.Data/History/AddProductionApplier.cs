@@ -5,16 +5,18 @@ namespace C64.Data.History
 {
     public class AddProductionApplier : IHistoryApplier
     {
-        public void Apply(Production production, HistoryProduction historyProduction)
+        public void Apply(object production, HistoryRecord historyProduction)
         {
             return;
         }
 
-        public HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyentity, object entity, object newValue, HistoryStatus status)
         {
-            var dbhistory = new HistoryProduction
+            var production = (Production)entity;
+            var dbhistory = new HistoryRecord
             {
-                AffectedId = production.ProductionId,
+                AffectedProductionId = production.ProductionId,
+                AffectedEntity = historyentity,
                 Property = "AddProduction",
                 NewValue = newValue == null ? null : JsonConvert.SerializeObject(newValue, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }),
                 OldValue = null,

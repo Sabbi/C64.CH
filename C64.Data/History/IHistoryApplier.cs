@@ -4,8 +4,8 @@ namespace C64.Data.History
 {
     public interface IHistoryApplier
     {
-        HistoryProduction CreateHistoryProduction(ProductionEditProperty property, Production production, object newValue, HistoryStatus status);
+        HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status);
 
-        void Apply(Production production, HistoryProduction historyProduction);
+        void Apply(object entity, HistoryRecord historyProduction);
     }
 }

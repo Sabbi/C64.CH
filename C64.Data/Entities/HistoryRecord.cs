@@ -3,15 +3,25 @@ using System.ComponentModel.DataAnnotations;
 
 namespace C64.Data.Entities
 {
-    public abstract class History<T>
+    public class HistoryRecord
     {
+        public int HistoryRecordId { get; set; }
+
         [Required]
         [MaxLength(36)]
         [MinLength(36)]
         public string TransactionId { get; set; }
 
-        public int AffectedId { get; set; }
-        public virtual T Affected { get; set; }
+        public HistoryEntity AffectedEntity { get; set; }
+
+        public int? AffectedProductionId { get; set; }
+        public virtual Production AffectedProduction { get; set; }
+
+        public int? AffectedGroupId { get; set; }
+        public virtual Group AffectedGroup { get; set; }
+
+        public int? AffectedScenerId { get; set; }
+        public virtual Scener AffectedScener { get; set; }
 
         public string OldValue { get; set; }
         public string NewValue { get; set; }
@@ -39,9 +49,11 @@ namespace C64.Data.Entities
         public string Description { get; set; }
     }
 
-    public class HistoryProduction : History<Production>
+    public enum HistoryEntity
     {
-        public int HistoryProductionId { get; set; }
+        Production,
+        Group,
+        Scener
     }
 
     public enum HistoryStatus

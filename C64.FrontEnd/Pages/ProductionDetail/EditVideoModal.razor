@@ -58,8 +58,8 @@
     {
         editProductionVideos.ProductionVideos.UpdateSort();
 
-        var productionHistory = new ProductionHistoryHandler(unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
-        productionHistory.AddHistory(ProductionEditProperty.ProductionVideos, editProductionVideos.ProductionVideos);
+        var productionHistory = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        productionHistory.AddHistory(HistoryEditProperty.ProductionVideos, editProductionVideos.ProductionVideos);
 
         productionHistory.Apply();
 
