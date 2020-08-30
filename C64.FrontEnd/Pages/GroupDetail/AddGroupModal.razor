@@ -1,0 +1,116 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+@inject IToastService toastService
+
+<BootstrapModal @ref="bootstrapModal" Title="Add new group" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <EditForm Model="editGroup" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label>
+                    Group name:
+                </label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Name" />
+                    <ValidationMessage For="@(() => editGroup.Name)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Aka (also known as):</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Aka" />
+                    <ValidationMessage For="@(() => editGroup.Aka)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Founded on:</label>
+                <div>
+                    <InputPartialDate @bind-Value="@editGroup.FoundedDate" StartingYear="1982" EndingYear="DateTime.Now.Year" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Closed on:</label>
+                <div>
+                    <InputPartialDate @bind-Value="@editGroup.ClosedDate" StartingYear="1982" EndingYear="DateTime.Now.Year" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Url / Homepage:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Url" />
+                    <ValidationMessage For="@(() => editGroup.Url)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email / Contact:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Email" />
+                    <ValidationMessage For="@(() => editGroup.Email)" />
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Add Group</button>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Group Group { get; set; }
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private EditGroup editGroup = new EditGroup();
+
+    private async Task OnValidSubmit()
+    {
+
+        Group.Name = editGroup.Name;
+        Group.Aka = editGroup.Aka;
+        Group.FoundedDate = editGroup.FoundedDate.Date;
+        Group.FoundedDateType = editGroup.FoundedDate.Type;
+        Group.ClosedDate = editGroup.ClosedDate.Date;
+        Group.ClosedDateType = editGroup.ClosedDate.Type;
+        Group.Url = editGroup.Url;
+        Group.Email = editGroup.Email;
+
+        Group.AddedById = httpContext.HttpContext.GetUserId();
+        Group.Added = DateTime.Now;
+
+        unitOfWork.Groups.Add(Group);
+
+        await unitOfWork.Commit();
+
+        var groupHistory = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWork, Group, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        groupHistory.AddHistory(HistoryEditProperty.AddGroup, Group);
+        groupHistory.Apply();
+
+        await unitOfWork.Commit();
+
+        await OnClosed.InvokeAsync(null);
+
+        await bootstrapModal.Close();
+    }
+
+    protected override void OnInitialized()
+    {
+        editGroup.Name = Group.Name;
+        editGroup.Aka = Group.Aka;
+        editGroup.Description = Group.Description;
+        editGroup.Email = Group.Email;
+        editGroup.Url = Group.Url;
+        editGroup.FoundedDate = new PartialDate(Group.FoundedDate, Group.FoundedDateType);
+        editGroup.ClosedDate = new PartialDate(Group.ClosedDate, Group.ClosedDateType);
+    }
+}

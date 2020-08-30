@@ -37,6 +37,9 @@ namespace C64.Data.History
                 case HistoryEditProperty.ProductionCredits:
                     return new ProductionCreditsApplier();
 
+                case HistoryEditProperty.AddGroup:
+                    return new AddGroupApplier();
+
                 default:
                     return new GenericHistoryApplier();
             }

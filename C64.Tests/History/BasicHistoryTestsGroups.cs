@@ -22,6 +22,19 @@ namespace C64.Tests.History
         }
 
         [Fact]
+        public void AddGroup()
+        {
+            var group = new Group { GroupId = 1, Name = "NewGroup" };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWorkMock.Object, group, "1", "127.0.0.0");
+
+            historyHandler.AddHistory(HistoryEditProperty.AddGroup, group);
+            historyHandler.Apply();
+
+            Assert.Equal(HistoryEntity.Group, addedHistoriesMock.FirstOrDefault().AffectedEntity);
+        }
+
+        [Fact]
         public void ChangeGroupName()
         {
             var group = new Group { GroupId = 1, Name = "OldName" };

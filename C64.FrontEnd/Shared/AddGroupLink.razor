@@ -1,0 +1,25 @@
+﻿@inject IModalService Modal
+@inject IUnitOfWork unitOfWork
+@inject IToastService toastService
+
+<a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddGroupModal" @onclick:preventDefault>
+    @Content
+</a>
+
+@code{
+    [Parameter]
+    public RenderFragment Content { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private async Task OpenAddGroupModal()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(EditGroupModal.Group), new Group());
+        parameters.Add(nameof(EditGroupModal.unitOfWork), unitOfWork);
+        var reference = Modal.Show<AddGroupModal>("", parameters);
+        await reference.Result;
+        toastService.ShowSuccess($"Group added");
+    }
+}
