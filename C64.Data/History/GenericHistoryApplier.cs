@@ -150,8 +150,20 @@ namespace C64.Data.History
                 case HistoryEditProperty.VideoType:
                     return $"Videotype changed from '{production.VideoType}' to '{newValue}'";
 
+                case HistoryEditProperty.Email:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Email removed";
+
+                    return $"Email changed to '{newValue}'";
+
+                case HistoryEditProperty.Url:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Url removed";
+
+                    return $"Url changed to '{newValue}'";
+
                 default:
-                    return "Not Implemented";
+                    throw new NotImplementedException($"Description for {property} lacks implementation");
             }
         }
     }

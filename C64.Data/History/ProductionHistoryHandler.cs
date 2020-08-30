@@ -39,6 +39,8 @@ namespace C64.Data.History
             if (dbhistory.NewValue == dbhistory.OldValue)
                 return;
 
+            dbhistory.AffectedProductionId = production.ProductionId;
+            dbhistory.AffectedGroupId = null;
             dbhistory.UserId = userId;
             dbhistory.IpAdress = userIp;
 
@@ -71,7 +73,10 @@ namespace C64.Data.History
             {
                 history.Add(new HistoryRecord
                 {
+                    AffectedEntity = toUndo.AffectedEntity,
                     AffectedProductionId = toUndo.AffectedProductionId,
+                    AffectedGroupId = toUndo.AffectedGroupId,
+                    AffectedScenerId = toUndo.AffectedScenerId,
                     Applied = DateTime.Now,
                     NewValue = toUndo.OldValue,
                     OldValue = toUndo.NewValue,
@@ -112,6 +117,8 @@ namespace C64.Data.History
             if (dbhistory.NewValue == dbhistory.OldValue)
                 return;
 
+            dbhistory.AffectedProductionId = null;
+            dbhistory.AffectedGroupId = group.GroupId;
             dbhistory.UserId = userId;
             dbhistory.IpAdress = userIp;
 
@@ -144,7 +151,10 @@ namespace C64.Data.History
             {
                 history.Add(new HistoryRecord
                 {
+                    AffectedEntity = toUndo.AffectedEntity,
+                    AffectedProductionId = toUndo.AffectedProductionId,
                     AffectedGroupId = toUndo.AffectedGroupId,
+                    AffectedScenerId = toUndo.AffectedScenerId,
                     Applied = DateTime.Now,
                     NewValue = toUndo.OldValue,
                     OldValue = toUndo.NewValue,
@@ -179,8 +189,10 @@ namespace C64.Data.History
         ProductionCredits,
 
         // Groups,
-        FoundedDate,
 
-        ClosedDate
+        FoundedDate,
+        ClosedDate,
+        Url,
+        Email
     }
 }

@@ -90,40 +90,15 @@
         groupHistory.AddHistory(HistoryEditProperty.Aka, editGroup.Aka);
         groupHistory.AddHistory(HistoryEditProperty.FoundedDate, new PartialDateApplierData { Date = editGroup.FoundedDate.Date, Type = editGroup.FoundedDate.Type });
         groupHistory.AddHistory(HistoryEditProperty.ClosedDate, new PartialDateApplierData { Date = editGroup.ClosedDate.Date, Type = editGroup.ClosedDate.Type });
-
+        groupHistory.AddHistory(HistoryEditProperty.Url, editGroup.Url);
+        groupHistory.AddHistory(HistoryEditProperty.Email, editGroup.Email);
         groupHistory.Apply();
 
         await unitOfWork.Commit();
 
-        //var productionHistory = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
-        //productionHistory.AddHistory(HistoryEditProperty.Name, editProductionGeneral.Name);
-        //productionHistory.AddHistory(HistoryEditProperty.Aka, editProductionGeneral.Aka);
-        //productionHistory.AddHistory(HistoryEditProperty.SubCategory, editProductionGeneral.SubCategory);
-        //productionHistory.AddHistory(HistoryEditProperty.Platform, editProductionGeneral.Platform);
-
-        //productionHistory.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData { Date = editProductionGeneral.ReleasedOn.Date, Type = editProductionGeneral.ReleasedOn.Type });
-
-        //int? partyCategory = editProductionGeneral.PartyCategoryId == "0" ? null : (int?)int.Parse(editProductionGeneral.PartyCategoryId);
-        //string partyCategoryName = partyCategories.FirstOrDefault(p => p.PartyCategoryId == partyCategory)?.Name;
-
-        //productionHistory.AddHistory(HistoryEditProperty.Party, new PartyApplierData
-        //{
-        //    PartyId = editProductionGeneral.Party?.PartyId ?? 0,
-        //    PartyName = editProductionGeneral.Party?.Name,
-        //    CategoryId = partyCategory,
-        //    CategoryName = partyCategoryName,
-        //    Rank = editProductionGeneral.PartyRank
-        //});
-        //productionHistory.AddHistory(HistoryEditProperty.Groups, editProductionGeneral.SelectedGroups);
-
-        //productionHistory.Apply();
-
-        //await unitOfWork.Commit();
-
         await OnClosed.InvokeAsync(null);
 
         await bootstrapModal.Close();
-
     }
 
     protected override void OnInitialized()

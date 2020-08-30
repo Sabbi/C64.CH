@@ -74,6 +74,8 @@ namespace C64.Tests.History
             Assert.Equal("TestProduction", JsonConvert.DeserializeObject<string>(addedHistoriesMock.FirstOrDefault().OldValue));
             Assert.Equal("NewName", JsonConvert.DeserializeObject<string>(addedHistoriesMock.FirstOrDefault().NewValue));
             Assert.Equal("NewName", productionUnderTest.Name);
+            Assert.Null(addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedProductionId);
         }
 
         [Fact]
@@ -85,6 +87,8 @@ namespace C64.Tests.History
             historyHandler.Apply();
 
             Assert.Equal("NewAka", productionUnderTest.Aka);
+            Assert.Null(addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedProductionId);
         }
 
         [Fact]
@@ -98,6 +102,8 @@ namespace C64.Tests.History
             Assert.Single(addedHistoriesMock);
             Assert.Equal(new DateTime(1980, 1, 1), productionUnderTest.ReleaseDate);
             Assert.Equal(DateType.Year, productionUnderTest.ReleaseDateType);
+            Assert.Null(addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedProductionId);
         }
 
         [Fact]
