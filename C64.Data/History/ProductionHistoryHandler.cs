@@ -193,6 +193,7 @@ namespace C64.Data.History
         FoundedDate,
         ClosedDate,
         Url,
-        Email
+        Email,
+        AddGroup,
     }
 }
