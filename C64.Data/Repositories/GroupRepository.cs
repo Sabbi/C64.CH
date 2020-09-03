@@ -18,6 +18,16 @@ namespace C64.Data.Repositories
             return context.Set<Group>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Production).FirstOrDefaultAsync(p => p.GroupId == groupId);
         }
 
+        public async Task<Group> GetDetails(int groupId)
+        {
+            var group = await GetWithProductions(groupId);
+
+            var members = await context.Set<ScenersGroups>().Include(p => p.Scener).Where(p => p.GroupId == groupId).ToListAsync();
+            group.ScenerGroups = members;
+
+            return group;
+        }
+
         public void UpdateGroupStats()
         {
             var sw = new Stopwatch();
