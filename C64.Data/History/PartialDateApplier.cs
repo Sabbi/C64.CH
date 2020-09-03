@@ -24,26 +24,15 @@ namespace C64.Data.History
             }
         }
 
-        private void Apply(Production production, HistoryRecord historyRecord)
+        private void Apply<T>(T entity, HistoryRecord historyRecord)
         {
             var newValues = JsonConvert.DeserializeObject<PartialDateApplierData>(historyRecord.NewValue);
 
-            var property = typeof(Production).GetProperty(historyRecord.Property);
-            property.SetValue(production, newValues.Date);
+            var property = typeof(T).GetProperty(historyRecord.Property);
+            property.SetValue(entity, newValues.Date);
 
-            var property2 = typeof(Production).GetProperty(historyRecord.Property + "Type");
-            property2.SetValue(production, newValues.Type);
-        }
-
-        private void Apply(Group group, HistoryRecord historyRecord)
-        {
-            var newValues = JsonConvert.DeserializeObject<PartialDateApplierData>(historyRecord.NewValue);
-
-            var property = typeof(Group).GetProperty(historyRecord.Property);
-            property.SetValue(group, newValues.Date);
-
-            var property2 = typeof(Group).GetProperty(historyRecord.Property + "Type");
-            property2.SetValue(group, newValues.Type);
+            var property2 = typeof(T).GetProperty(historyRecord.Property + "Type");
+            property2.SetValue(entity, newValues.Type);
         }
 
         public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
