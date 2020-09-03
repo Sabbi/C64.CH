@@ -110,6 +110,10 @@ function ResetProdEditSelect() {
     prodEditSelect.selectedIndex = 0
 }
 
+function ResetGroupEditSelect() {
+    groupEditSelect.selectedIndex = 0
+}
+
 window.scrollToElementId = (elementId) => {
     console.info('scrolling to element', elementId);
     var element = document.getElementById(elementId);
