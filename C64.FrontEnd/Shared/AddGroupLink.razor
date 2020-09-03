@@ -19,7 +19,9 @@
         parameters.Add(nameof(EditGroupModal.Group), new Group());
         parameters.Add(nameof(EditGroupModal.unitOfWork), unitOfWork);
         var reference = Modal.Show<AddGroupModal>("", parameters);
-        await reference.Result;
-        toastService.ShowSuccess($"Group added");
+        var result = await reference.Result;
+
+        if (!result.Cancelled)
+            toastService.ShowSuccess($"Group added");
     }
 }
