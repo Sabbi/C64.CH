@@ -11,5 +11,13 @@
             text = System.Text.RegularExpressions.Regex.Replace(text, @"\s", "_"); // //Replace spaces by dashes
             return System.Web.HttpUtility.UrlEncode(text);
         }
+
+        public static string ValueOrNa(this string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return "n/a";
+
+            return text;
+        }
     }
 }

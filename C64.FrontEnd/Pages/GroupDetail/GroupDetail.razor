@@ -1,0 +1,114 @@
+﻿@page "/groups/{GroupId:int}"
+@page "/groups/{GroupId:int}/{GroupName}"
+
+@using Microsoft.Extensions.DependencyInjection
+@inherits OwningComponentBase
+
+@implements IDisposable
+
+@inject ILogger<GroupDetail> logger
+@inject NavigationManager navigationManager
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IModalService Modal
+@inject IToastService toastService
+
+@if (group != null)
+{
+    <Box>
+        <Title>Details of @group.Name</Title>
+        <Content>
+            <table class="table table-prod-list">
+                <tr><th>Name:</th><td>@group.Name</td></tr>
+                @if (!string.IsNullOrEmpty(group.Aka))
+                {
+                    <tr><th>Aka</th><td>@group.Aka</td></tr>
+                }
+                <tr><th>Founded</th><td><PartialDateDisplay DateType="@group.FoundedDateType" DateValue="@group.FoundedDate" /></td></tr>
+                <tr><th>Closed</th><td><PartialDateDisplay DateType="@group.ClosedDateType" DateValue="@group.ClosedDate" /></td></tr>
+                <tr><th>Homepage</th><td>@group.Url.ValueOrNa()</td></tr>
+                <tr><th>Email</th><td>@group.Email.ValueOrNa()</td></tr>
+                <tr><th>Releases</th><td>@group.NumberOfReleases</td></tr>
+                @if (group.AverageRating > 0)
+                {
+                    <tr><th>Average Rating</th><td>@(group.AverageRating.ToString("#.00")) (with @group.NumberOfRatings.ToString("N0") ratings)</td></tr>
+                }
+                <tr><th>Downloads</th><td>@group.Downloads.ToString("N0")</td></tr>
+            </table>
+
+            @if (group.ScenerGroups.Any())
+            {
+                <h5>Members:</h5>
+                <table class="table table-prod-list">
+                    <tr><th>Handle</th><th>Jobs</th><th>Joined</th><th>Left</th></tr>
+                    @foreach (var scenergroup in group.ScenerGroups)
+                    {
+                        <tr>
+                            <td>@scenergroup.Scener.Handle</td>
+                            <td>Jobs*</td>
+                            <td><PartialDateDisplay DateValue="@scenergroup.ValidFrom" DateType="@scenergroup.ValidFromType" /></td>
+                            <td><PartialDateDisplay DateValue="@scenergroup.ValidTo" DateType="@scenergroup.ValidToType" /></td>
+                        </tr>
+
+                    }
+                </table>
+            }
+
+            @if (productionIds != null)
+            {
+                <h5>Productions:</h5>
+                <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" />
+            }
+        </Content>
+    </Box>
+}
+
+@code {
+
+    [Parameter]
+    public int GroupId { get; set; }
+
+    // Fake, only for nicer URL.
+    [Parameter]
+    public string GroupName { get; set; }
+
+    private IUnitOfWork unitOfWork;
+
+    private Group group;
+
+    private string baseUrl => $"groups/{GroupId}/{GroupName}";
+    private IEnumerable<int> productionIds;
+
+    protected override async Task OnInitializedAsync()
+    {
+        navigationManager.LocationChanged += OnLocationChanged;
+        await LoadGroup(GroupId);
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        //await LoadGroup(GroupId);
+    }
+
+    private async Task LoadGroup(int id)
+    {
+        var sw = new System.Diagnostics.Stopwatch();
+        sw.Start();
+
+        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+
+        group = await unitOfWork.Groups.GetDetails(GroupId);
+
+        productionIds = group.ProductionsGroups.Select(p => p.ProductionId);
+
+        sw.Stop();
+
+        logger.LogInformation("Loaded group {name} in {milliseconds}ms", group.Name, sw.ElapsedMilliseconds);
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        navigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
