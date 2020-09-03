@@ -7,7 +7,6 @@
 @implements IDisposable
 
 @inject ILogger<GroupDetail> logger
-@inject NavigationManager navigationManager
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IModalService Modal
 @inject IToastService toastService
@@ -48,7 +47,6 @@
                             <td><PartialDateDisplay DateValue="@scenergroup.ValidFrom" DateType="@scenergroup.ValidFromType" /></td>
                             <td><PartialDateDisplay DateValue="@scenergroup.ValidTo" DateType="@scenergroup.ValidToType" /></td>
                         </tr>
-
                     }
                 </table>
             }
@@ -80,13 +78,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        navigationManager.LocationChanged += OnLocationChanged;
         await LoadGroup(GroupId);
-    }
-
-    private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
-    {
-        //await LoadGroup(GroupId);
     }
 
     private async Task LoadGroup(int id)
@@ -105,10 +97,5 @@
         logger.LogInformation("Loaded group {name} in {milliseconds}ms", group.Name, sw.ElapsedMilliseconds);
 
         StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        navigationManager.LocationChanged -= OnLocationChanged;
     }
 }
