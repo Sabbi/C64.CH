@@ -59,11 +59,10 @@ namespace C64.FrontEnd.Extensions
             {
                 var span = DateTime.Now.Subtract(result);
 
-                if (span > minimumInterval)
-                    return true;
+                if (span < minimumInterval)
+                    return false;
             }
-
-            return false;
+            return true;
         }
     }
 }
