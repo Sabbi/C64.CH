@@ -227,6 +227,12 @@
 
     private async Task SetFavorite(bool value)
     {
+        if (httpContext.HttpContext.GetUserId() == null)
+        {
+            Modal.Show<LoginModal>();
+            return;
+        }
+
         isFavorite = value;
 
         unitOfWork.Users.SetFavorite(httpContext.HttpContext.GetUserId(), production.ProductionId, value);
