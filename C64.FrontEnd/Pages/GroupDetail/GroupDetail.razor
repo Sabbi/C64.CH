@@ -54,7 +54,12 @@
                     {
                         <tr>
                             <td>@scenergroup.Scener.Handle</td>
-                            <td>Jobs*</td>
+                            <td>
+                                @if (scenergroup.ScenerGroupJobs.Any())
+                                {
+                                    @string.Join(", ", scenergroup.ScenerGroupJobs.Select(p => p.Job))
+                                }
+                            </td>
                             <td><PartialDateDisplay DateValue="@scenergroup.ValidFrom" DateType="@scenergroup.ValidFromType" /></td>
                             <td><PartialDateDisplay DateValue="@scenergroup.ValidTo" DateType="@scenergroup.ValidToType" /></td>
                         </tr>
