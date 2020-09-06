@@ -28,9 +28,9 @@ namespace C64.Data.Entities
 
             sb.Append(Handle);
 
-            if (ScenersGroups.Any())
+            if (ScenersGroups.Any(p => p.Currently))
             {
-                sb.Append(" of " + string.Join(",", ScenersGroups.Select(p => p.Group?.Name)));
+                sb.Append(" of " + string.Join(",", ScenersGroups.Where(p => p.Currently).Select(p => p.Group?.Name)));
             }
 
             return sb.ToString();
