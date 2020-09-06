@@ -138,5 +138,28 @@ namespace C64.Tests.History
             Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
             Assert.Null(addedHistoriesMock.FirstOrDefault().AffectedProductionId);
         }
+
+        [Fact]
+        public void AddGroupMember()
+        {
+            var group = new Group { GroupId = 1 };
+
+            var addGroupMember = new AddGroupMember()
+            {
+                Scener = new Scener { ScenerId = 2, Handle = "TestHandle" },
+                JoinedDate = DateTime.Now,
+                JoinedDateType = DateType.YearMonthDay,
+                LeftDate = DateTime.Now,
+                LeftDateType = DateType.YearMonthDay,
+                SelectedJobs = new[] { Job.Coder, Job.Musician }
+            };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWorkMock.Object, group, "1", "127.0.0.1");
+            historyHandler.AddHistory(HistoryEditProperty.AddGroupMember, addGroupMember);
+            historyHandler.Apply();
+
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+            Assert.True(group.ScenerGroups.Any());
+        }
     }
 }
