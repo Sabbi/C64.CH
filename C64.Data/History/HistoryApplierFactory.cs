@@ -43,6 +43,9 @@ namespace C64.Data.History
                 case HistoryEditProperty.AddGroupMember:
                     return new AddGroupMemberApplier();
 
+                case HistoryEditProperty.EditGroupMember:
+                    return new EditGroupMemberApplier();
+
                 default:
                     return new GenericHistoryApplier();
             }

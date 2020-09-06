@@ -151,5 +151,6 @@ namespace C64.Data.History
         Email,
         AddGroup,
         AddGroupMember,
+        EditGroupMember,
     }
 }

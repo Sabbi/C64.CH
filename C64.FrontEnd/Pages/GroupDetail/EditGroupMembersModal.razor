@@ -3,30 +3,32 @@
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger;
 
-<BootstrapModal @ref="bootstrapModal" Title="@($"Add Member to {Group.Name}")" Size="BootstrapModal.ModalSize.Large">
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit Members of {Group.Name}")" Size="BootstrapModal.ModalSize.Large">
     <Content>
         <EditForm Model="addGroupMemberModel" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <div class="row">
                     <div class="col-4">
-                        Scener*:
+                        Member:
                     </div>
                     <div class="col-8">
-                        <BlazoredTypeahead TValue="Scener" TItem="Scener" ValueExpression="@(() => Scener)" Value="@Scener" ValueChanged="OnValueChanged" SearchMethod="SearchScener">
-                            <SelectedTemplate Context="scener">
-                                @scener.HandleWithGroups()
-                            </SelectedTemplate>
-                            <ResultTemplate Context="scener">
-                                @scener.ScenerId (@scener.HandleWithGroups())
-                            </ResultTemplate>
-                            <NotFoundTemplate>
-                                Scener not found
-                            </NotFoundTemplate>
-                        </BlazoredTypeahead>
+                        @if (Group.ScenerGroups.Any())
+                        {
+                            <select @onchange="OnSelectMember" class="form-control">
+                                <option value="0">Select scener:</option>
+                                @foreach (var member in Group.ScenerGroups.Select(p => p.Scener))
+                                {
+                                    <option value="@member.ScenerId">@member.Handle</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <p>This group does not have any members yet, please add them first</p>
+                        }
                     </div>
                 </div>
-                * Sceners already assigned to this group do not show up anymore
             </div>
             @if (!disabled)
             {
@@ -68,11 +70,11 @@
             }
             @if (!disabled)
             {
-                <button class="btn btn-primary" type="submit">Add as Member</button>
+                <button class="btn btn-primary" type="submit">Update Member</button>
             }
-        <div class="float-right">
-            <button class="btn btn-warning" type="button" @onclick="(() => bootstrapModal.Cancel())">Cancel</button>
-        </div>
+            <div class="float-right">
+                <button class="btn btn-warning" type="button" @onclick="(() => bootstrapModal.Cancel())">Cancel</button>
+            </div>
         </EditForm>
     </Content>
 </BootstrapModal>
@@ -87,8 +89,7 @@
     [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
-    [Parameter]
-    public Scener Scener { get; set; } = new Scener();
+    private int selectedScenerId;
 
     private bool disabled = true;
 
@@ -96,11 +97,21 @@
 
     private AddGroupMemberModel addGroupMemberModel = new AddGroupMemberModel();
 
-    private void OnValueChanged(Scener selectedScener)
+    private void OnSelectMember(ChangeEventArgs e)
     {
-        Scener = selectedScener;
-        addGroupMemberModel.Scener = selectedScener;
-        disabled = Scener == null;
+        selectedScenerId = int.Parse(e.Value.ToString());
+        disabled = selectedScenerId == 0;
+
+        if (selectedScenerId > 0)
+        {
+            var selectedScener = Group.ScenerGroups.FirstOrDefault(p => p.ScenerId == selectedScenerId);
+            addGroupMemberModel.Joined = new PartialDate(selectedScener.ValidFrom, selectedScener.ValidFromType);
+            addGroupMemberModel.Left = new PartialDate(selectedScener.ValidTo, selectedScener.ValidToType);
+            addGroupMemberModel.Scener = selectedScener.Scener;
+            addGroupMemberModel.SelectedJobs = selectedScener.ScenerGroupJobs.Select(p => p.Job).ToList();
+        }
+
+        return;
     }
 
     private void OnSelectJob(ChangeEventArgs e)
@@ -119,22 +130,11 @@
         addGroupMemberModel.SelectedJobs.Remove(job);
     }
 
-    private async Task<IEnumerable<Scener>> SearchScener(string searchText)
-    {
-        var sceners = (await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText, StringComparison.OrdinalIgnoreCase))).ToList();
-
-        // TODO: Linqify
-        foreach (var inGroup in Group.ScenerGroups.Select(p => p.Scener))
-            sceners.Remove(inGroup);
-
-        return sceners;
-    }
-
     private async Task OnValidSubmit()
     {
         var groupHistory = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWork, Group, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
 
-        var addGroupMember = new AddGroupMember
+        var editGroupMember = new AddGroupMember
         {
             Scener = addGroupMemberModel.Scener,
             SelectedJobs = addGroupMemberModel.SelectedJobs,
@@ -144,7 +144,7 @@
             LeftDateType = addGroupMemberModel.Left.Type
         };
 
-        groupHistory.AddHistory(HistoryEditProperty.AddGroupMember, addGroupMember);
+        groupHistory.AddHistory(HistoryEditProperty.EditGroupMember, editGroupMember);
 
         groupHistory.Apply();
 

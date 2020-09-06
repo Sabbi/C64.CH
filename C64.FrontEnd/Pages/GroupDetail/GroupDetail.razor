@@ -21,7 +21,8 @@
                 <select class="form-control d-inline" id="groupEditSelect" @onchange="OnSelectEdit">
                     <option value="0">Edit Group</option>
                     <option value="general">- General</option>
-                    <option value="addmember">- Add Members</option>
+                    <option value="addmember">- Add Member</option>
+                    <option value="editmember">- Edit Members</option>
                     <option value="viewHistory">View history</option>
                 </select>
             </div>
@@ -120,6 +121,14 @@
             parameters.Add(nameof(AddGroupMembersModal.Group), group);
             parameters.Add(nameof(AddGroupMembersModal.unitOfWork), unitOfWork);
             reference = Modal.Show<AddGroupMembersModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "editmember")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditGroupMembersModal.Group), group);
+            parameters.Add(nameof(EditGroupMembersModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditGroupMembersModal>("", parameters);
             await reference.Result;
         }
         await jsRuntime.InvokeAsync<object>("ResetGroupEditSelect");
