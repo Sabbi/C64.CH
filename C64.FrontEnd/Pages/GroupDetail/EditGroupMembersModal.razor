@@ -2,6 +2,7 @@
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger;
+@inject IJSRuntime jsRuntime
 
 <BootstrapModal @ref="bootstrapModal" Title="@($"Edit Members of {Group.Name}")" Size="BootstrapModal.ModalSize.Large">
     <Content>
@@ -73,6 +74,10 @@
                 <button class="btn btn-primary" type="submit">Update Member</button>
             }
             <div class="float-right">
+                @if (addGroupMemberModel.CanDeleteMember)
+                {
+                    <button class="btn btn-danger" type="button" @onclick="DeleteMember">Delete Member</button>
+                }
                 <button class="btn btn-warning" type="button" @onclick="(() => bootstrapModal.Cancel())">Cancel</button>
             </div>
         </EditForm>
@@ -109,9 +114,31 @@
             addGroupMemberModel.Left = new PartialDate(selectedScener.ValidTo, selectedScener.ValidToType);
             addGroupMemberModel.Scener = selectedScener.Scener;
             addGroupMemberModel.SelectedJobs = selectedScener.ScenerGroupJobs.Select(p => p.Job).ToList();
+            addGroupMemberModel.CanDeleteMember = httpContext.HttpContext.UserIsModerator();
         }
+        else
+            addGroupMemberModel.CanDeleteMember = false;
 
         return;
+    }
+
+    private async Task DeleteMember()
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Sure to delete this member?");
+        if (confirmed)
+        {
+            var groupHistory = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWork, Group, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+
+            groupHistory.AddHistory(HistoryEditProperty.DeleteGroupMember, selectedScenerId);
+
+            groupHistory.Apply();
+
+            await unitOfWork.Commit();
+
+            await OnClosed.InvokeAsync(null);
+
+            await bootstrapModal.Close();
+        }
     }
 
     private void OnSelectJob(ChangeEventArgs e)
@@ -161,5 +188,7 @@
         public IList<Job> SelectedJobs = new List<Job>();
         public PartialDate Joined { get; set; } = new PartialDate();
         public PartialDate Left { get; set; } = new PartialDate();
+
+        public bool CanDeleteMember { get; set; }
     }
 }

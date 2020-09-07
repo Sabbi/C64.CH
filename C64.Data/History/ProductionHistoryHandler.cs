@@ -152,5 +152,6 @@ namespace C64.Data.History
         AddGroup,
         AddGroupMember,
         EditGroupMember,
+        DeleteGroupMember
     }
 }
