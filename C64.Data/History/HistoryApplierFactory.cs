@@ -19,6 +19,10 @@ namespace C64.Data.History
                 case HistoryEditProperty.ClosedDate:
                     return new PartialDateApplier();
 
+                case HistoryEditProperty.JoinedDate:
+                case HistoryEditProperty.LeftDate:
+                    return new MembersPartialDateApplier();
+
                 case HistoryEditProperty.HiddenParts:
                     return new HiddenPartsApplier();
 
@@ -43,8 +47,8 @@ namespace C64.Data.History
                 case HistoryEditProperty.AddGroupMember:
                     return new AddGroupMemberApplier();
 
-                case HistoryEditProperty.EditGroupMember:
-                    return new EditGroupMemberApplier();
+                case HistoryEditProperty.MemberJobs:
+                    return new MemberJobsApplier();
 
                 case HistoryEditProperty.DeleteGroupMember:
                     return new DeleteGroupMemberApplier();

@@ -171,7 +171,9 @@
             LeftDateType = addGroupMemberModel.Left.Type
         };
 
-        groupHistory.AddHistory(HistoryEditProperty.EditGroupMember, editGroupMember);
+        groupHistory.AddHistory(HistoryEditProperty.JoinedDate, editGroupMember);
+        groupHistory.AddHistory(HistoryEditProperty.LeftDate, editGroupMember);
+        groupHistory.AddHistory(HistoryEditProperty.MemberJobs, editGroupMember);
 
         groupHistory.Apply();
 
