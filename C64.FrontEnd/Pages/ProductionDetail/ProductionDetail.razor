@@ -38,13 +38,7 @@
                     <option value="downloads">- Downloads</option>
                     <option value="credits">- Credits</option>
                     <option value="additional">- Additional info</option>
-                    <option value="0">--------------------------</option>
-                    <option value="0">Edit Group</option>"
-                    @for (var i = 0; i < production.ProductionsGroups.Count(); i++)
-                    {
-                        <option value="group-@i">- Edit @production.ProductionsGroups.ElementAt(i).Group.Name</option>
-                    }
-                    <option value="0">--------------------------</option>
+                    <optgroup label="---------------------------"></optgroup>
                     <option value="viewHistory">View history</option>
                 </select>
             </div>
@@ -304,22 +298,12 @@
         else if (args.Value.ToString() == "viewHistory")
         {
             var parameters = new ModalParameters();
-            parameters.Add(nameof(EditRemarksModal.Production), production);
+            parameters.Add(nameof(ViewHistoryModal.Production), production);
             reference = Modal.Show<ViewHistoryModal>("", parameters);
             await reference.Result;
         }
-        else if (args.Value.ToString().StartsWith("group-"))
-        {
-            var groupToEdit = production.ProductionsGroups.ElementAt(int.Parse(args.Value.ToString().Split("-")[1])).Group;
 
-            var parameters = new ModalParameters();
-            parameters.Add(nameof(EditGroupModal.Group), groupToEdit);
-            parameters.Add(nameof(EditGroupModal.unitOfWork), unitOfWork);
-            reference = Modal.Show<EditGroupModal>("", parameters);
-            await reference.Result;
-        }
         StateHasChanged();
-
         await jsRuntime.InvokeAsync<object>("ResetProdEditSelect");
     }
 
