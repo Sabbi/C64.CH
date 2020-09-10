@@ -1,6 +1,7 @@
 ﻿using C64.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +27,11 @@ namespace C64.Data.Repositories
             group.ScenerGroups = members;
 
             return group;
+        }
+
+        public async Task<IEnumerable<HistoryRecord>> GetHistory(int groupId)
+        {
+            return await context.Set<HistoryRecord>().Where(p => p.AffectedGroupId == groupId).Include(p => p.User).Include(p => p.AffectedScener).ToListAsync();
         }
 
         public void UpdateGroupStats()

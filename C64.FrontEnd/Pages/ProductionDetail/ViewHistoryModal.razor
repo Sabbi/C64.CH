@@ -4,25 +4,22 @@
 @inject IJSRuntime jsRuntime
 @inject IUnitOfWork unitOfWork
 
-<BootstrapModal @ref="bootstrapModal" Title="@($"History of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+<BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
     <Content>
-        @Production.Name
+        <p>@title</p>
         <ul class="list-unstyled">
             @foreach (var history in histories)
             {
-            <li>
-                <div class="row">
-                    <div class="col-6">@history.User.UserName</div>
-                    <div class="col-6">@history.Property</div>
-                </div>
-                <div class="row">
-                    <div class="col-6">@history.OldValue</div>
-                    <div class="col-6">@history.NewValue</div>
-                </div>
-                <div class="row">
-                    <div class="col-12">@Parsed(history)</div>
-                </div>
-            </li>
+                <li>
+                    <div class="row">
+                        <div class="col-6">@history.User.UserName</div>
+                        <div class="col-6">@history.Applied</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">@Parsed(history)</div>
+                    </div>
+                    <hr />
+                </li>
             }
         </ul>
     </Content>
@@ -32,13 +29,27 @@
     [Parameter]
     public Production Production { get; set; }
 
+    [Parameter]
+    public Group Group { get; set; }
+
     private BootstrapModal bootstrapModal;
 
     private IEnumerable<HistoryRecord> histories = new HashSet<HistoryRecord>();
 
+    private string title;
+
     protected override async Task OnInitializedAsync()
     {
-        histories = (await unitOfWork.Productions.GetHistory(Production.ProductionId)).OrderByDescending(p => p.Applied);
+        if (Production != null)
+        {
+            histories = (await unitOfWork.Productions.GetHistory(Production.ProductionId)).OrderByDescending(p => p.Applied);
+            title = $"History of {Production.Name}";
+        }
+        else
+        {
+            histories = (await unitOfWork.Groups.GetHistory(Group.GroupId)).OrderByDescending(p => p.Applied);
+            title = $"History of {Group.Name}";
+        }
     }
 
     private string Parsed(HistoryRecord history)
