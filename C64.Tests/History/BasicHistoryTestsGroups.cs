@@ -138,5 +138,130 @@ namespace C64.Tests.History
             Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
             Assert.Null(addedHistoriesMock.FirstOrDefault().AffectedProductionId);
         }
+
+        [Fact]
+        public void AddGroupMember()
+        {
+            var group = new Group { GroupId = 1 };
+
+            var addGroupMember = new AddGroupMember()
+            {
+                Scener = new Scener { ScenerId = 2, Handle = "TestHandle" },
+                JoinedDate = DateTime.Now,
+                JoinedDateType = DateType.YearMonthDay,
+                LeftDate = DateTime.Now,
+                LeftDateType = DateType.YearMonthDay,
+                SelectedJobs = new[] { Job.Coder, Job.Musician }
+            };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWorkMock.Object, group, "1", "127.0.0.1");
+            historyHandler.AddHistory(HistoryEditProperty.AddGroupMember, addGroupMember);
+            historyHandler.Apply();
+
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+            Assert.True(group.ScenerGroups.Any());
+        }
+
+        [Fact]
+        public void EditGroupMemberJobs()
+        {
+            var group = new Group { GroupId = 1 };
+
+            group.ScenerGroups.Add(new ScenersGroups { ScenerId = 1, Scener = new Scener { Handle = "Handle" }, ValidFrom = new DateTime(2020, 1, 1), ValidFromType = DateType.YearMonth, ValidTo = new DateTime(2100, 1, 1), ValidToType = DateType.YearMonthDay, ScenerGroupJobs = new List<ScenerGroupJob> { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.MoralSupport } } });
+
+            var editGroupMember = new AddGroupMember()
+            {
+                Scener = new Scener { ScenerId = 1 },
+                JoinedDate = DateTime.Now,
+                JoinedDateType = DateType.YearMonthDay,
+                LeftDate = DateTime.Now,
+                LeftDateType = DateType.YearMonthDay,
+                SelectedJobs = new[] { Job.Coder, Job.Musician, Job.Swapper }
+            };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWorkMock.Object, group, "1", "127.0.0.1");
+            historyHandler.AddHistory(HistoryEditProperty.MemberJobs, editGroupMember);
+            historyHandler.Apply();
+
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+
+            Assert.Equal(1, group.ScenerGroups.Count);
+            Assert.Equal(3, group.ScenerGroups.FirstOrDefault().ScenerGroupJobs.Count());
+            Assert.Contains(Job.Coder, group.ScenerGroups.FirstOrDefault().ScenerGroupJobs.Select(p => p.Job));
+            Assert.Contains(Job.Musician, group.ScenerGroups.FirstOrDefault().ScenerGroupJobs.Select(p => p.Job));
+            Assert.Contains(Job.Swapper, group.ScenerGroups.FirstOrDefault().ScenerGroupJobs.Select(p => p.Job));
+
+            Assert.True(group.ScenerGroups.Any());
+        }
+
+        [Fact]
+        public void EditGroupMemberJoined()
+        {
+            var group = new Group { GroupId = 1 };
+
+            group.ScenerGroups.Add(new ScenersGroups { ScenerId = 1, ValidFrom = new DateTime(2020, 1, 1), ValidFromType = DateType.YearMonth, ValidTo = new DateTime(2100, 1, 1), ValidToType = DateType.YearMonthDay, ScenerGroupJobs = new List<ScenerGroupJob> { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.MoralSupport } } });
+
+            var editGroupMember = new AddGroupMember()
+            {
+                Scener = new Scener { ScenerId = 1 },
+                JoinedDate = new DateTime(2020, 10, 10),
+                JoinedDateType = DateType.YearMonthDay,
+            };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWorkMock.Object, group, "1", "127.0.0.1");
+            historyHandler.AddHistory(HistoryEditProperty.JoinedDate, editGroupMember);
+            historyHandler.Apply();
+
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+
+            Assert.Equal(1, group.ScenerGroups.Count);
+            Assert.Equal(new DateTime(2020, 10, 10), group.ScenerGroups.FirstOrDefault().ValidFrom);
+            Assert.Equal(DateType.YearMonthDay, group.ScenerGroups.FirstOrDefault().ValidFromType);
+
+            Assert.True(group.ScenerGroups.Any());
+        }
+
+        [Fact]
+        public void EditGroupMemberLeft()
+        {
+            var group = new Group { GroupId = 1 };
+
+            group.ScenerGroups.Add(new ScenersGroups { ScenerId = 1, ValidFrom = new DateTime(2020, 1, 1), ValidFromType = DateType.YearMonth, ValidTo = new DateTime(2100, 1, 1), ValidToType = DateType.YearMonthDay, ScenerGroupJobs = new List<ScenerGroupJob> { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.MoralSupport } } });
+
+            var editGroupMember = new AddGroupMember()
+            {
+                Scener = new Scener { ScenerId = 1 },
+                LeftDate = new DateTime(2020, 10, 10),
+                LeftDateType = DateType.YearMonthDay,
+            };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWorkMock.Object, group, "1", "127.0.0.1");
+            historyHandler.AddHistory(HistoryEditProperty.LeftDate, editGroupMember);
+            historyHandler.Apply();
+
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+
+            Assert.Equal(1, group.ScenerGroups.Count);
+            Assert.Equal(new DateTime(2020, 10, 10), group.ScenerGroups.FirstOrDefault().ValidTo);
+            Assert.Equal(DateType.YearMonthDay, group.ScenerGroups.FirstOrDefault().ValidToType);
+
+            Assert.True(group.ScenerGroups.Any());
+        }
+
+        [Fact]
+        public void DeleteGroupMember()
+        {
+            var group = new Group { GroupId = 1 };
+
+            group.ScenerGroups.Add(new ScenersGroups { ScenerId = 1, Scener = new Scener { ScenerId = 1, Handle = "Handle" }, ValidFrom = new DateTime(2020, 1, 1), ValidFromType = DateType.YearMonth, ValidTo = new DateTime(2100, 1, 1), ValidToType = DateType.YearMonthDay, ScenerGroupJobs = new List<ScenerGroupJob> { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.MoralSupport } } }); ;
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWorkMock.Object, group, "1", "127.0.0.1");
+            historyHandler.AddHistory(HistoryEditProperty.DeleteGroupMember, 1);
+            historyHandler.Apply();
+
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+
+            Assert.Equal(0, group.ScenerGroups.Count);
+        }
     }
 }

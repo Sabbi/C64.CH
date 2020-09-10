@@ -150,5 +150,10 @@ namespace C64.Data.History
         Url,
         Email,
         AddGroup,
+        AddGroupMember,
+        DeleteGroupMember,
+        JoinedDate,
+        LeftDate,
+        MemberJobs
     }
 }

@@ -22,7 +22,7 @@ namespace C64.Data.Repositories
         {
             var group = await GetWithProductions(groupId);
 
-            var members = await context.Set<ScenersGroups>().Include(p => p.Scener).Where(p => p.GroupId == groupId).ToListAsync();
+            var members = await context.Set<ScenersGroups>().Include(p => p.Scener).Include(p => p.ScenerGroupJobs).Where(p => p.GroupId == groupId).ToListAsync();
             group.ScenerGroups = members;
 
             return group;
