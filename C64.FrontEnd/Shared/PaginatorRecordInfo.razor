@@ -1,5 +1,4 @@
-﻿<div class="text-center">Displaying records @StartRecord to @EndRecord of @TotalNumberOfRecords</div>
-
+﻿<div>@TotalNumberOfRecords Results / Showing Page @CurrentPage of @NumberOfPages  with records @StartRecord to @EndRecord</div>
 @code {
 
     [Parameter]
@@ -25,6 +24,14 @@
         {
             var tmp = CurrentPage * PageSize;
             return Math.Min(tmp, TotalNumberOfRecords);
+        }
+    }
+
+    private int NumberOfPages
+    {
+        get
+        {
+            return (int)((TotalNumberOfRecords - 1) / PageSize) + 1;
         }
     }
 }
