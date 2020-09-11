@@ -1,0 +1,165 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Add Member to {Group.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <EditForm Model="addGroupMemberModel" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-4">
+                        Scener*:
+                    </div>
+                    <div class="col-8">
+                        <BlazoredTypeahead TValue="Scener" TItem="Scener" ValueExpression="@(() => Scener)" Value="@Scener" ValueChanged="OnValueChanged" SearchMethod="SearchScener">
+                            <SelectedTemplate Context="scener">
+                                @scener.HandleWithGroups()
+                            </SelectedTemplate>
+                            <ResultTemplate Context="scener">
+                                @scener.ScenerId (@scener.HandleWithGroups())
+                            </ResultTemplate>
+                            <NotFoundTemplate>
+                                Scener not found
+                            </NotFoundTemplate>
+                        </BlazoredTypeahead>
+                    </div>
+                </div>
+                * Sceners already assigned to this group do not show up anymore
+            </div>
+            @if (!disabled)
+            {
+                <div class="form-group">
+                    <label>Jobs:</label>
+                    <div>
+                        <select @onchange="OnSelectJob" TValue="Job" class="form-control">
+                            <option value="0">Select job:</option>
+                            @foreach (var item in Enum.GetValues(typeof(Job)))
+                            {
+                                if ((Job)item != Job.Undefined)
+                                {
+                                    <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <h5>
+                    @foreach (var job in addGroupMemberModel.SelectedJobs)
+                    {
+                        <span class="badge badge-primary" href="">@job <i class="fas fa-backspace cursor-pointer" @onclick="(() => RemoveJob(job))"></i> </span>
+                    }
+                </h5>
+
+                <div class="form-group">
+                    <label>Joined on:</label>
+                    <div>
+                        <InputPartialDate @bind-Value="@addGroupMemberModel.Joined" StartingYear="1982" EndingYear="DateTime.Now.Year" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Left on:</label>
+                    <div>
+                        <InputPartialDate @bind-Value="@addGroupMemberModel.Left" StartingYear="1982" EndingYear="DateTime.Now.Year" />
+                    </div>
+                </div>
+
+            }
+            @if (!disabled)
+            {
+                <button class="btn btn-primary" type="submit">Add as Member</button>
+            }
+        <div class="float-right">
+            <button class="btn btn-warning" type="button" @onclick="(() => bootstrapModal.Cancel())">Cancel</button>
+        </div>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Group Group { get; set; }
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    [Parameter]
+    public Scener Scener { get; set; } = new Scener();
+
+    private bool disabled = true;
+
+    private BootstrapModal bootstrapModal;
+
+    private AddGroupMemberModel addGroupMemberModel = new AddGroupMemberModel();
+
+    private void OnValueChanged(Scener selectedScener)
+    {
+        Scener = selectedScener;
+        addGroupMemberModel.Scener = selectedScener;
+        disabled = Scener == null;
+    }
+
+    private void OnSelectJob(ChangeEventArgs e)
+    {
+        if (e.Value.ToString() == "0")
+            return;
+
+        var parsed = (Job)Enum.Parse(typeof(Job), e.Value.ToString());
+
+        if (!addGroupMemberModel.SelectedJobs.Contains(parsed))
+            addGroupMemberModel.SelectedJobs.Add(parsed);
+    }
+
+    private void RemoveJob(Job job)
+    {
+        addGroupMemberModel.SelectedJobs.Remove(job);
+    }
+
+    private async Task<IEnumerable<Scener>> SearchScener(string searchText)
+    {
+        var sceners = (await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText, StringComparison.OrdinalIgnoreCase))).ToList();
+
+        // TODO: Linqify
+        foreach (var inGroup in Group.ScenerGroups.Select(p => p.Scener))
+            sceners.Remove(inGroup);
+
+        return sceners;
+    }
+
+    private async Task OnValidSubmit()
+    {
+        var groupHistory = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWork, Group, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+
+        var addGroupMember = new AddGroupMember
+        {
+            Scener = addGroupMemberModel.Scener,
+            SelectedJobs = addGroupMemberModel.SelectedJobs,
+            JoinedDate = addGroupMemberModel.Joined.Date,
+            JoinedDateType = addGroupMemberModel.Joined.Type,
+            LeftDate = addGroupMemberModel.Left.Date,
+            LeftDateType = addGroupMemberModel.Left.Type
+        };
+
+        groupHistory.AddHistory(HistoryEditProperty.AddGroupMember, addGroupMember);
+
+        groupHistory.Apply();
+
+        await unitOfWork.Commit();
+
+        await OnClosed.InvokeAsync(null);
+
+        await bootstrapModal.Close();
+    }
+
+    private class AddGroupMemberModel
+    {
+        public Scener Scener { get; set; }
+        public IList<Job> SelectedJobs = new List<Job>();
+        public PartialDate Joined { get; set; } = new PartialDate();
+        public PartialDate Left { get; set; } = new PartialDate();
+    }
+}
