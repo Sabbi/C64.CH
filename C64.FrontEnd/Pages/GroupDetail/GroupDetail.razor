@@ -23,6 +23,7 @@
                     <option value="general">- General</option>
                     <option value="addmember">- Add Member</option>
                     <option value="editmember">- Edit Members</option>
+                    <optgroup label="---------------------------"></optgroup>
                     <option value="viewHistory">View history</option>
                 </select>
             </div>
@@ -129,6 +130,13 @@
             parameters.Add(nameof(EditGroupMembersModal.Group), group);
             parameters.Add(nameof(EditGroupMembersModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditGroupMembersModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "viewHistory")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ViewHistoryModal.Group), group);
+            reference = Modal.Show<ViewHistoryModal>("", parameters);
             await reference.Result;
         }
         await jsRuntime.InvokeAsync<object>("ResetGroupEditSelect");
