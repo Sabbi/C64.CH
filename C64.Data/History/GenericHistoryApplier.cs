@@ -41,7 +41,14 @@ namespace C64.Data.History
         private void ApplyGroup(Group production, HistoryRecord historyRecord)
         {
             var type = Type.GetType(historyRecord.Type, true);
-            var property = typeof(Group).GetProperty(historyRecord.Property);
+
+            var propertyName = historyRecord.Property;
+
+            // Hack
+            if (propertyName == "GroupDescription")
+                propertyName = "Description";
+
+            var property = typeof(Group).GetProperty(propertyName);
             if (historyRecord.NewValue == null)
             {
                 property.SetValue(production, null);
@@ -101,6 +108,10 @@ namespace C64.Data.History
             // Default, Simple Datatype properties
             var propertyName = property.ToString();
 
+            // Hack
+            if (propertyName == "GroupDescription")
+                propertyName = "Description";
+
             var propInfo = typeof(Group).GetProperty(propertyName);
             var oldValue = propInfo.GetValue(group);
 
@@ -108,7 +119,7 @@ namespace C64.Data.History
             {
                 AffectedProductionId = group.GroupId,
                 AffectedEntity = HistoryEntity.Group,
-                Property = propertyName,
+                Property = property.ToString(),
                 NewValue = newValue == null ? null : JsonConvert.SerializeObject(newValue),
                 OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValue),
                 Status = status,
@@ -161,6 +172,12 @@ namespace C64.Data.History
                         return "Url removed";
 
                     return $"Url changed to '{newValue}'";
+
+                case HistoryEditProperty.GroupDescription:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Group description removed";
+
+                    return $"Group description changed to '{newValue}'";
 
                 default:
                     throw new NotImplementedException($"Description for {property} lacks implementation");

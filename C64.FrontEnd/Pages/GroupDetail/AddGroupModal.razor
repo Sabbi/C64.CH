@@ -38,22 +38,6 @@
                     <InputPartialDate @bind-Value="@editGroup.ClosedDate" StartingYear="1982" EndingYear="DateTime.Now.Year" />
                 </div>
             </div>
-            <div class="form-group">
-                <label>Url / Homepage:</label>
-                <div>
-                    <InputText class="form-control" @bind-Value="@editGroup.Url" />
-                    <ValidationMessage For="@(() => editGroup.Url)" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Email / Contact:</label>
-                <div>
-                    <InputText class="form-control" @bind-Value="@editGroup.Email" />
-                    <ValidationMessage For="@(() => editGroup.Email)" />
-                </div>
-            </div>
-
             <button class="btn btn-primary" type="submit">Add Group</button>
         </EditForm>
     </Content>
@@ -82,8 +66,6 @@
         Group.FoundedDateType = editGroup.FoundedDate.Type;
         Group.ClosedDate = editGroup.ClosedDate.Date;
         Group.ClosedDateType = editGroup.ClosedDate.Type;
-        Group.Url = editGroup.Url;
-        Group.Email = editGroup.Email;
 
         Group.AddedById = httpContext.HttpContext.GetUserId();
         Group.Added = DateTime.Now;
@@ -107,9 +89,6 @@
     {
         editGroup.Name = Group.Name;
         editGroup.Aka = Group.Aka;
-        editGroup.Description = Group.Description;
-        editGroup.Email = Group.Email;
-        editGroup.Url = Group.Url;
         editGroup.FoundedDate = new PartialDate(Group.FoundedDate, Group.FoundedDateType);
         editGroup.ClosedDate = new PartialDate(Group.ClosedDate, Group.ClosedDateType);
     }

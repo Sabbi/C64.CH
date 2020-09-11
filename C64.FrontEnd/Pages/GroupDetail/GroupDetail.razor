@@ -20,7 +20,8 @@
             <div class="float-right pr-3 position-absolute" style="right:0; top:5px">
                 <select class="form-control d-inline" id="groupEditSelect" @onchange="OnSelectEdit">
                     <option value="0">Edit Group</option>
-                    <option value="general">- General</option>
+                    <option value="general">- General Info</option>
+                    <option value="additional">- Additional Info</option>
                     <option value="addmember">- Add Member</option>
                     <option value="editmember">- Edit Members</option>
                     <optgroup label="---------------------------"></optgroup>
@@ -45,6 +46,11 @@
                     <tr><th>Average Rating</th><td>@(group.AverageRating.ToString("#.00")) (with @group.NumberOfRatings.ToString("N0") ratings)</td></tr>
                 }
                 <tr><th>Downloads</th><td>@group.Downloads.ToString("N0")</td></tr>
+                @if (!string.IsNullOrEmpty(group.Description))
+                {
+                    <tr><th>Description</th><td>@group.Description</td></tr>
+
+                }
             </table>
 
             @if (group.ScenerGroups.Any())
@@ -114,6 +120,14 @@
             parameters.Add(nameof(EditGroupModal.Group), group);
             parameters.Add(nameof(EditGroupModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditGroupModal>("", parameters);
+            await reference.Result;
+        }
+        if (args.Value.ToString() == "additional")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditGroupAdditionalModal.Group), group);
+            parameters.Add(nameof(EditGroupAdditionalModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditGroupAdditionalModal>("", parameters);
             await reference.Result;
         }
         else if (args.Value.ToString() == "addmember")

@@ -10,17 +10,20 @@ namespace C64.FrontEnd.Models
 
         public string Aka { get; set; }
 
-        public string Description { get; set; }
-
         public PartialDate FoundedDate { get; set; }
         public PartialDate ClosedDate { get; set; }
 
+        public bool CanEditName { get; set; } = false;
+    }
+
+    public class EditGroupAdditional
+    {
         [NotRequiredUrl]
         public string Url { get; set; }
 
         [NotRequiredEmailAddress]
         public string Email { get; set; }
 
-        public bool CanEditName { get; set; } = false;
+        public string Description { get; set; }
     }
 }

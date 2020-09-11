@@ -149,6 +149,7 @@ namespace C64.Data.History
         ClosedDate,
         Url,
         Email,
+        GroupDescription,
         AddGroup,
         AddGroupMember,
         DeleteGroupMember,

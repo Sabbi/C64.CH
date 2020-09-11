@@ -70,6 +70,23 @@ namespace C64.Tests.History
         }
 
         [Fact]
+        public void ChangeGroupDescription()
+        {
+            var group = new Group { GroupId = 1, Description = "OldDescription" };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWorkMock.Object, group, "1", "127.0.0.0");
+
+            historyHandler.AddHistory(HistoryEditProperty.GroupDescription, "NewDescription");
+            historyHandler.Apply();
+
+            Assert.Equal("OldDescription", JsonConvert.DeserializeObject<string>(addedHistoriesMock.FirstOrDefault().OldValue));
+            Assert.Equal("NewDescription", JsonConvert.DeserializeObject<string>(addedHistoriesMock.FirstOrDefault().NewValue));
+            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
+            Assert.Null(addedHistoriesMock.FirstOrDefault().AffectedProductionId);
+            Assert.Equal("NewDescription", group.Description);
+        }
+
+        [Fact]
         public void ChangeGroupFoundedDate()
         {
             var group = new Group { GroupId = 1, FoundedDate = new DateTime(2020, 01, 01), FoundedDateType = DateType.Year };

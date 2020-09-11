@@ -1,0 +1,78 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit Group {Group.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <EditForm Model="editGroup" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label>Description / Info:</label>
+                <div>
+                    <InputTextArea Rows="4" class="form-control" @bind-Value="@editGroup.Description" />
+                    <ValidationMessage For="@(() => editGroup.Description)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Url / Homepage:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Url" />
+                    <ValidationMessage For="@(() => editGroup.Url)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email / Contact:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editGroup.Email" />
+                    <ValidationMessage For="@(() => editGroup.Email)" />
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Update Group</button>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Group Group { get; set; }
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private EditGroupAdditional editGroup = new EditGroupAdditional();
+
+    private async Task OnValidSubmit()
+    {
+        //logger.LogInformation("OnValidSubmit");
+
+        var groupHistory = HistoryHandlerFactory.Get(HistoryEntity.Group, unitOfWork, Group, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+
+        groupHistory.AddHistory(HistoryEditProperty.GroupDescription, editGroup.Description);
+        groupHistory.AddHistory(HistoryEditProperty.Url, editGroup.Url);
+        groupHistory.AddHistory(HistoryEditProperty.Email, editGroup.Email);
+        groupHistory.Apply();
+
+        await unitOfWork.Commit();
+
+        await OnClosed.InvokeAsync(null);
+
+        await bootstrapModal.Close();
+    }
+
+    protected override void OnInitialized()
+    {
+        // Can edit name? Only Moderators+ OR if group was just added
+        editGroup.Description = Group.Description;
+        editGroup.Email = Group.Email;
+        editGroup.Url = Group.Url;
+    }
+}
