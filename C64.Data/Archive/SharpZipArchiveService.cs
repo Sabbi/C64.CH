@@ -43,20 +43,27 @@ namespace C64.Data.Archive
             {
                 byteStream.Write(archiveData, 0, archiveData.Length);
 
-                using (var archive = new ZipFile(byteStream))
+                try
                 {
-                    archive.BeginUpdate();
+                    using (var archive = new ZipFile(byteStream))
+                    {
+                        archive.BeginUpdate();
 
-                    var index = archive.FindEntry("file_id.diz", true);
+                        var index = archive.FindEntry("file_id.diz", true);
 
-                    if (archive.FindEntry("file_id.diz", true) >= 0)
-                        archive.Delete("file_id.diz");
+                        if (archive.FindEntry("file_id.diz", true) >= 0)
+                            archive.Delete("file_id.diz");
 
-                    archive.Add(new StringStaticDataSource(fileIdDiz), "file_id.diz");
-                    archive.SetComment(fileIdDiz);
+                        archive.Add(new StringStaticDataSource(fileIdDiz), "file_id.diz");
+                        archive.SetComment(fileIdDiz);
 
-                    archive.CommitUpdate();
-                    archive.Close();
+                        archive.CommitUpdate();
+                        archive.Close();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("AddFileId Failed: " + e.Message);
                 }
                 return byteStream.ToArray();
             }

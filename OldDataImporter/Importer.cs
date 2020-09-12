@@ -758,7 +758,7 @@ namespace OldDataImporter
             foreach (var production in productions)
             {
                 var pictures = production.ProductionPictures.OrderBy(p => p.Filename);
-                var cnt = 1;
+                var cnt = 0;
                 foreach (var picture in pictures)
                 {
                     picture.Sort = cnt;
