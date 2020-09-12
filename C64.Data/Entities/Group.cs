@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace C64.Data.Entities
 {
@@ -11,6 +12,13 @@ namespace C64.Data.Entities
 
     public class Group : ILinkJoinable
     {
+        [NotMapped]
+        public int Id
+        {
+            get => GroupId;
+            set => GroupId = value;
+        }
+
         public int GroupId { get; set; }
 
         [MaxLength(255)]

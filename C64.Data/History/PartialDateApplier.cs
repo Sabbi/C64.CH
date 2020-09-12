@@ -24,6 +24,26 @@ namespace C64.Data.History
             }
         }
 
+        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
+        {
+            HistoryRecord historyRecord = null;
+
+            switch (historyEntity)
+            {
+                case HistoryEntity.Production:
+                    historyRecord = CreateHistory(property, (Production)entity, newValue, status);
+                    break;
+
+                case HistoryEntity.Group:
+                    historyRecord = CreateHistory(property, (Group)entity, newValue, status);
+                    break;
+
+                case HistoryEntity.Scener:
+                    throw new NotImplementedException();
+            }
+            return historyRecord;
+        }
+
         private void Apply<T>(T entity, HistoryRecord historyRecord)
         {
             var newValues = JsonConvert.DeserializeObject<PartialDateApplierData>(historyRecord.NewValue);
@@ -35,39 +55,19 @@ namespace C64.Data.History
             property2.SetValue(entity, newValues.Type);
         }
 
-        public HistoryRecord CreateHistory(HistoryEditProperty property, HistoryEntity historyEntity, object entity, object newValue, HistoryStatus status)
-        {
-            HistoryRecord historyRecord = null;
-
-            switch (historyEntity)
-            {
-                case HistoryEntity.Production:
-                    historyRecord = CreateProductionHistory(property, (Production)entity, newValue, status);
-                    break;
-
-                case HistoryEntity.Group:
-                    historyRecord = CreateGroupHistory(property, (Group)entity, newValue, status);
-                    break;
-
-                case HistoryEntity.Scener:
-                    throw new NotImplementedException();
-            }
-            return historyRecord;
-        }
-
-        public HistoryRecord CreateProductionHistory(HistoryEditProperty property, Production production, object newValue, HistoryStatus status)
+        public HistoryRecord CreateHistory<T>(HistoryEditProperty property, T production, object newValue, HistoryStatus status)
         {
             var newValues = (PartialDateApplierData)newValue;
 
             var oldValues = new PartialDateApplierData();
             var propertyName = property.ToString();
 
-            var propInfo = typeof(Production).GetProperty(propertyName);
+            var propInfo = typeof(T).GetProperty(propertyName);
             var oldValue = propInfo.GetValue(production);
 
             oldValues.Date = (DateTime)oldValue;
 
-            var propInfo2 = typeof(Production).GetProperty(propertyName + "Type");
+            var propInfo2 = typeof(T).GetProperty(propertyName + "Type");
             var oldValue2 = propInfo2.GetValue(production);
 
             oldValues.Type = (DateType)oldValue2;
@@ -81,52 +81,27 @@ namespace C64.Data.History
             else
                 description = $"{dateName} changed from '{oldValues.Date.ParseDate(oldValues.Type)}' to '{newValues.Date.ParseDate(newValues.Type)}'";
 
-            var dbhistory = new HistoryRecord
+            int? affectedProductionId = null;
+            int? affectedGroupId = null;
+
+            HistoryEntity affectedEntity = HistoryEntity.Production;
+
+            if (production is Production)
             {
-                AffectedProductionId = production.ProductionId,
-                AffectedEntity = HistoryEntity.Production,
-                Property = propertyName,
-                NewValue = newValues == null ? null : JsonConvert.SerializeObject(newValues),
-                OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValues),
-                Status = status,
-                Type = typeof(PartialDateApplierData).FullName,
-                Version = 1M,
-                Description = description
-            };
-            return dbhistory;
-        }
-
-        public HistoryRecord CreateGroupHistory(HistoryEditProperty property, Group group, object newValue, HistoryStatus status)
-        {
-            var newValues = (PartialDateApplierData)newValue;
-
-            var oldValues = new PartialDateApplierData();
-            var propertyName = property.ToString();
-
-            var propInfo = typeof(Group).GetProperty(propertyName);
-            var oldValue = propInfo.GetValue(group);
-
-            oldValues.Date = (DateTime)oldValue;
-
-            var propInfo2 = typeof(Group).GetProperty(propertyName + "Type");
-            var oldValue2 = propInfo2.GetValue(group);
-
-            oldValues.Type = (DateType)oldValue2;
-
-            //Release date changed from 'January 2020' to 'February 2nd, 2020'"
-            string description;
-            var dateName = DateName(property);
-            if (newValues.Type == DateType.None)
-                description = $"{dateName} removed";
-            else if (oldValues.Type == DateType.None)
-                description = $"{dateName} set to '{newValues.Date.ParseDate(newValues.Type)}'";
-            else
-                description = $"{dateName} changed from '{oldValues.Date.ParseDate(oldValues.Type)}' to '{newValues.Date.ParseDate(newValues.Type)}'";
+                affectedProductionId = (production as Production).Id;
+                affectedEntity = HistoryEntity.Production;
+            }
+            else if (production is Group)
+            {
+                affectedGroupId = (production as Group).Id;
+                affectedEntity = HistoryEntity.Group;
+            }
 
             var dbhistory = new HistoryRecord
             {
-                AffectedProductionId = group.GroupId,
-                AffectedEntity = HistoryEntity.Group,
+                AffectedProductionId = affectedProductionId,
+                AffectedGroupId = affectedGroupId,
+                AffectedEntity = affectedEntity,
                 Property = propertyName,
                 NewValue = newValues == null ? null : JsonConvert.SerializeObject(newValues),
                 OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValues),
@@ -152,7 +127,7 @@ namespace C64.Data.History
                     return "Closed date";
             }
 
-            throw new NotImplementedException();
+            throw new NotImplementedException($"Not implemented DateName {property}");
         }
     }
 

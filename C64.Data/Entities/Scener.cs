@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Internal;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 
@@ -9,6 +10,14 @@ namespace C64.Data.Entities
     public class Scener
     {
         public int ScenerId { get; set; }
+
+        [NotMapped]
+        public int Id
+        {
+            get => ScenerId;
+            set => ScenerId = value;
+        }
+
         public string Handle { get; set; }
 
         [MaxLength(255)]
