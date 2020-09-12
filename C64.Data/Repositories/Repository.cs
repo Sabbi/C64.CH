@@ -43,7 +43,7 @@ namespace C64.Data.Repositories
 
         public IEnumerable<T> GetAll()
         {
-            return context.Set<T>();
+            return context.Set<T>().ToList();
         }
 
         public void Remove(T entity)
