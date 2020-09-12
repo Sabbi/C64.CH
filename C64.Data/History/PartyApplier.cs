@@ -44,9 +44,9 @@ namespace C64.Data.History
             // Old and new
             string description = null;
             if (production.ProductionsParties.Any() && newValues.PartyId > 0)
-                description = $"Partyinformation changed from '{production.ProductionsParties.FirstOrDefault().Party.Name}/{production.ProductionsParties.FirstOrDefault().PartyCategory.Name}/{production.ProductionsParties.FirstOrDefault().Rank}' to '{newValues.PartyName}/{newValues.CategoryName}/{newValues.Rank}'";
+                description = $"Partyinformation changed from '{production.ProductionsParties.FirstOrDefault().Party.Name}/{production.ProductionsParties.FirstOrDefault().PartyCategory?.Name}/{production.ProductionsParties.FirstOrDefault().Rank}' to '{newValues.PartyName}/{newValues?.CategoryName}/{newValues.Rank}'";
             else if (!production.ProductionsParties.Any() && newValues.PartyId > 0)
-                description = $"Partyinformation added: '{newValues.PartyName}/{newValues.CategoryName}/{newValues.Rank}'";
+                description = $"Partyinformation added: '{newValues.PartyName}/{newValues?.CategoryName}/{newValues.Rank}'";
             else if (production.ProductionsParties.Any() && newValues.PartyId == 0)
                 description = "Partyinformation removed";
 
