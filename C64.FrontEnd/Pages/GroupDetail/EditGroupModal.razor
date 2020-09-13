@@ -72,8 +72,8 @@
 
         groupHistory.AddHistory(HistoryEditProperty.Name, editGroup.Name);
         groupHistory.AddHistory(HistoryEditProperty.Aka, editGroup.Aka);
-        groupHistory.AddHistory(HistoryEditProperty.FoundedDate, new PartialDateApplierData { Date = editGroup.FoundedDate.Date, Type = editGroup.FoundedDate.Type });
-        groupHistory.AddHistory(HistoryEditProperty.ClosedDate, new PartialDateApplierData { Date = editGroup.ClosedDate.Date, Type = editGroup.ClosedDate.Type });
+        groupHistory.AddHistory(HistoryEditProperty.FoundedDate, new PartialDate { Date = editGroup.FoundedDate.Date, Type = editGroup.FoundedDate.Type });
+        groupHistory.AddHistory(HistoryEditProperty.ClosedDate, new PartialDate { Date = editGroup.ClosedDate.Date, Type = editGroup.ClosedDate.Type });
         groupHistory.Apply();
 
         await unitOfWork.Commit();

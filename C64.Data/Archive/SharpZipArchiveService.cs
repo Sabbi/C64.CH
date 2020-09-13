@@ -28,9 +28,11 @@ namespace C64.Data.Archive
             {
                 if (archiveData == null)
                     return null;
-                var retVal = new ArchiveInfo();
-                retVal.CompressedFileInfos = ListFilesInArchive();
-                retVal.FileSize = archiveData.Length;
+                var retVal = new ArchiveInfo
+                {
+                    CompressedFileInfos = ListFilesInArchive(),
+                    FileSize = archiveData.Length
+                };
                 retVal.NumberOfFiles = retVal.CompressedFileInfos.Count();
                 retVal.NumberOfD64Files = retVal.CompressedFileInfos.Count(p => p.FileName.EndsWith(".d64", StringComparison.OrdinalIgnoreCase));
                 return retVal;

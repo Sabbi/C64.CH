@@ -1,7 +1,6 @@
-﻿using C64.Data;
-using System;
+﻿using System;
 
-namespace C64.FrontEnd.Models
+namespace C64.Data.Models
 {
     public class PartialDate
     {

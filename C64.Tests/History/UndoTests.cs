@@ -1,6 +1,7 @@
 ﻿using C64.Data;
 using C64.Data.Entities;
 using C64.Data.History;
+using C64.Data.Models;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -70,7 +71,7 @@ namespace C64.Tests.History
             var production = new Production { ReleaseDate = new DateTime(2000, 1, 1), ReleaseDateType = DateType.Year };
 
             var doHistoryHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
-            doHistoryHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData { Date = new DateTime(2001, 2, 3), Type = DateType.YearMonthDay });
+            doHistoryHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDate { Date = new DateTime(2001, 2, 3), Type = DateType.YearMonthDay });
             doHistoryHandler.Apply();
 
             Assert.Equal(new DateTime(2001, 2, 3), production.ReleaseDate);

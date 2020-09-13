@@ -1,5 +1,6 @@
 ﻿using C64.Data;
 using C64.Data.Entities;
+using C64.Data.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 

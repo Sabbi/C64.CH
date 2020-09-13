@@ -1,5 +1,6 @@
 ﻿using C64.Data.Entities;
 using C64.Data.Extensions;
+using C64.Data.Models;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace C64.Data.History
         public void Apply(object entity, HistoryRecord historyRecord)
         {
             var group = (Group)entity;
-            var newValues = JsonConvert.DeserializeObject<PartialDateApplierData>(historyRecord.NewValue);
+            var newValues = JsonConvert.DeserializeObject<PartialDate>(historyRecord.NewValue);
 
             if (historyRecord.Property == "JoinedDate")
             {
@@ -33,17 +34,17 @@ namespace C64.Data.History
 
             var oldValues = group.ScenerGroups.FirstOrDefault(p => p.ScenerId == newValues.Scener.ScenerId);
 
-            PartialDateApplierData defNewValues, defOldValues;
+            PartialDate defNewValues, defOldValues;
 
             if (property == HistoryEditProperty.JoinedDate)
             {
-                defNewValues = new PartialDateApplierData { Date = newValues.JoinedDate, Type = newValues.JoinedDateType };
-                defOldValues = new PartialDateApplierData { Date = oldValues.ValidFrom, Type = oldValues.ValidFromType };
+                defNewValues = new PartialDate { Date = newValues.JoinedDate, Type = newValues.JoinedDateType };
+                defOldValues = new PartialDate { Date = oldValues.ValidFrom, Type = oldValues.ValidFromType };
             }
             else
             {
-                defNewValues = new PartialDateApplierData { Date = newValues.LeftDate, Type = newValues.LeftDateType };
-                defOldValues = new PartialDateApplierData { Date = oldValues.ValidTo, Type = oldValues.ValidToType };
+                defNewValues = new PartialDate { Date = newValues.LeftDate, Type = newValues.LeftDateType };
+                defOldValues = new PartialDate { Date = oldValues.ValidTo, Type = oldValues.ValidToType };
             }
 
             var dbhistory = new HistoryRecord
@@ -66,15 +67,12 @@ namespace C64.Data.History
 
         private string DateName(HistoryEditProperty property)
         {
-            switch (property)
+            return property switch
             {
-                case HistoryEditProperty.JoinedDate:
-                    return "Joined date";
-
-                case HistoryEditProperty.LeftDate:
-                    return "Left date";
-            }
-            throw new NotImplementedException();
+                HistoryEditProperty.JoinedDate => "Joined date",
+                HistoryEditProperty.LeftDate => "Left date",
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

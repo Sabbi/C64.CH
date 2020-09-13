@@ -1,6 +1,7 @@
 ﻿using C64.Data;
 using C64.Data.Entities;
 using C64.Data.History;
+using C64.Data.Models;
 using Moq;
 using Newtonsoft.Json;
 using System;
@@ -96,7 +97,7 @@ namespace C64.Tests.History
         {
             var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, productionUnderTest, "1", "127.0.0.0");
 
-            historyHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData { Date = new DateTime(1980, 1, 1), Type = DateType.Year });
+            historyHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDate { Date = new DateTime(1980, 1, 1), Type = DateType.Year });
             historyHandler.Apply();
 
             Assert.Single(addedHistoriesMock);

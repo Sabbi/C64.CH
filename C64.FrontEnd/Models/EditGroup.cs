@@ -1,4 +1,5 @@
-﻿using C64.FrontEnd.Helpers;
+﻿using C64.Data.Models;
+using C64.FrontEnd.Helpers;
 using System.ComponentModel.DataAnnotations;
 
 namespace C64.FrontEnd.Models

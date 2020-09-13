@@ -1,5 +1,6 @@
 ﻿using C64.Data.Entities;
 using C64.Data.Extensions;
+using C64.Data.Models;
 using Newtonsoft.Json;
 using System;
 
@@ -46,7 +47,7 @@ namespace C64.Data.History
 
         private void Apply<T>(T entity, HistoryRecord historyRecord)
         {
-            var newValues = JsonConvert.DeserializeObject<PartialDateApplierData>(historyRecord.NewValue);
+            var newValues = JsonConvert.DeserializeObject<PartialDate>(historyRecord.NewValue);
 
             var property = typeof(T).GetProperty(historyRecord.Property);
             property.SetValue(entity, newValues.Date);
@@ -57,9 +58,9 @@ namespace C64.Data.History
 
         public HistoryRecord CreateHistory<T>(HistoryEditProperty property, T production, object newValue, HistoryStatus status)
         {
-            var newValues = (PartialDateApplierData)newValue;
+            var newValues = (PartialDate)newValue;
 
-            var oldValues = new PartialDateApplierData();
+            var oldValues = new PartialDate();
             var propertyName = property.ToString();
 
             var propInfo = typeof(T).GetProperty(propertyName);
@@ -106,7 +107,7 @@ namespace C64.Data.History
                 NewValue = newValues == null ? null : JsonConvert.SerializeObject(newValues),
                 OldValue = oldValue == null ? null : JsonConvert.SerializeObject(oldValues),
                 Status = status,
-                Type = typeof(PartialDateApplierData).FullName,
+                Type = typeof(PartialDate).FullName,
                 Version = 1M,
                 Description = description
             };
@@ -115,25 +116,13 @@ namespace C64.Data.History
 
         private string DateName(HistoryEditProperty property)
         {
-            switch (property)
+            return property switch
             {
-                case HistoryEditProperty.ReleaseDate:
-                    return "Release date";
-
-                case HistoryEditProperty.FoundedDate:
-                    return "Founded date";
-
-                case HistoryEditProperty.ClosedDate:
-                    return "Closed date";
-            }
-
-            throw new NotImplementedException($"Not implemented DateName {property}");
+                HistoryEditProperty.ReleaseDate => "Release date",
+                HistoryEditProperty.FoundedDate => "Founded date",
+                HistoryEditProperty.ClosedDate => "Closed date",
+                _ => throw new NotImplementedException($"Not implemented DateName {property}"),
+            };
         }
-    }
-
-    public class PartialDateApplierData
-    {
-        public DateTime Date { get; set; }
-        public DateType Type { get; set; }
     }
 }

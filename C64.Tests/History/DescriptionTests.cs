@@ -1,6 +1,7 @@
 ﻿using C64.Data;
 using C64.Data.Entities;
 using C64.Data.History;
+using C64.Data.Models;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -84,7 +85,7 @@ namespace C64.Tests.History
 
             var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
 
-            historyHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData() { Date = new DateTime(2020, 02, 02), Type = DateType.YearMonthDay });
+            historyHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDate() { Date = new DateTime(2020, 02, 02), Type = DateType.YearMonthDay });
             historyHandler.Apply();
 
             Assert.Equal("Release date changed from 'January 2020' to 'February 2nd, 2020'", addedHistoriesMock.FirstOrDefault().Description);
@@ -97,7 +98,7 @@ namespace C64.Tests.History
 
             var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
 
-            historyHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData() { Date = new DateTime(1900, 1, 1), Type = DateType.None });
+            historyHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDate() { Date = new DateTime(1900, 1, 1), Type = DateType.None });
             historyHandler.Apply();
 
             Assert.Equal("Release date removed", addedHistoriesMock.FirstOrDefault().Description);
@@ -110,7 +111,7 @@ namespace C64.Tests.History
 
             var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
 
-            historyHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDateApplierData() { Date = new DateTime(2020, 02, 02), Type = DateType.YearMonthDay });
+            historyHandler.AddHistory(HistoryEditProperty.ReleaseDate, new PartialDate() { Date = new DateTime(2020, 02, 02), Type = DateType.YearMonthDay });
             historyHandler.Apply();
 
             Assert.Equal("Release date set to 'February 2nd, 2020'", addedHistoriesMock.FirstOrDefault().Description);
