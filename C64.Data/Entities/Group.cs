@@ -63,6 +63,11 @@ namespace C64.Data.Entities
 
         public int NumberOfReleases { get; set; }
 
+        [MinLength(2), MaxLength(2)]
+        public string CountryId { get; set; }
+
+        public virtual Country Country { get; set; }
+
         public ICollection<ProductionsGroups> ProductionsGroups { get; set; } = new HashSet<ProductionsGroups>();
 
         public ICollection<ScenersGroups> ScenerGroups { get; set; } = new HashSet<ScenersGroups>();

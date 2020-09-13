@@ -33,6 +33,18 @@
                 </div>
             </div>
             <div class="form-group">
+                <label>Base country:</label>
+                <div>
+                    <InputSelect class="form-control" @bind-Value="@editGroup.CountryId">
+                        <option value="">Select Country:</option>
+                        @foreach (var country in countries)
+                        {
+                            <option value="@country.CountryId">@country.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="form-group">
                 <label>Founded on:</label>
                 <div>
                     <InputPartialDate @bind-Value="@editGroup.FoundedDate" StartingYear="1982" EndingYear="DateTime.Now.Year" />
@@ -60,6 +72,8 @@
     [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
+    private IEnumerable<Country> countries = new List<Country>();
+
     private BootstrapModal bootstrapModal;
 
     private EditGroup editGroup = new EditGroup();
@@ -72,6 +86,7 @@
 
         groupHistory.AddHistory(HistoryEditProperty.Name, editGroup.Name);
         groupHistory.AddHistory(HistoryEditProperty.Aka, editGroup.Aka);
+        groupHistory.AddHistory(HistoryEditProperty.CountryId, editGroup.CountryId);
         groupHistory.AddHistory(HistoryEditProperty.FoundedDate, new PartialDate { Date = editGroup.FoundedDate.Date, Type = editGroup.FoundedDate.Type });
         groupHistory.AddHistory(HistoryEditProperty.ClosedDate, new PartialDate { Date = editGroup.ClosedDate.Date, Type = editGroup.ClosedDate.Type });
         groupHistory.Apply();
@@ -85,6 +100,7 @@
 
     protected override void OnInitialized()
     {
+        countries = unitOfWork.Countries.Find(p => p.Selectable).OrderBy(p => p.Name);
         // Can edit name? Only Moderators+ OR if group was just added
         editGroup.CanEditName = (DateTime.Now - Group.Added).TotalDays < 5 || httpContext.HttpContext.UserIsModerator();
 

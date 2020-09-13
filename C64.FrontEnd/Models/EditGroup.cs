@@ -11,6 +11,8 @@ namespace C64.FrontEnd.Models
 
         public string Aka { get; set; }
 
+        public string CountryId { get; set; }
+
         public PartialDate FoundedDate { get; set; }
         public PartialDate ClosedDate { get; set; }
 

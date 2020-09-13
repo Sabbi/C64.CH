@@ -16,7 +16,7 @@ namespace C64.Data.Repositories
 
         public Task<Group> GetWithProductions(int groupId)
         {
-            return context.Set<Group>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Production).FirstOrDefaultAsync(p => p.GroupId == groupId);
+            return context.Set<Group>().Include(p => p.Country).Include(p => p.ProductionsGroups).ThenInclude(p => p.Production).FirstOrDefaultAsync(p => p.GroupId == groupId);
         }
 
         public async Task<Group> GetDetails(int groupId)

@@ -155,6 +155,7 @@ namespace C64.Data.History
         DeleteGroupMember,
         JoinedDate,
         LeftDate,
-        MemberJobs
+        MemberJobs,
+        CountryId
     }
 }

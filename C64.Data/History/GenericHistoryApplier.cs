@@ -167,6 +167,12 @@ namespace C64.Data.History
 
                     return $"Group description changed to '{newValue}'";
 
+                case HistoryEditProperty.CountryId:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Country removed";
+
+                    return $"Country changed to {newValue}";
+
                 default:
                     throw new NotImplementedException($"Description for {property} lacks implementation");
             }
