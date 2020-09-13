@@ -23,8 +23,15 @@ namespace C64.Data
         {
             optionsBuilder.UseLoggerFactory(_loggerFactory);
 
-            if (configuration.GetValue<bool>("DetailedErrors"))
-                optionsBuilder.EnableDetailedErrors();
+            try
+            {
+                if (configuration.GetValue<bool>("DetailedErrors"))
+                    optionsBuilder.EnableDetailedErrors();
+            }
+            catch
+            {
+                ///
+            }
 
             //optionsBuilder.EnableSensitiveDataLogging(true);
         }

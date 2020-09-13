@@ -37,6 +37,10 @@
                     <tr><th>Aka</th><td>@group.Aka</td></tr>
                 }
                 <tr><th>Founded</th><td><PartialDateDisplay DateType="@group.FoundedDateType" DateValue="@group.FoundedDate" /></td></tr>
+                @if (group.Country != null)
+                {
+                    <tr><th>Base country</th><td>@group.Country.Name</td></tr>
+                }
                 <tr><th>Closed</th><td><PartialDateDisplay DateType="@group.ClosedDateType" DateValue="@group.ClosedDate" /></td></tr>
                 <tr><th>Homepage</th><td>@group.Url.ValueOrNa()</td></tr>
                 <tr><th>Email</th><td>@group.Email.ValueOrNa()</td></tr>
