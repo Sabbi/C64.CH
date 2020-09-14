@@ -30,7 +30,7 @@ namespace C64.Data.History
             var propertyName = historyRecord.Property;
 
             // Hack
-            if (propertyName == "GroupDescription")
+            if (propertyName.EndsWith("Description"))
                 propertyName = "Description";
 
             var property = typeof(T).GetProperty(propertyName);
@@ -71,7 +71,7 @@ namespace C64.Data.History
             var propertyName = property.ToString();
 
             // Hack
-            if (propertyName == "GroupDescription")
+            if (propertyName.EndsWith("Description"))
                 propertyName = "Description";
 
             var propInfo = typeof(T).GetProperty(propertyName);
