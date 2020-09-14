@@ -1,0 +1,163 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using C64.FrontEnd.Validators;
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+@inject IToastService toastService
+
+<BootstrapModal @ref="bootstrapModal" Title="Add new party" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <EditForm Model="editParty" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ServerSideValidator @ref="serverSideValidator" />
+            <div class="form-group">
+                <label>
+                    Name
+                </label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editParty.Name" />
+                    <ValidationMessage For="@(() => editParty.Name)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <div>
+                    <InputTextArea rows="4" class="form-control" @bind-Value="@editParty.Description" />
+                    <ValidationMessage For="@(() => editParty.Description)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>From</label>
+                <div>
+                    <InputPartialDate @bind-Value="@editParty.From" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
+                    <ValidationMessage For="@(() => editParty.From)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>To</label>
+                <div>
+                    <InputPartialDate @bind-Value="@editParty.To" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
+                    <ValidationMessage For="@(() => editParty.To)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>
+                    Organizers
+                </label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editParty.Organizers" />
+                    <ValidationMessage For="@(() => editParty.Organizers)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>
+                    Url
+                </label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editParty.Url" />
+                    <ValidationMessage For="@(() => editParty.Url)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>
+                    Email
+                </label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editParty.Email" />
+                    <ValidationMessage For="@(() => editParty.Email)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>
+                    Location
+                </label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editParty.Location" />
+                    <ValidationMessage For="@(() => editParty.Location)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Country:</label>
+                <div>
+                    <InputSelect class="form-control" @bind-Value="@editParty.CountryId">
+                        <option value="">Select Country:</option>
+                        @foreach (var country in countries)
+                        {
+                            <option value="@country.CountryId">@country.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Add party</button>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [Parameter]
+    public Party Party { get; set; } = new Party();
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private EditParty editParty = new EditParty();
+
+    private ServerSideValidator serverSideValidator = new ServerSideValidator();
+
+    private IEnumerable<Country> countries = new List<Country>();
+
+    private async Task OnValidSubmit()
+    {
+
+        var errors = new Dictionary<string, List<string>>();
+
+        if (editParty.From.Type != DateType.YearMonthDay)
+            errors.Add("From", new List<string> { "Date not valid" });
+
+        if (editParty.To.Type != DateType.YearMonthDay)
+            errors.Add("To", new List<string> { "Date not valid" });
+
+        if (errors.Any())
+        {
+            serverSideValidator.DisplayErrors(errors);
+            return;
+        }
+
+        Party.Name = editParty.Name;
+        Party.Description = editParty.Description;
+        Party.CountryId = editParty.CountryId;
+        Party.Email = editParty.Email;
+        Party.From = editParty.From.Date;
+        Party.To = editParty.To.Date;
+        Party.Location = editParty.Location;
+        Party.Organizers = editParty.Organizers;
+        Party.Url = editParty.Url;
+
+        unitOfWork.Parties.Add(Party);
+        await unitOfWork.Commit();
+
+        var partyHistory = HistoryHandlerFactory.Get(HistoryEntity.Party, unitOfWork, Party, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+
+        partyHistory.AddHistory(HistoryEditProperty.AddParty, Party);
+        partyHistory.Apply();
+
+        await unitOfWork.Commit();
+
+        await OnClosed.InvokeAsync(null);
+
+        await bootstrapModal.Close();
+    }
+
+    protected override void OnInitialized()
+    {
+        countries = unitOfWork.Countries.Find(p => p.Selectable).OrderBy(p => p.Name);
+        editParty = new EditParty();
+    }
+}

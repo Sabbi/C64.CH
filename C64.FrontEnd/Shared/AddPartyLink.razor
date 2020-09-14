@@ -1,0 +1,26 @@
+﻿@inject IModalService Modal
+@inject IUnitOfWork unitOfWork
+@inject IToastService toastService
+
+<a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddPartyModal" @onclick:preventDefault>
+    @Content
+</a>
+
+@code{
+    [Parameter]
+    public RenderFragment Content { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private async Task OpenAddPartyModal()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(AddPartyModal.unitOfWork), unitOfWork);
+        var reference = Modal.Show<AddPartyModal>("", parameters);
+        var result = await reference.Result;
+
+        if (!result.Cancelled)
+            toastService.ShowSuccess($"Party added");
+    }
+}
