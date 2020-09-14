@@ -1,0 +1,148 @@
+﻿@page "/parties/{PartyId:int}"
+@page "/parties/{PartyId:int}/{PartyName}"
+
+@using Microsoft.Extensions.DependencyInjection
+@inherits OwningComponentBase
+
+@implements IDisposable
+
+@inject IJSRuntime jsRuntime
+@inject ILogger<PartyDetail> logger
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IModalService Modal
+@inject IToastService toastService
+
+@if (party != null)
+{
+    <Box>
+        <Title>
+            Details of @party.Name
+            @*<div class="float-right pr-3 position-absolute" style="right:0; top:5px">
+                    <select class="form-control d-inline" id="groupEditSelect" @onchange="OnSelectEdit">
+                        <option value="0">Edit Group</option>
+                        <option value="general">- General Info</option>
+                        <option value="additional">- Additional Info</option>
+                        <option value="addmember">- Add Member</option>
+                        <option value="editmember">- Edit Members</option>
+                        <optgroup label="---------------------------"></optgroup>
+                        <option value="viewHistory">View history</option>
+                    </select>
+                </div>*@
+        </Title>
+        <Content>
+            <table class="table table-prod-list">
+                <tr><th>Name:</th><td>@party.Name</td></tr>
+                @if (!string.IsNullOrEmpty(party.Description))
+                {
+                    <tr><th>Description</th><td>@party.Description</td></tr>
+                }
+                <tr><th>Starts:</th><td><PartialDateDisplay DateType="DateType.YearMonthDay" DateValue="@party.From" /></td></tr>
+                <tr><th>Ends:</th><td><PartialDateDisplay DateType="DateType.YearMonthDay" DateValue="@party.To" /></td></tr>
+                <tr><th>Location</th><td>@party.Location</td></tr>
+                @if (party.Country != null)
+                {
+                    <tr><th>Country</th><td>@party.Country.Name</td></tr>
+                }
+                <tr><th>Organizers</th><td>@party.Organizers</td></tr>
+                <tr><th>Homepage</th><td>@party.Url.ValueOrNa()</td></tr>
+                <tr><th>Email</th><td>@party.Email.ValueOrNa()</td></tr>
+            </table>
+            @if (productionIds != null)
+            {
+                <h5>Productions released at @party.Name:</h5>
+                <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" />
+            }
+        </Content>
+    </Box>
+}
+
+@code {
+
+    [Parameter]
+    public int PartyId { get; set; }
+
+    // Fake, only for nicer URL.
+    [Parameter]
+    public string PartyName { get; set; }
+
+    private IUnitOfWork unitOfWork;
+
+    private Party party;
+
+    private string baseUrl => $"parties/{PartyId}/{PartyName}";
+    private IEnumerable<int> productionIds;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadParty(PartyId);
+    }
+
+    //private async Task OnSelectEdit(ChangeEventArgs args)
+    //{
+    //    if (httpContext.HttpContext.GetUserId() == null && args.Value.ToString() != "viewHistory")
+    //    {
+    //        Modal.Show<LoginModal>();
+    //        return;
+    //    }
+    //    IModalReference reference;
+
+    //    if (args.Value.ToString() == "general")
+    //    {
+    //        var parameters = new ModalParameters();
+    //        parameters.Add(nameof(EditGroupModal.Group), group);
+    //        parameters.Add(nameof(EditGroupModal.unitOfWork), unitOfWork);
+    //        reference = Modal.Show<EditGroupModal>("", parameters);
+    //        await reference.Result;
+    //    }
+    //    if (args.Value.ToString() == "additional")
+    //    {
+    //        var parameters = new ModalParameters();
+    //        parameters.Add(nameof(EditGroupAdditionalModal.Group), group);
+    //        parameters.Add(nameof(EditGroupAdditionalModal.unitOfWork), unitOfWork);
+    //        reference = Modal.Show<EditGroupAdditionalModal>("", parameters);
+    //        await reference.Result;
+    //    }
+    //    else if (args.Value.ToString() == "addmember")
+    //    {
+    //        var parameters = new ModalParameters();
+    //        parameters.Add(nameof(AddGroupMembersModal.Group), group);
+    //        parameters.Add(nameof(AddGroupMembersModal.unitOfWork), unitOfWork);
+    //        reference = Modal.Show<AddGroupMembersModal>("", parameters);
+    //        await reference.Result;
+    //    }
+    //    else if (args.Value.ToString() == "editmember")
+    //    {
+    //        var parameters = new ModalParameters();
+    //        parameters.Add(nameof(EditGroupMembersModal.Group), group);
+    //        parameters.Add(nameof(EditGroupMembersModal.unitOfWork), unitOfWork);
+    //        reference = Modal.Show<EditGroupMembersModal>("", parameters);
+    //        await reference.Result;
+    //    }
+    //    else if (args.Value.ToString() == "viewHistory")
+    //    {
+    //        var parameters = new ModalParameters();
+    //        parameters.Add(nameof(ViewHistoryModal.Group), group);
+    //        reference = Modal.Show<ViewHistoryModal>("", parameters);
+    //        await reference.Result;
+    //    }
+    //    await jsRuntime.InvokeAsync<object>("ResetGroupEditSelect");
+    //}
+
+    private async Task LoadParty(int id)
+    {
+        var sw = new System.Diagnostics.Stopwatch();
+        sw.Start();
+
+        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+
+        party = await unitOfWork.Parties.GetDetails(id);
+
+        productionIds = party.ProductionsParties.Select(p => p.ProductionId);
+
+        sw.Stop();
+
+        logger.LogInformation("Loaded party {name} in {milliseconds}ms", party.Name, sw.ElapsedMilliseconds);
+
+        StateHasChanged();
+    }
+}
