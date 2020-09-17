@@ -47,8 +47,9 @@
     {
         links = new List<LinkModel>();
 
-        // Previous Link
-        links.Add(new LinkModel(CurrentPage - 1, CurrentPage != 1, "Previous"));
+        // First/Previous Link
+        links.Add(new LinkModel(1, CurrentPage > 1, "«"));
+        links.Add(new LinkModel(CurrentPage - 1, CurrentPage != 1, "‹"));
 
         for (int i = 1; i <= TotalAmountPages; i++)
         {
@@ -58,9 +59,9 @@
             }
         }
 
-        // Next Link
-        links.Add(new LinkModel(CurrentPage + 1, CurrentPage != TotalAmountPages, "Next"));
-
+        // Next/Last Link
+        links.Add(new LinkModel(CurrentPage + 1, CurrentPage != TotalAmountPages, "›"));
+        links.Add(new LinkModel(TotalAmountPages, CurrentPage < TotalAmountPages, "»"));
     }
 
     private class LinkModel
