@@ -1,0 +1,134 @@
+﻿@inherits InputBase<DateTime>
+@inject ILogger<InputPartialDate> logger
+<select @onchange="YearChange" class="form-control d-inline-block" style="width:25%">
+    <option value="0">- Year -</option>
+    @for (var i = EndingYear; i >= StartingYear; i--)
+    {
+        if (year == i.ToString())
+        {
+            <option selected>@i.ToString()</option>
+        }
+        else
+        {
+            <option>@i.ToString()</option>
+        }
+    }
+</select>
+    &nbsp;
+<select @onchange="MonthChange" class="form-control d-inline-block" style="width:25%">
+    <option value="0">- Month -</option>
+    @for (var i = 1; i <= 12; i++)
+    {
+        if (month == i.ToString())
+        {
+            <option selected>@i.ToString()</option>
+        }
+        else
+        {
+            <option>@i.ToString()</option>
+        }
+    }
+</select>
+    &nbsp;
+<select @onchange="DayChange" class="form-control d-inline-block" style="width:25%">
+    <option value="0">- Day -</option>
+    @for (var i = 1; i <= 31; i++)
+    {
+        if (day == i.ToString())
+        {
+            <option selected>@i.ToString()</option>
+        }
+        else
+        {
+            <option>@i.ToString()</option>
+        }
+    }
+</select>
+@code {
+    /// <summary>
+    /// TODO: Chnorz - A lot of clearup 2 do!
+    /// </summary>
+
+    [Parameter]
+    public int StartingYear { get; set; } = 1982;
+
+    [Parameter]
+    public int EndingYear { get; set; } = DateTime.Now.Year;
+
+    private string day = "0";
+    private string month = "0";
+    private string year = "0";
+
+    private int dayInt = 0;
+    private int monthInt = 0;
+    private int yearInt = 0;
+
+    private void MonthChange(ChangeEventArgs eventArgs)
+    {
+        month = eventArgs.Value.ToString();
+
+        if (month == "0")
+            day = "0";
+
+        logger.LogInformation("MonthChange called");
+        Updater();
+    }
+
+    private void DayChange(ChangeEventArgs eventArgs)
+    {
+        day = eventArgs.Value.ToString();
+
+        if (day != "0" && month == "0")
+            month = "1";
+
+        logger.LogInformation("DayChange called");
+        Updater();
+    }
+
+    private void YearChange(ChangeEventArgs eventArgs)
+    {
+        year = eventArgs.Value.ToString();
+
+        if (year == "0")
+        {
+            month = "0";
+            day = "0";
+        }
+
+        logger.LogInformation("YearChange called");
+        Updater();
+    }
+
+    private void Updater()
+    {
+        dayInt = int.Parse(day);
+        monthInt = int.Parse(month);
+        yearInt = int.Parse(year);
+
+        try
+        {
+            CurrentValue = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day));
+        }
+        catch (Exception e)
+        {
+            CurrentValue = DateTime.MinValue;
+        }
+    }
+
+    protected override bool TryParseValueFromString(string value, out DateTime result, out string validationErrorMessage)
+    {
+        result = DateTime.Parse(value);
+        validationErrorMessage = null;
+        return true;
+    }
+
+    protected override void OnInitialized()
+    {
+        if (CurrentValue != null)
+        {
+            day = CurrentValue.Day.ToString();
+            month = CurrentValue.Month.ToString();
+            year = CurrentValue.Year.ToString();
+        }
+    }
+}
