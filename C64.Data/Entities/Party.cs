@@ -9,9 +9,13 @@ namespace C64.Data.Entities
         public int PartyId { get; set; }
 
         [MaxLength(255)]
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public DateTime From { get; set; } = DateTime.MinValue;
+
+        [Required]
         public DateTime To { get; set; } = DateTime.MinValue;
 
         [MaxLength(65535)]

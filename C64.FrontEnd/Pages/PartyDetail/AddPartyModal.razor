@@ -1,0 +1,58 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using C64.FrontEnd.Validators;
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+@inject IToastService toastService
+
+<BootstrapModal @ref="bootstrapModal" Title="Add new party" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <PartyForm OnValidSubmit="OnValidSubmit" Countries="@countries" Party="@Party" />
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [Parameter]
+    public Party Party { get; set; } = new Party();
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private EditParty editParty = new EditParty();
+
+    private bool showMarkDown = false;
+
+    private ServerSideValidator serverSideValidator = new ServerSideValidator();
+
+    private IEnumerable<Country> countries = new List<Country>();
+
+    private async Task OnValidSubmit()
+    {
+        unitOfWork.Parties.Add(Party);
+        await unitOfWork.Commit();
+
+        var partyHistory = HistoryHandlerFactory.Get(HistoryEntity.Party, unitOfWork, Party, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+
+        partyHistory.AddHistory(HistoryEditProperty.AddParty, Party);
+        partyHistory.Apply();
+
+        await unitOfWork.Commit();
+
+        await OnClosed.InvokeAsync(null);
+
+        await bootstrapModal.Close();
+    }
+
+    protected override void OnInitialized()
+    {
+        countries = unitOfWork.Countries.Find(p => p.Selectable).OrderBy(p => p.Name);
+        editParty = new EditParty();
+    }
+}
