@@ -11,10 +11,10 @@ namespace C64.FrontEnd.Models
 
         public string Description { get; set; }
 
-        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid Date")]
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid date range")]
         public DateTime From { get; set; } = DateTime.MinValue;
 
-        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid Date")]
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid date range")]
         public DateTime To { get; set; } = DateTime.MinValue;
 
         public string Organizers { get; set; }

@@ -32,6 +32,7 @@
         <div>
             <InputNormalDate @bind-Value="@EditParty.From" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
             <ValidationMessage For="@(() => EditParty.From)" />
+            <p>@EditParty.From</p>
         </div>
     </div>
     <div class="form-group">

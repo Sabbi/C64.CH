@@ -69,7 +69,7 @@
     private string baseUrl => $"parties/{PartyId}/{PartyName}";
     private IEnumerable<int> productionIds;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         await LoadParty(PartyId);
     }

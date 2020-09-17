@@ -2,6 +2,8 @@
 @inject IUnitOfWork unitOfWork
 @inject IToastService toastService
 
+@inject NavigationManager navigationManager
+
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddPartyModal" @onclick:preventDefault>
     @Content
 </a>
@@ -21,6 +23,10 @@
         var result = await reference.Result;
 
         if (!result.Cancelled)
-            toastService.ShowSuccess($"Party added");
+        {
+            var party = (Party)result.Data;
+            toastService.ShowSuccess($"Party {party.Name} added");
+            navigationManager.NavigateTo($"/parties/{party.PartyId}/{party.Name.UrlEncode()}");
+        }
     }
 }

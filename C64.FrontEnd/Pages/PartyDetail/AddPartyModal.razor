@@ -54,7 +54,8 @@
 
         await OnClosed.InvokeAsync(null);
 
-        await bootstrapModal.Close();
+        await bootstrapModal.Close(party);
+
     }
 
     protected override void OnInitialized()
