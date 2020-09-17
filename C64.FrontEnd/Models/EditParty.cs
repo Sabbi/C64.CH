@@ -1,5 +1,5 @@
-﻿using C64.Data.Models;
-using C64.FrontEnd.Helpers;
+﻿using C64.FrontEnd.Helpers;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace C64.FrontEnd.Models
@@ -11,8 +11,12 @@ namespace C64.FrontEnd.Models
 
         public string Description { get; set; }
 
-        public PartialDate From { get; set; } = new PartialDate();
-        public PartialDate To { get; set; } = new PartialDate();
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid Date")]
+        public DateTime From { get; set; } = DateTime.MinValue;
+
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid Date")]
+        public DateTime To { get; set; } = DateTime.MinValue;
+
         public string Organizers { get; set; }
 
         [NotRequiredUrl]

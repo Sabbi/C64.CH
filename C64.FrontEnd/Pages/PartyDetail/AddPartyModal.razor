@@ -8,14 +8,11 @@
 
 <BootstrapModal @ref="bootstrapModal" Title="Add new party" Size="BootstrapModal.ModalSize.Large">
     <Content>
-        <PartyForm OnValidSubmit="OnValidSubmit" Countries="@countries" Party="@Party" />
+        <PartyForm OnValidSubmit="OnValidSubmit" Countries="@countries" EditParty="@editParty" />
     </Content>
 </BootstrapModal>
 
 @code {
-
-    [Parameter]
-    public Party Party { get; set; } = new Party();
 
     [Parameter]
     public EventCallback OnClosed { get; set; }
@@ -27,20 +24,30 @@
 
     private EditParty editParty = new EditParty();
 
-    private bool showMarkDown = false;
-
-    private ServerSideValidator serverSideValidator = new ServerSideValidator();
-
     private IEnumerable<Country> countries = new List<Country>();
 
     private async Task OnValidSubmit()
     {
-        unitOfWork.Parties.Add(Party);
+
+        var party = new Party
+        {
+            CountryId = editParty.CountryId,
+            Description = editParty.Description,
+            Email = editParty.Email,
+            From = editParty.From,
+            Location = editParty.Location,
+            Name = editParty.Name,
+            Organizers = editParty.Organizers,
+            To = editParty.To,
+            Url = editParty.Url
+        };
+
+        unitOfWork.Parties.Add(party);
         await unitOfWork.Commit();
 
-        var partyHistory = HistoryHandlerFactory.Get(HistoryEntity.Party, unitOfWork, Party, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        var partyHistory = HistoryHandlerFactory.Get(HistoryEntity.Party, unitOfWork, party, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
 
-        partyHistory.AddHistory(HistoryEditProperty.AddParty, Party);
+        partyHistory.AddHistory(HistoryEditProperty.AddParty, party);
         partyHistory.Apply();
 
         await unitOfWork.Commit();

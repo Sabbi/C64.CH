@@ -13,9 +13,11 @@ namespace C64.Data.Entities
         public string Name { get; set; }
 
         [Required]
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid Date")]
         public DateTime From { get; set; } = DateTime.MinValue;
 
         [Required]
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid Date")]
         public DateTime To { get; set; } = DateTime.MinValue;
 
         [MaxLength(65535)]

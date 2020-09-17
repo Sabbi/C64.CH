@@ -1,15 +1,14 @@
 ﻿@namespace C64.FrontEnd.Pages
 @using C64.FrontEnd.Validators;
-<EditForm Model="Party" OnValidSubmit="OnDataAnnotationsValidated">
+<EditForm Model="EditParty" OnValidSubmit="OnDataAnnotationsValidated">
     <DataAnnotationsValidator />
-    <ServerSideValidator @ref="serverSideValidator" />
     <div class="form-group">
         <label>
             Name
         </label>
         <div>
-            <InputText class="form-control" @bind-Value="@Party.Name" />
-            <ValidationMessage For="@(() => Party.Name)" />
+            <InputText class="form-control" @bind-Value="@EditParty.Name" />
+            <ValidationMessage For="@(() => EditParty.Name)" />
         </div>
     </div>
     <div class="form-group">
@@ -18,28 +17,28 @@
             @if (showMarkDown)
             {
                 <div class="border border-secondary p-3">
-                    <RenderMarkdown MarkdownContent="@Party.Description" />
+                    <RenderMarkdown MarkdownContent="@EditParty.Description" />
                 </div>
             }
             else
             {
-                <InputTextArea rows="4" class="form-control" @bind-Value="@Party.Description" />
-                <ValidationMessage For="@(() => Party.Description)" />
+                <InputTextArea rows="4" class="form-control" @bind-Value="@EditParty.Description" />
+                <ValidationMessage For="@(() => EditParty.Description)" />
             }
         </div>
     </div>
     <div class="form-group">
         <label>From</label>
         <div>
-            <InputDate @bind-Value="@Party.From" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
-            <ValidationMessage For="@(() => Party.From)" />
+            <InputNormalDate @bind-Value="@EditParty.From" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
+            <ValidationMessage For="@(() => EditParty.From)" />
         </div>
     </div>
     <div class="form-group">
         <label>To</label>
         <div>
-            <InputDate @bind-Value="@Party.To" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
-            <ValidationMessage For="@(() => Party.To)" />
+            <InputNormalDate @bind-Value="@EditParty.To" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
+            <ValidationMessage For="@(() => EditParty.To)" />
         </div>
     </div>
     <div class="form-group">
@@ -47,8 +46,8 @@
             Organizers
         </label>
         <div>
-            <InputText class="form-control" @bind-Value="@Party.Organizers" />
-            <ValidationMessage For="@(() => Party.Organizers)" />
+            <InputText class="form-control" @bind-Value="@EditParty.Organizers" />
+            <ValidationMessage For="@(() => EditParty.Organizers)" />
         </div>
     </div>
     <div class="form-group">
@@ -56,8 +55,8 @@
             Url
         </label>
         <div>
-            <InputText class="form-control" @bind-Value="@Party.Url" />
-            <ValidationMessage For="@(() => Party.Url)" />
+            <InputText class="form-control" @bind-Value="@EditParty.Url" />
+            <ValidationMessage For="@(() => EditParty.Url)" />
         </div>
     </div>
     <div class="form-group">
@@ -65,8 +64,8 @@
             Email
         </label>
         <div>
-            <InputText class="form-control" @bind-Value="@Party.Email" />
-            <ValidationMessage For="@(() => Party.Email)" />
+            <InputText class="form-control" @bind-Value="@EditParty.Email" />
+            <ValidationMessage For="@(() => EditParty.Email)" />
         </div>
     </div>
     <div class="form-group">
@@ -74,14 +73,14 @@
             Location
         </label>
         <div>
-            <InputText class="form-control" @bind-Value="@Party.Location" />
-            <ValidationMessage For="@(() => Party.Location)" />
+            <InputText class="form-control" @bind-Value="@EditParty.Location" />
+            <ValidationMessage For="@(() => EditParty.Location)" />
         </div>
     </div>
     <div class="form-group">
         <label>Country:</label>
         <div>
-            <InputSelect class="form-control" @bind-Value="@Party.CountryId">
+            <InputSelect class="form-control" @bind-Value="@EditParty.CountryId">
                 <option value="">Select Country:</option>
                 @foreach (var country in Countries)
                 {
@@ -96,7 +95,7 @@
 @code {
 
     [Parameter]
-    public Party Party { get; set; }
+    public EditParty EditParty { get; set; }
 
     [Parameter]
     public EventCallback OnValidSubmit { get; set; }
@@ -104,7 +103,7 @@
     [Parameter]
     public IEnumerable<Country> Countries { get; set; } = new List<Country>();
 
-    private ServerSideValidator serverSideValidator = new ServerSideValidator();
+    // private EditParty EditParty = new EditParty();
 
     private bool showMarkDown = false;
 
