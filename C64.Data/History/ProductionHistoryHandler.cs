@@ -125,6 +125,29 @@ namespace C64.Data.History
         }
     }
 
+    public class PartyHistoryHandler : HistoryHandler<Party>
+    {
+        public PartyHistoryHandler(IUnitOfWork unitOfWork, Party party, string userId, string userIp) : base(unitOfWork, party, userId, userIp)
+        {
+        }
+
+        public override void AddHistory(HistoryEditProperty property, object newValue, HistoryStatus status = HistoryStatus.ToApply)
+        {
+            var applier = HistoryApplierFactory.Get(property);
+
+            var dbhistory = applier.CreateHistory(property, HistoryEntity.Party, entity, newValue, status);
+
+            if (dbhistory.NewValue == dbhistory.OldValue)
+                return;
+
+            dbhistory.AffectedPartyId = entity.PartyId;
+            dbhistory.UserId = userId;
+            dbhistory.IpAdress = userIp;
+
+            history.Add(dbhistory);
+        }
+    }
+
     public enum HistoryEditProperty
     {
         Name,
@@ -156,6 +179,19 @@ namespace C64.Data.History
         JoinedDate,
         LeftDate,
         MemberJobs,
-        CountryId
+        CountryId,
+
+        // Parties
+        AddParty,
+
+        PartyName,
+        PartyDescription,
+        PartyFrom,
+        PartyTo,
+        PartyUrl,
+        PartyEmail,
+        PartyCountryId,
+        PartyLocation,
+        PartyOrganizers,
     }
 }

@@ -53,6 +53,9 @@ namespace C64.Data.History
                 case HistoryEditProperty.DeleteGroupMember:
                     return new DeleteGroupMemberApplier();
 
+                case HistoryEditProperty.AddParty:
+                    return new AddPartyApplier();
+
                 default:
                     return new GenericHistoryApplier();
             }

@@ -1,0 +1,66 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using C64.FrontEnd.Validators;
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger
+@inject IToastService toastService
+
+<BootstrapModal @ref="bootstrapModal" Title="Add new party" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <PartyForm OnValidSubmit="OnValidSubmit" Countries="@countries" EditParty="@editParty" />
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [Parameter]
+    public Party Party { get; set; } = new Party();
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private EditParty editParty = new EditParty();
+
+    private bool showMarkDown = false;
+
+    private ServerSideValidator serverSideValidator = new ServerSideValidator();
+
+    private IEnumerable<Country> countries = new List<Country>();
+
+    private async Task OnValidSubmit()
+    {
+
+        var partyHistory = HistoryHandlerFactory.Get(HistoryEntity.Party, unitOfWork, Party, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+
+        partyHistory.AddHistory(HistoryEditProperty.PartyName, editParty.Name);
+        partyHistory.AddHistory(HistoryEditProperty.PartyDescription, editParty.Description);
+        partyHistory.AddHistory(HistoryEditProperty.PartyFrom, editParty.From);
+        partyHistory.AddHistory(HistoryEditProperty.PartyTo, editParty.To);
+        partyHistory.AddHistory(HistoryEditProperty.PartyUrl, editParty.Url);
+        partyHistory.AddHistory(HistoryEditProperty.PartyEmail, editParty.Email);
+        partyHistory.AddHistory(HistoryEditProperty.PartyOrganizers, editParty.Organizers);
+        partyHistory.AddHistory(HistoryEditProperty.PartyLocation, editParty.Location);
+        partyHistory.AddHistory(HistoryEditProperty.PartyCountryId, editParty.CountryId);
+
+        partyHistory.Apply();
+
+        await unitOfWork.Commit();
+
+        await OnClosed.InvokeAsync(null);
+
+        await bootstrapModal.Close();
+    }
+
+    protected override void OnInitialized()
+    {
+        countries = unitOfWork.Countries.Find(p => p.Selectable).OrderBy(p => p.Name);
+        editParty = new EditParty();
+        editParty.LoadParty(Party);
+    }
+}

@@ -69,6 +69,14 @@
 
     }
 
+    public async Task Close(object data)
+    {
+        if (BlazoredModal != null)
+            await BlazoredModal.Close(ModalResult.Ok(data));
+        else
+            navigationManager.NavigateTo("/");
+    }
+
     public async Task Cancel()
     {
         if (BlazoredModal != null)

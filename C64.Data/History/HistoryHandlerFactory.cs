@@ -15,6 +15,9 @@ namespace C64.Data.History
                 case HistoryEntity.Group:
                     return new GroupHistoryHandler(unitOfWork, (Group)entity, userId, userIp);
 
+                case HistoryEntity.Party:
+                    return new PartyHistoryHandler(unitOfWork, (Party)entity, userId, userIp);
+
                 case HistoryEntity.Scener:
                     throw new NotImplementedException();
             }

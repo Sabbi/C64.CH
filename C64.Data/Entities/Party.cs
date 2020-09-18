@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace C64.Data.Entities
 {
@@ -8,10 +9,22 @@ namespace C64.Data.Entities
     {
         public int PartyId { get; set; }
 
+        [NotMapped]
+        public int Id
+        {
+            get => PartyId;
+            set => PartyId = value;
+        }
+
         [MaxLength(255)]
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public DateTime From { get; set; } = DateTime.MinValue;
+
+        [Required]
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid Date")]
         public DateTime To { get; set; } = DateTime.MinValue;
 
         [MaxLength(65535)]

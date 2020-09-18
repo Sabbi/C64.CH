@@ -32,6 +32,9 @@
     [Parameter]
     public Group Group { get; set; }
 
+    [Parameter]
+    public Party Party { get; set; }
+
     private BootstrapModal bootstrapModal;
 
     private IEnumerable<HistoryRecord> histories = new HashSet<HistoryRecord>();
@@ -45,10 +48,15 @@
             histories = (await unitOfWork.Productions.GetHistory(Production.ProductionId)).OrderByDescending(p => p.Applied);
             title = $"History of {Production.Name}";
         }
-        else
+        else if (Group != null)
         {
             histories = (await unitOfWork.Groups.GetHistory(Group.GroupId)).OrderByDescending(p => p.Applied);
             title = $"History of {Group.Name}";
+        }
+        else
+        {
+            histories = (await unitOfWork.Parties.GetHistory(Party.PartyId)).OrderByDescending(p => p.Applied);
+            title = $"History of {Party.Name}";
         }
     }
 

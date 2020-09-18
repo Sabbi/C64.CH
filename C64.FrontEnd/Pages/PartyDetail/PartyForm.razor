@@ -1,0 +1,116 @@
+﻿@namespace C64.FrontEnd.Pages
+@using C64.FrontEnd.Validators;
+<EditForm Model="EditParty" OnValidSubmit="OnDataAnnotationsValidated">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>
+            Name
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@EditParty.Name" />
+            <ValidationMessage For="@(() => EditParty.Name)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Description</label><button class="btn btn-xs btn-primary float-right" type="button" @onclick="(() => showMarkDown = !showMarkDown)">Toggle Preview</button>
+        <div>
+            @if (showMarkDown)
+            {
+                <div class="border border-secondary p-3">
+                    <RenderMarkdown MarkdownContent="@EditParty.Description" />
+                </div>
+            }
+            else
+            {
+                <InputTextArea rows="4" class="form-control" @bind-Value="@EditParty.Description" />
+                <ValidationMessage For="@(() => EditParty.Description)" />
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <label>From</label>
+        <div>
+            <InputNormalDate @bind-Value="@EditParty.From" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
+            <ValidationMessage For="@(() => EditParty.From)" />
+            <p>@EditParty.From</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>To</label>
+        <div>
+            <InputNormalDate @bind-Value="@EditParty.To" StartingYear="1982" EndingYear="DateTime.Now.Year+1" />
+            <ValidationMessage For="@(() => EditParty.To)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>
+            Organizers
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@EditParty.Organizers" />
+            <ValidationMessage For="@(() => EditParty.Organizers)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>
+            Url
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@EditParty.Url" />
+            <ValidationMessage For="@(() => EditParty.Url)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>
+            Email
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@EditParty.Email" />
+            <ValidationMessage For="@(() => EditParty.Email)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>
+            Location
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@EditParty.Location" />
+            <ValidationMessage For="@(() => EditParty.Location)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Country:</label>
+        <div>
+            <InputSelect class="form-control" @bind-Value="@EditParty.CountryId">
+                <option value="">Select Country:</option>
+                @foreach (var country in Countries)
+                {
+                    <option value="@country.CountryId">@country.Name</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Add party</button>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public EditParty EditParty { get; set; }
+
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    public IEnumerable<Country> Countries { get; set; } = new List<Country>();
+
+    // private EditParty EditParty = new EditParty();
+
+    private bool showMarkDown = false;
+
+    private async Task OnDataAnnotationsValidated()
+    {
+        await OnValidSubmit.InvokeAsync(null);
+
+    }
+}

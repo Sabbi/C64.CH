@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace C64.Data.Repositories
@@ -17,9 +18,19 @@ namespace C64.Data.Repositories
             return await context.Set<PartyCategory>().ToListAsync();
         }
 
+        public Task<Party> GetDetails(int partyId)
+        {
+            return context.Set<Party>().Include(p => p.Country).Include(p => p.ProductionsParties).ThenInclude(p => p.Production).FirstOrDefaultAsync(p => p.PartyId == partyId);
+        }
+
         public Task<Party> GetWithProductions(int partyId)
         {
             return context.Set<Party>().Include(p => p.ProductionsParties).ThenInclude(p => p.Production).FirstOrDefaultAsync(p => p.PartyId == partyId);
+        }
+
+        public async Task<IEnumerable<HistoryRecord>> GetHistory(int partyId)
+        {
+            return await context.Set<HistoryRecord>().Where(p => p.AffectedPartyId == partyId).Include(p => p.User).Include(p => p.AffectedParty).ToListAsync();
         }
     }
 }

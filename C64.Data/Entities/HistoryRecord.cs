@@ -14,14 +14,17 @@ namespace C64.Data.Entities
 
         public HistoryEntity AffectedEntity { get; set; }
 
-        public int? AffectedProductionId { get; set; }
+        public int? AffectedProductionId { get; set; } = null;
         public virtual Production AffectedProduction { get; set; }
 
-        public int? AffectedGroupId { get; set; }
+        public int? AffectedGroupId { get; set; } = null;
         public virtual Group AffectedGroup { get; set; }
 
-        public int? AffectedScenerId { get; set; }
+        public int? AffectedScenerId { get; set; } = null;
         public virtual Scener AffectedScener { get; set; }
+
+        public int? AffectedPartyId { get; set; } = null;
+        public virtual Party AffectedParty { get; set; }
 
         public string OldValue { get; set; }
         public string NewValue { get; set; }
@@ -53,7 +56,8 @@ namespace C64.Data.Entities
     {
         Production,
         Group,
-        Scener
+        Scener,
+        Party
     }
 
     public enum HistoryStatus

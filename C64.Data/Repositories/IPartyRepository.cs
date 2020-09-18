@@ -9,5 +9,7 @@ namespace C64.Data.Repositories
         Task<Party> GetWithProductions(int partyId);
 
         Task<ICollection<PartyCategory>> GetCategories();
+        Task<Party> GetDetails(int partyId);
+        Task<IEnumerable<HistoryRecord>> GetHistory(int partyId);
     }
 }
