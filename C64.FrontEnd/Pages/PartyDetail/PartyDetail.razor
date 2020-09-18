@@ -83,14 +83,14 @@
         }
         IModalReference reference;
 
-        //if (args.Value.ToString() == "general")
-        //{
-        //    var parameters = new ModalParameters();
-        //    parameters.Add(nameof(EditPartyModal.Party), party);
-        //    parameters.Add(nameof(EditParty.unitOfWork), unitOfWork);
-        //    reference = Modal.Show<EditGroupModal>("", parameters);
-        //    await reference.Result;
-        //}
+        if (args.Value.ToString() == "general")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditPartyModal.Party), party);
+            parameters.Add(nameof(EditPartyModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditPartyModal>("", parameters);
+            await reference.Result;
+        }
         //else if (args.Value.ToString() == "viewHistory")
         //{
         //    //var parameters = new ModalParameters();
