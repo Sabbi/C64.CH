@@ -18,8 +18,12 @@ namespace C64.Data.History
                     Apply((Group)entity, historyRecord);
                     break;
 
-                case HistoryEntity.Scener:
-                    throw new NotImplementedException();
+                case HistoryEntity.Party:
+                    Apply((Party)entity, historyRecord);
+                    break;
+
+                default:
+                    throw new NotImplementedException($"GenericHistoryApplier for {historyRecord.AffectedEntity} does not exist");
             }
         }
 
@@ -27,11 +31,7 @@ namespace C64.Data.History
         {
             var type = Type.GetType(historyRecord.Type, true);
 
-            var propertyName = historyRecord.Property;
-
-            // Hack
-            if (propertyName.EndsWith("Description"))
-                propertyName = "Description";
+            var propertyName = FixPropertyName(historyRecord.Property);
 
             var property = typeof(T).GetProperty(propertyName);
             if (historyRecord.NewValue == null)
@@ -59,6 +59,10 @@ namespace C64.Data.History
                     historyRecord = CreateHistory(property, (Group)entity, newValue, status);
                     break;
 
+                case HistoryEntity.Party:
+                    historyRecord = CreateHistory(property, (Party)entity, newValue, status);
+                    break;
+
                 case HistoryEntity.Scener:
                     throw new NotImplementedException();
             }
@@ -67,12 +71,7 @@ namespace C64.Data.History
 
         private HistoryRecord CreateHistory<T>(HistoryEditProperty property, T entity, object newValue, HistoryStatus status)
         {
-            // Default, Simple Datatype properties
-            var propertyName = property.ToString();
-
-            // Hack
-            if (propertyName.EndsWith("Description"))
-                propertyName = "Description";
+            var propertyName = FixPropertyName(property.ToString());
 
             var propInfo = typeof(T).GetProperty(propertyName);
             var oldValue = propInfo.GetValue(entity);
@@ -90,12 +89,28 @@ namespace C64.Data.History
             return dbHistory;
         }
 
+        private string FixPropertyName(string property)
+        {
+            var propertyName = property.ToString();
+
+            if (propertyName.EndsWith("Description"))
+                return "Description";
+
+            if (propertyName.StartsWith("Party") && !propertyName.Equals("Party"))
+            {
+                return propertyName.Substring(5);
+            }
+
+            return propertyName;
+        }
+
         private HistoryRecord CreateBaseRecord(object entity)
         {
             HistoryEntity affectedEntity = HistoryEntity.Production;
 
             int? affectedProductionId = null;
             int? affectedGroupId = null;
+            int? affectedPartyId = null;
 
             if (entity is Production)
             {
@@ -107,11 +122,17 @@ namespace C64.Data.History
                 affectedGroupId = (entity as Group).Id;
                 affectedEntity = HistoryEntity.Group;
             }
+            else if (entity is Party)
+            {
+                affectedPartyId = (entity as Party).Id;
+                affectedEntity = HistoryEntity.Party;
+            }
 
             var dbhistory = new HistoryRecord
             {
                 AffectedProductionId = affectedProductionId,
                 AffectedGroupId = affectedGroupId,
+                AffectedPartyId = affectedPartyId,
                 AffectedEntity = affectedEntity,
             };
 
@@ -126,6 +147,7 @@ namespace C64.Data.History
                     return $"Platform changed from '{production.Platform}' to '{newValue}'";
 
                 case HistoryEditProperty.Name:
+                case HistoryEditProperty.PartyName:
                     return $"Name changed from '{production.Name}' to '{newValue}'";
 
                 case HistoryEditProperty.Aka:
@@ -150,12 +172,14 @@ namespace C64.Data.History
                     return $"Videotype changed from '{production.VideoType}' to '{newValue}'";
 
                 case HistoryEditProperty.Email:
+                case HistoryEditProperty.PartyEmail:
                     if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
                         return "Email removed";
 
                     return $"Email changed to '{newValue}'";
 
                 case HistoryEditProperty.Url:
+                case HistoryEditProperty.PartyUrl:
                     if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
                         return "Url removed";
 
@@ -168,10 +192,35 @@ namespace C64.Data.History
                     return $"Group description changed to '{newValue}'";
 
                 case HistoryEditProperty.CountryId:
+                case HistoryEditProperty.PartyCountryId:
                     if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
                         return "Country removed";
 
                     return $"Country changed to {newValue}";
+
+                case HistoryEditProperty.PartyDescription:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Party description removed";
+
+                    return $"Party description changed to '{newValue}'";
+
+                case HistoryEditProperty.PartyFrom:
+                    return $"Party starting date changed from {production.From.ToShortDateString()} to {(newValue as DateTime?).GetValueOrDefault().ToShortDateString()}";
+
+                case HistoryEditProperty.PartyTo:
+                    return $"Party ending date changed from {production.To} to {(newValue as DateTime?).GetValueOrDefault().ToShortDateString()}";
+
+                case HistoryEditProperty.PartyLocation:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Party location removed";
+
+                    return $"Party location changed to '{newValue}'";
+
+                case HistoryEditProperty.PartyOrganizers:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Party organizers removed";
+
+                    return $"Party organizers changed to '{newValue}'";
 
                 default:
                     throw new NotImplementedException($"Description for {property} lacks implementation");

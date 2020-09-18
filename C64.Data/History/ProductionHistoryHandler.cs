@@ -182,6 +182,16 @@ namespace C64.Data.History
         CountryId,
 
         // Parties
-        AddParty
+        AddParty,
+
+        PartyName,
+        PartyDescription,
+        PartyFrom,
+        PartyTo,
+        PartyUrl,
+        PartyEmail,
+        PartyCountryId,
+        PartyLocation,
+        PartyOrganizers,
     }
 }
