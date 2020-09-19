@@ -1,0 +1,16 @@
+﻿@namespace C64.FrontEnd.Pages
+<div class="media-body">
+    <h5>@Party.Name</h5>
+    <p>Held in @Party.Location (@Party.CountryId) from <PartialDateDisplay DateValue="@Party.From" /> to <PartialDateDisplay DateValue="@Party.To" /></p>
+    @if (!string.IsNullOrEmpty(Party.Organizers))
+    {
+        <p>Organized by: @Party.Organizers</p>
+    }
+    <p><a href="/parties/@Party.PartyId/@Party.Name.UrlEncode()">See details</a></p>
+    <hr />
+</div>
+
+@code {
+    [Parameter]
+    public Party Party { get; set; }
+}

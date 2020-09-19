@@ -27,23 +27,7 @@
             </div>
         </Title>
         <Content>
-            <table class="table table-prod-list">
-                <tr><th>Name:</th><td>@party.Name</td></tr>
-                @if (!string.IsNullOrEmpty(party.Description))
-                {
-                    <tr><th>Description</th><td>@party.Description</td></tr>
-                }
-                <tr><th>Starts:</th><td><PartialDateDisplay DateType="DateType.YearMonthDay" DateValue="@party.From" /></td></tr>
-                <tr><th>Ends:</th><td><PartialDateDisplay DateType="DateType.YearMonthDay" DateValue="@party.To" /></td></tr>
-                <tr><th>Location</th><td>@party.Location</td></tr>
-                @if (party.Country != null)
-                {
-                    <tr><th>Country</th><td>@party.Country.Name</td></tr>
-                }
-                <tr><th>Organizers</th><td>@party.Organizers</td></tr>
-                <tr><th>Homepage</th><td>@party.Url.ValueOrNa()</td></tr>
-                <tr><th>Email</th><td>@party.Email.ValueOrNa()</td></tr>
-            </table>
+            <PartyOverview Party="@party" />
             @if (productionIds != null)
             {
                 <h5>Productions released at @party.Name:</h5>
