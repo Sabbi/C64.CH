@@ -1,0 +1,99 @@
+﻿@page "/parties"
+
+@implements IDisposable
+
+@inject IUnitOfWork unitOfWork
+@inject NavigationManager navigationManager
+
+@inject ILogger<Parties> logger
+
+<Box MarginBottom="4">
+    <Title>Upcoming Parties</Title>
+    <Content>
+        @if (!upcomingParties.Any())
+        {
+            <p>There are no upcoming parties, sorry</p>
+
+        }
+        else
+        {
+            foreach (var party in upcomingParties)
+            {
+                <PartyOverview Party="party" />
+            }
+        }
+        <hr />
+        <div class="text-center mb-2">
+            <h5 class="d-inline"><AddPartyLink class="badge badge-primary"><Content>You organize a party? Add it!</Content></AddPartyLink></h5>
+        </div>
+    </Content>
+</Box>
+
+<Box MarginBottom="4">
+    <Title>Parties that were</Title>
+    <Content>
+        <select class="form-control" @onchange=@OnYearChange>
+            <option value="0">Select year:</option>
+            @for (var i = 1982; i <= DateTime.Now.Year; i++)
+            {
+                <option selected="@(year == i)">@i</option>
+            }
+        </select>
+        <div class="pt-3">
+            @foreach (var party in pastParties)
+            {
+                <PartyList Party="@party" />
+            }
+        </div>
+    </Content>
+</Box>
+
+@code {
+
+    private IEnumerable<Party> upcomingParties = new HashSet<Party>();
+
+    private IEnumerable<Party> pastParties = new HashSet<Party>();
+
+    private int year;
+
+    protected override void OnInitialized()
+    {
+        upcomingParties = unitOfWork.Parties.Find(p => p.To >= DateTime.Now);
+        navigationManager.LocationChanged += OnLocationChanged;
+        year = navigationManager.GetFromQueryString<int>("year");
+
+        if (year > 0)
+            LoadParties();
+    }
+
+    private void OnYearChange(ChangeEventArgs e)
+    {
+        year = int.Parse(e.Value.ToString());
+        navigationManager.NavigateTo($"/parties/?year={year}");
+    }
+
+    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        year = navigationManager.GetFromQueryString<int>("year");
+        LoadParties();
+        logger.LogInformation("OnLocationChanged, Year = {year}", year);
+    }
+
+    private void LoadParties()
+    {
+
+        logger.LogInformation("Loading Parties, Year = {year}", year);
+
+        pastParties = unitOfWork.Parties.Find(p => p.From.Year == year || p.To.Year == year).OrderBy(p => p.From);
+
+        logger.LogInformation("Loaded parties, {numberOfParties} found", pastParties.Count());
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        navigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+}

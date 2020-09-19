@@ -1,0 +1,45 @@
+﻿@namespace C64.FrontEnd.Pages
+
+<h4>@Party.Name</h4>
+
+@if (IsPast())
+{
+    <p>The party was held from <b><PartialDateDisplay DateValue="Party.From" /> to <PartialDateDisplay DateValue="Party.To" /></b> in @Party.Location (@Party.CountryId) </p>
+}
+else
+{
+    <p>The party will take place from <b><PartialDateDisplay DateValue="Party.From" /> to <PartialDateDisplay DateValue="Party.To" /></b> in @Party.Location (@Party.CountryId) </p>
+}
+<p>
+    Organized by: @Party.Organizers
+</p>
+
+@if (!string.IsNullOrEmpty(Party.Url))
+{
+    <p><a href="@Party.Url">Visit Homepage</a></p>
+}
+
+@if (!string.IsNullOrEmpty(Party.Email))
+{
+    <p><a href="mailto: @Party.Email">Send Email</a></p>
+}
+
+@if (!string.IsNullOrEmpty(Party.Description))
+{
+    <h4>Description:</h4>
+    <p>
+        <RenderMarkdown MarkdownContent="@Party.Description" />
+    </p>
+
+}
+<p><a href="/parties/@Party.PartyId/@Party.Name.UrlEncode()">View Details</a></p>
+
+@code {
+    [Parameter]
+    public Party Party { get; set; } = new Party();
+
+    private bool IsPast()
+    {
+        return Party.To < DateTime.Now;
+    }
+}
