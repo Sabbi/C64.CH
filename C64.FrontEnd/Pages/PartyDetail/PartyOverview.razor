@@ -4,7 +4,7 @@
 
 @if (IsPast())
 {
-    <p>The party was held from <b><PartialDateDisplay DateValue="Party.From" /> to <PartialDateDisplay DateValue="Party.To" /></b> in @Party.Location (@Party.CountryId) </p>
+    <p>The party was held from <b><PartialDateDisplay DateValue="Party.From" /> to <PartialDateDisplay DateValue="Party.To" /></b> in @Party.Location (@(Party.Country == null ? Party.CountryId : Party.Country.Name)) </p>
 }
 else
 {
@@ -16,12 +16,12 @@ else
 
 @if (!string.IsNullOrEmpty(Party.Url))
 {
-    <p><a href="@Party.Url">Visit Homepage</a></p>
+    <p><a href="@Party.Url">Visit Homepage (@Party.Url)</a></p>
 }
 
 @if (!string.IsNullOrEmpty(Party.Email))
 {
-    <p><a href="mailto: @Party.Email">Send Email</a></p>
+    <p><a href="mailto: @Party.Email">Send Email to the organizers</a></p>
 }
 
 @if (!string.IsNullOrEmpty(Party.Description))
