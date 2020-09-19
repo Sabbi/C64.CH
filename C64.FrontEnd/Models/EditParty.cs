@@ -16,6 +16,7 @@ namespace C64.FrontEnd.Models
         public DateTime From { get; set; } = DateTime.MinValue;
 
         [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Invalid date")]
+        [LaterOrEqualDate("From", "To-Date must be later than From-Date")]
         public DateTime To { get; set; } = DateTime.MinValue;
 
         public string Organizers { get; set; }
