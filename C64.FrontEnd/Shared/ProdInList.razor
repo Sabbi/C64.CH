@@ -9,14 +9,7 @@
         <div class="thumb">
             <a href="/productions/@Production.ProductionId/@Production.Name.UrlEncode()">
 
-                @if (Production.ProductionPictures.Any(p => p.Show))
-                {
-                    <img class="prodlistitem-img" src="/data/thumbnails/240x169/@Production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show).Filename" alt="@Production.Name" />
-                }
-                else
-                {
-                    <img class="prodlistitem-img" src="/images/nopicture.jpg" width="240" height="169" alt="No screenshot yet" />
-                }
+                <FirstProductionThumbnail Production="@Production" Size="ThumbnailSize.Thumbnail240x169" />
 
                 <div class="icons">
                     @if (Production.NumberOfVideos > 0)
