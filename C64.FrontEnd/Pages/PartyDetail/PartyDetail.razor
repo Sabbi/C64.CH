@@ -30,6 +30,7 @@
             <PartyOverview Party="@party" />
             @if (productionIds != null)
             {
+                <PartyCompetitionList Party="@party" />
                 <h5>Productions released at @party.Name:</h5>
                 <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" />
             }
@@ -92,7 +93,7 @@
 
         unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
 
-        party = await unitOfWork.Parties.GetDetails(id);
+        party = await unitOfWork.Parties.GetDetails(id, true);
 
         productionIds = party.ProductionsParties.Select(p => p.ProductionId);
 

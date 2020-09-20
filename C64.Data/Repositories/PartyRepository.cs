@@ -18,8 +18,16 @@ namespace C64.Data.Repositories
             return await context.Set<PartyCategory>().ToListAsync();
         }
 
-        public Task<Party> GetDetails(int partyId)
+        public Task<Party> GetDetails(int partyId, bool includeGroupData)
         {
+            if (includeGroupData)
+                return context.Set<Party>()
+                    .Include(p => p.Country)
+                    .Include(p => p.ProductionsParties).ThenInclude(p => p.PartyCategory)
+                    .Include(p => p.ProductionsParties).ThenInclude(p => p.Production).ThenInclude(p => p.ProductionPictures)
+                    .Include(p => p.ProductionsParties).ThenInclude(p => p.Production).ThenInclude(p => p.ProductionsGroups).ThenInclude(p => p.Group)
+                    .FirstOrDefaultAsync(p => p.PartyId == partyId);
+
             return context.Set<Party>().Include(p => p.Country).Include(p => p.ProductionsParties).ThenInclude(p => p.Production).FirstOrDefaultAsync(p => p.PartyId == partyId);
         }
 

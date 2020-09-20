@@ -1,0 +1,60 @@
+﻿<div class="pb-4">
+    @foreach (var competition in competitions)
+    {
+        <div class="mb-4">
+            <h5>@GetCompetitionName(competition.GetValueOrDefault()) Competiton:</h5>
+
+            @{
+                var counter = 0;
+            }
+            @foreach (var prod in Party.ProductionsParties.Where(p => p.PartyCategoryId.GetValueOrDefault() == competition.GetValueOrDefault()).OrderBy(p => p.Rank))
+            {
+
+                <div class="row p-3" style="background-color:@(counter%2 == 0 ? BackgroundColor : BackgroundColorAlt)">
+                    <div class="flex-column pl-1" style="min-width:60px">
+                        <h5>#@((prod.Rank != 0 && prod.Rank < 99) ? prod.Rank.ToString() : "--")</h5>
+                    </div>
+                    <div class="flex-column pr-3">
+                        <a href="/productions/@prod.ProductionId/@prod.Production.Name.UrlEncode()">
+                            <FirstProductionThumbnail Production="@prod.Production" Size="ThumbnailSize.Thumbanil80x56" />
+                        </a>
+                    </div>
+                    <div class="flex-column">
+                        <h5>
+                            <a href="/productions/@prod.ProductionId/@prod.Production.Name.UrlEncode()">
+                                @prod.Production.Name
+                            </a>
+                        </h5>
+                        by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="prod.Production.ProductionsGroups.Select(p => p.Group)" />
+                    </div>
+                    <hr />
+                </div>
+                counter++;
+            }
+        </div>
+    }
+</div>
+@code {
+    [Parameter]
+    public Party Party { get; set; }
+
+    [Parameter]
+    public string BackgroundColor { get; set; } = "#fffff";
+
+    [Parameter]
+    public string BackgroundColorAlt { get; set; } = "#f0f0f0";
+
+    private IEnumerable<int?> competitions;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        competitions = Party.ProductionsParties.Select(p => p.PartyCategoryId).Distinct();
+    }
+
+    private string GetCompetitionName(int competition)
+    {
+        var prod = Party.ProductionsParties.FirstOrDefault(p => p.PartyCategoryId == competition);
+
+        return prod?.PartyCategory.Name ?? "Other";
+    }
+}
