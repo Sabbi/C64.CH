@@ -1,6 +1,7 @@
 ﻿@inject IModalService Modal
-
 @inject IUnitOfWork unitOfWork;
+@inject IToastService toastService
+@inject NavigationManager navigationManager
 
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddProductionModal" @onclick:preventDefault>
     @Content
@@ -13,11 +14,19 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> AllOtherAttributes { get; set; }
 
-    private void OpenAddProductionModal()
+    private async Task OpenAddProductionModal()
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(EditProductionModal.Production), new Production());
         parameters.Add(nameof(EditProductionModal.unitOfWork), unitOfWork);
-        Modal.Show<AddProductionModal>("", parameters);
+        var reference = Modal.Show<AddProductionModal>("", parameters);
+        var result = await reference.Result;
+
+        if (!result.Cancelled)
+        {
+            var production = (Production)result.Data;
+            toastService.ShowSuccess($"Production {production.Name} added");
+            navigationManager.NavigateTo($"/productions/{production.ProductionId}/{production.Name.UrlEncode()}");
+        }
     }
 }
