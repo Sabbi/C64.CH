@@ -7,21 +7,14 @@ namespace C64.Data.History
     {
         public static IHistoryHandler Get(HistoryEntity historyentity, IUnitOfWork unitOfWork, object entity, string userId, string userIp)
         {
-            switch (historyentity)
+            return historyentity switch
             {
-                case HistoryEntity.Production:
-                    return new ProductionHistoryHandler(unitOfWork, (Production)entity, userId, userIp);
-
-                case HistoryEntity.Group:
-                    return new GroupHistoryHandler(unitOfWork, (Group)entity, userId, userIp);
-
-                case HistoryEntity.Party:
-                    return new PartyHistoryHandler(unitOfWork, (Party)entity, userId, userIp);
-
-                case HistoryEntity.Scener:
-                    throw new NotImplementedException();
-            }
-            throw new NotImplementedException();
+                HistoryEntity.Production => new ProductionHistoryHandler(unitOfWork, (Production)entity, userId, userIp),
+                HistoryEntity.Group => new GroupHistoryHandler(unitOfWork, (Group)entity, userId, userIp),
+                HistoryEntity.Party => new PartyHistoryHandler(unitOfWork, (Party)entity, userId, userIp),
+                HistoryEntity.Scener => throw new NotImplementedException(),
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

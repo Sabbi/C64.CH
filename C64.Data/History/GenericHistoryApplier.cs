@@ -139,7 +139,7 @@ namespace C64.Data.History
             return dbhistory;
         }
 
-        public static string GenerateHistoryDescription(HistoryEditProperty property, dynamic production, object newValue, decimal version = 1M)
+        public static string GenerateHistoryDescription(HistoryEditProperty property, dynamic production, object newValue, decimal _ = 1M)
         {
             switch (property)
             {

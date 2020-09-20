@@ -82,17 +82,10 @@ namespace OldDataImporter.Models
         public int Day => Tag ?? 0;
 
         [NotMapped]
-        public DateTime UploadDate
-        {
-            get
-            {
-                DateTime outDate;
-                return DateTime.TryParse(Upload, out outDate) ? outDate : DateTime.MinValue;
-            }
-        }
+        public DateTime UploadDate => DateTime.TryParse(Upload, out var outDate) ? outDate : DateTime.MinValue;
 
         [NotMapped]
-        public IEnumerable<string> Pictures => Picture != null ? Picture.Split(';') : null;
+        public IEnumerable<string> Pictures => Picture?.Split(';');
 
         [NotMapped]
         public IEnumerable<int> GroupIds
@@ -159,23 +152,9 @@ namespace OldDataImporter.Models
         [Column("PartyCountry")]
         public int? CountryId { get; set; }
 
-        public DateTime From
-        {
-            get
-            {
-                DateTime outDate;
-                return DateTime.TryParse(DateFromString, out outDate) ? outDate : DateTime.MinValue;
-            }
-        }
+        public DateTime From => DateTime.TryParse(DateFromString, out DateTime outDate) ? outDate : DateTime.MinValue;
 
-        public DateTime To
-        {
-            get
-            {
-                DateTime outDate;
-                return DateTime.TryParse(DateToString, out outDate) ? outDate : DateTime.MinValue;
-            }
-        }
+        public DateTime To => DateTime.TryParse(DateToString, out DateTime outDate) ? outDate : DateTime.MinValue;
     }
 
     [Table("PartyLink")]

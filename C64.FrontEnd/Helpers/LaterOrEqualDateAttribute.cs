@@ -5,7 +5,7 @@ namespace C64.FrontEnd.Helpers
 {
     public class LaterOrEqualDateAttribute : ValidationAttribute
     {
-        private string otherProperty;
+        private readonly string otherProperty;
 
         public LaterOrEqualDateAttribute(string otherProperty, string errorMessage) : base(errorMessage)
         {
