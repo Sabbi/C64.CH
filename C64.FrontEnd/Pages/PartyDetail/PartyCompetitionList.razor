@@ -46,7 +46,7 @@
 
     private IEnumerable<int?> competitions;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         competitions = Party.ProductionsParties.Select(p => p.PartyCategoryId).Distinct();
     }
