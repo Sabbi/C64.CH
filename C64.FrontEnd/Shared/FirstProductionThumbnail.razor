@@ -1,0 +1,38 @@
+﻿@if (Production.ProductionPictures.Any(p => p.Show))
+{
+    <img class="prodlistitem-img" src="/data/thumbnails/@(x)x@(y)/@Production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show).Filename" alt="@Production.Name" />
+}
+else
+{
+    <img class="prodlistitem-img" src="/images/nopicture.jpg" width="@x" height="@y" alt="No screenshot yet" />
+}
+
+@code {
+    [Parameter]
+    public Production Production { get; set; }
+
+    [Parameter]
+    public ThumbnailSize Size { get; set; } = ThumbnailSize.Thumbnail240x169;
+
+    private int x = 0;
+    private int y = 0;
+
+    protected override void OnParametersSet()
+    {
+        switch (Size)
+        {
+            case ThumbnailSize.Thumbnail120x85:
+                x = 120; y = 85;
+                break;
+            case ThumbnailSize.Thumbnail240x169:
+                x = 240; y = 169;
+                break;
+            case ThumbnailSize.Thumbanil80x56:
+                x = 80; y = 56;
+                break;
+
+            default:
+                throw new System.ComponentModel.InvalidEnumArgumentException("Invalid Thumbnail size");
+        }
+    }
+}
