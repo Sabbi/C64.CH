@@ -31,9 +31,22 @@ namespace C64.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
         {
-            return context.Set<T>().Where(predicate).ToList();
+            return await context.Set<T>().Where(predicate).ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> Find<TKey>(Expression<Func<T, bool>> predicate, Expression<Func<T, TKey>> orderBy, int skip = 0, int take = 0)
+        {
+            var immediate = context.Set<T>().Where(predicate).OrderBy(orderBy);
+
+            if (skip > 0)
+                immediate = (IOrderedQueryable<T>)immediate.Skip(skip);
+
+            if (take > 0)
+                immediate = (IOrderedQueryable<T>)immediate.Take(take);
+
+            return await immediate.ToListAsync();
         }
 
         public async Task<T> Get(int id)

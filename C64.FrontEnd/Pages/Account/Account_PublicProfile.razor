@@ -94,7 +94,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        countries = unitOfWork.Countries.Find(p => p.Selectable).OrderBy(p => p.Name);
+        countries = await unitOfWork.Countries.Find(p => p.Selectable, p => p.Name);
         user = await userManager.FindByIdAsync(httpContext.HttpContext.GetUserId());
 
         editPublicProfileModel.Load(user);

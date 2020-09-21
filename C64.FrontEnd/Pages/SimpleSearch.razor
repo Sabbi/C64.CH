@@ -54,8 +54,8 @@
 
     private async Task Load()
     {
-        var prodIds = unitOfWork.Productions.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase)).Select(p => p.ProductionId).ToList();
-        var groups = unitOfWork.Groups.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+        var prodIds = (await unitOfWork.Productions.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase))).Select(p => p.ProductionId).ToList();
+        var groups = await unitOfWork.Groups.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
 
         foreach (var group in groups.Take(10))
         {

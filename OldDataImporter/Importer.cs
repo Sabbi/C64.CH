@@ -548,7 +548,7 @@ namespace OldDataImporter
                 {
                     foreach (var group in groups)
                     {
-                        var exists = _unitOfWork.Groups.Find(p => p.GroupId == group);
+                        var exists = await _unitOfWork.Groups.Find(p => p.GroupId == group);
 
                         if (exists != null)
                         {

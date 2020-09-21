@@ -56,14 +56,14 @@
 
     private int year;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        upcomingParties = unitOfWork.Parties.Find(p => p.To >= DateTime.Now);
+        upcomingParties = await unitOfWork.Parties.Find(p => p.To >= DateTime.Now);
         navigationManager.LocationChanged += OnLocationChanged;
         year = navigationManager.GetFromQueryString<int>("year");
 
         if (year > 0)
-            LoadParties();
+            await LoadParties();
     }
 
     private void OnYearChange(ChangeEventArgs e)
@@ -72,19 +72,19 @@
         navigationManager.NavigateTo($"/parties/?year={year}");
     }
 
-    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
         year = navigationManager.GetFromQueryString<int>("year");
-        LoadParties();
+        await LoadParties();
         logger.LogInformation("OnLocationChanged, Year = {year}", year);
     }
 
-    private void LoadParties()
+    private async Task LoadParties()
     {
 
         logger.LogInformation("Loading Parties, Year = {year}", year);
 
-        pastParties = unitOfWork.Parties.Find(p => p.From.Year == year || p.To.Year == year).OrderBy(p => p.From);
+        pastParties = (await unitOfWork.Parties.Find(p => p.From.Year == year || p.To.Year == year)).OrderBy(p => p.From);
 
         logger.LogInformation("Loaded parties, {numberOfParties} found", pastParties.Count());
 

@@ -91,9 +91,9 @@
         canAddLink = await jsRuntime.CanRedoAction("Link", TimeSpan.FromMinutes(10));
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        links = unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId).OrderByDescending(p => p.Added);
+        links = (await unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId)).OrderByDescending(p => p.Added);
         title = $"{linkCategories.FirstOrDefault(p => p.LinkCategoryId == CategoryId).Name} ({links.Count()} links found)";
     }
 
@@ -111,7 +111,7 @@
             await unitOfWork.Commit();
 
             CategoryId = newLink.LinkCategoryId;
-            links = unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId).OrderByDescending(p => p.Added);
+            links = (await unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId)).OrderByDescending(p => p.Added);
 
             toastService.ShowSuccess("Your link was added!");
             await jsRuntime.SetRedoTrigger("Link");
