@@ -72,10 +72,10 @@
         navigationManager.NavigateTo($"/parties/?year={year}");
     }
 
-    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
         year = navigationManager.GetFromQueryString<int>("year");
-        Task.Run(() => LoadParties()).Wait();
+        await LoadParties();
         logger.LogInformation("OnLocationChanged, Year = {year}", year);
     }
 
