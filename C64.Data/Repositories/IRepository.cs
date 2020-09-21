@@ -15,6 +15,9 @@ namespace C64.Data.Repositories
 
         Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
 
+        //Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate, Expression<Func<T, string>> orderBy, int skip = 0, int take = 0);
+        Task<IEnumerable<T>> Find<TKey>(Expression<Func<T, bool>> predicate, Expression<Func<T, TKey>> orderBy, int skip = 0, int take = 0);
+
         void Add(T entity);
 
         void AddRange(IEnumerable<T> entities);
