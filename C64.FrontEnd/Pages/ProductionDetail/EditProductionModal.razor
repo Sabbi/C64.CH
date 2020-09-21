@@ -128,7 +128,7 @@
 
     private async Task<IEnumerable<Party>> SearchParty(string searchPartyText)
     {
-        var result = unitOfWork.Parties.Find(p => p.Name.Contains(searchPartyText, StringComparison.OrdinalIgnoreCase)).OrderByDescending(p => p.From);
+        var result = (await unitOfWork.Parties.Find(p => p.Name.Contains(searchPartyText, StringComparison.OrdinalIgnoreCase))).OrderByDescending(p => p.From);
         return await Task.FromResult(result);
     }
 
@@ -136,7 +136,7 @@
     {
         this.searchText = searchText;
 
-        var result = unitOfWork.Groups.Find(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)).OrderBy(p => p.Name);
+        var result = (await unitOfWork.Groups.Find(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))).OrderBy(p => p.Name);
         return await Task.FromResult(result.OrderBy(p => p.Name));
 
     }

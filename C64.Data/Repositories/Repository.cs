@@ -31,9 +31,9 @@ namespace C64.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
         {
-            return context.Set<T>().Where(predicate).ToList();
+            return await context.Set<T>().Where(predicate).ToListAsync();
         }
 
         public async Task<T> Get(int id)

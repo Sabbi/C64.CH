@@ -58,9 +58,9 @@
 
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        countries = unitOfWork.Countries.Find(p => p.Selectable).OrderBy(p => p.Name);
+        countries = (await unitOfWork.Countries.Find(p => p.Selectable)).OrderBy(p => p.Name);
         editParty = new EditParty();
     }
 }

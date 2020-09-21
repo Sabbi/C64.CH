@@ -98,9 +98,9 @@
         await bootstrapModal.Close();
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        countries = unitOfWork.Countries.Find(p => p.Selectable).OrderBy(p => p.Name);
+        countries = (await unitOfWork.Countries.Find(p => p.Selectable)).OrderBy(p => p.Name);
         // Can edit name? Only Moderators+ OR if group was just added
         editGroup.CanEditName = (DateTime.Now - Group.Added).TotalDays < 5 || httpContext.HttpContext.UserIsModerator();
 

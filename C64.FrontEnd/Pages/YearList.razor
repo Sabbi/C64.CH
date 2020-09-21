@@ -20,9 +20,9 @@
 
     private string baseUrl => $"years/{Id}";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        productionIds = unitOfWork.Productions.Find(p => p.ReleaseDate.Year == Id).Select(p => p.ProductionId).ToList();
+        productionIds = (await unitOfWork.Productions.Find(p => p.ReleaseDate.Year == Id)).Select(p => p.ProductionId).ToList();
     }
 
     private string title => $"Productions released in {Id}";
