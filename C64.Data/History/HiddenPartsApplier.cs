@@ -40,7 +40,7 @@ namespace C64.Data.History
 
             string description = null;
 
-            if (oldParts.Any() && !newParts.Any())
+            if (oldParts.Any() && !newParts.Any(p => p.Description != null && p.Description != ""))
                 description = "Hiddenparts removed";
             else if (!oldParts.Any() && newParts.Any())
             {
