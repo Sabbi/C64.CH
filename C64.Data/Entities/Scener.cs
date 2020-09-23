@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Internal;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,6 +23,16 @@ namespace C64.Data.Entities
 
         [MaxLength(255)]
         public string RealName { get; set; }
+
+        public DateTime Birthday { get; set; }
+        public DateType BirthdayType { get; set; }
+
+        public string Location { get; set; }
+
+        [MinLength(2), MaxLength(2)]
+        public string CountryId { get; set; }
+
+        public virtual Country Country { get; set; }
 
         public bool ShowRealName { get; set; } = true;
         public virtual ICollection<ScenersGroups> ScenersGroups { get; set; } = new HashSet<ScenersGroups>();

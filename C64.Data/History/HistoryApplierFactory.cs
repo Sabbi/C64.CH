@@ -56,6 +56,9 @@ namespace C64.Data.History
                 case HistoryEditProperty.AddParty:
                     return new AddPartyApplier();
 
+                case HistoryEditProperty.AddScener:
+                    return new AddScenerApplier();
+
                 default:
                     return new GenericHistoryApplier();
             }
