@@ -16,8 +16,8 @@
     private async Task OpenAddScenerModal()
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(AddScenerModal.unitOfWork), unitOfWork);
-        var reference = Modal.Show<AddScenerModal>("", parameters);
+        parameters.Add(nameof(C64.FrontEnd.Page.AddScenerModal.unitOfWork), unitOfWork);
+        var reference = Modal.Show<C64.FrontEnd.Page.AddScenerModal>("", parameters);
         var result = await reference.Result;
 
         var scener = (Scener)result.Data;

@@ -65,7 +65,7 @@
                     @foreach (var scenergroup in group.ScenerGroups)
                     {
                         <tr>
-                            <td>@scenergroup.Scener.Handle</td>
+                            <td><a href="/sceners/@scenergroup.ScenerId/@scenergroup.Scener.Handle.UrlEncode()">@scenergroup.Scener.Handle</a></td>
                             <td>
                                 @if (scenergroup.ScenerGroupJobs.Any())
                                 {

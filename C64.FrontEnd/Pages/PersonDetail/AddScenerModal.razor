@@ -1,4 +1,4 @@
-﻿@namespace C64.FrontEnd.Pages
+﻿@namespace C64.FrontEnd.Page
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger;
@@ -35,8 +35,16 @@
             Birthday = editScener.Birthday.Date,
             BirthdayType = editScener.Birthday.Type,
             Location = editScener.Location,
-            CountryId = editScener.CountryId
+            CountryId = editScener.CountryId,
         };
+
+        if (editScener.SelectedJobs.Any())
+        {
+            foreach (var selectedJob in editScener.SelectedJobs)
+            {
+                scener.Jobs.Add(new ScenersJobs { Job = selectedJob });
+            }
+        }
 
         unitOfWork.Sceners.Add(scener);
         await unitOfWork.Commit();

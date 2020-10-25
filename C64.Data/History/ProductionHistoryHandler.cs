@@ -220,5 +220,12 @@ namespace C64.Data.History
         // Sceners
 
         AddScener,
+
+        ScenerHandle,
+        ScenerRealName,
+        Birthday,
+        ScenerLocation,
+        ScenerCountryId,
+        ScenerJobs
     }
 }

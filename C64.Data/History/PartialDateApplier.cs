@@ -21,7 +21,8 @@ namespace C64.Data.History
                     break;
 
                 case HistoryEntity.Scener:
-                    throw new NotImplementedException();
+                    Apply((Scener)entity, historyProduction);
+                    break;
             }
         }
 
@@ -40,7 +41,8 @@ namespace C64.Data.History
                     break;
 
                 case HistoryEntity.Scener:
-                    throw new NotImplementedException();
+                    historyRecord = CreateHistory(property, (Scener)entity, newValue, status);
+                    break;
             }
             return historyRecord;
         }
@@ -84,6 +86,7 @@ namespace C64.Data.History
 
             int? affectedProductionId = null;
             int? affectedGroupId = null;
+            int? affectedScenerId = null;
 
             HistoryEntity affectedEntity = HistoryEntity.Production;
 
@@ -96,6 +99,11 @@ namespace C64.Data.History
             {
                 affectedGroupId = (production as Group).Id;
                 affectedEntity = HistoryEntity.Group;
+            }
+            else if (production is Scener)
+            {
+                affectedScenerId = (production as Scener).Id;
+                affectedEntity = HistoryEntity.Scener;
             }
 
             var dbhistory = new HistoryRecord
@@ -121,6 +129,7 @@ namespace C64.Data.History
                 HistoryEditProperty.ReleaseDate => "Release date",
                 HistoryEditProperty.FoundedDate => "Founded date",
                 HistoryEditProperty.ClosedDate => "Closed date",
+                HistoryEditProperty.Birthday => "Birthday",
                 _ => throw new NotImplementedException($"Not implemented DateName {property}"),
             };
         }

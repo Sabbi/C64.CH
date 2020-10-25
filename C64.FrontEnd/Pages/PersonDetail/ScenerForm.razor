@@ -1,71 +1,111 @@
 ﻿@namespace C64.FrontEnd.Pages
 
-    <EditForm Model="EditScener" OnValidSubmit="OnDataAnnotationsValidated">
-        <DataAnnotationsValidator />
+<EditForm Model="EditScener" OnValidSubmit="OnDataAnnotationsValidated">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>
+            Handle
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@EditScener.Handle" />
+            <ValidationMessage For="@(() => EditScener.Handle)" />
+        </div>
+    </div>
+    @if (EditScener.ShowRealName)
+    {
         <div class="form-group">
             <label>
-                Handle
+                Real name
             </label>
             <div>
-                <InputText class="form-control" @bind-Value="@EditScener.Handle" />
-                <ValidationMessage For="@(() => EditScener.Handle)" />
+                <InputText class="form-control" @bind-Value="@EditScener.RealName" />
+                <ValidationMessage For="@(() => EditScener.RealName)" />
             </div>
         </div>
-        @if (EditScener.ShowRealName)
-        {
-            <div class="form-group">
-                <label>
-                    Real name
-                </label>
-                <div>
-                    <InputText class="form-control" @bind-Value="@EditScener.RealName" />
-                    <ValidationMessage For="@(() => EditScener.RealName)" />
-                </div>
-            </div>
-        }
-        <div class="form-group">
-            <label>Birthday</label>
-            <div>
-                <InputPartialDate @bind-Value="@EditScener.Birthday" StartingYear="1900" EndingYear="DateTime.Now.Year" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label>
-                Location
-            </label>
-            <div>
-                <InputText class="form-control" @bind-Value="@EditScener.Location" />
-                <ValidationMessage For="@(() => EditScener.Location)" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Country:</label>
-            <div>
-                <InputSelect class="form-control" @bind-Value="@EditScener.CountryId">
-                    <option value="">Select Country:</option>
-                    @foreach (var country in Countries)
-                    {
-                        <option value="@country.CountryId">@country.Name</option>
-                    }
-                </InputSelect>
-            </div>
-        </div>
-        <button class="btn btn-primary" type="submit">Add scener</button>
-    </EditForm>
-
-    @code {
-
-        [Parameter]
-        public EditScener EditScener { get; set; }
-
-        [Parameter]
-        public EventCallback OnValidSubmit { get; set; }
-
-        [Parameter]
-        public IEnumerable<Country> Countries { get; set; } = new List<Country>();
-
-        private async Task OnDataAnnotationsValidated()
-        {
-            await OnValidSubmit.InvokeAsync(null);
-        }
     }
+    <div class="form-group">
+        <label>Birthday</label>
+        <div>
+            <InputPartialDate @bind-Value="@EditScener.Birthday" StartingYear="1900" EndingYear="DateTime.Now.Year" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>
+            Location
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@EditScener.Location" />
+            <ValidationMessage For="@(() => EditScener.Location)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Country:</label>
+        <div>
+            <InputSelect class="form-control" @bind-Value="@EditScener.CountryId">
+                <option value="">Select Country:</option>
+                @foreach (var country in Countries)
+                {
+                    <option value="@country.CountryId">@country.Name</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Jobs:</label>
+        <div>
+            <select @onchange="OnSelectJob" TValue="Job" class="form-control">
+                <option value="0">Select job:</option>
+                @foreach (var item in Enum.GetValues(typeof(Job)))
+                {
+                    if ((Job)item != Job.Undefined)
+                    {
+                        <option value="@item"><EnumDisplayNameAttribute DisplayNameFor="item" /></option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <h5>
+        @foreach (var job in EditScener.SelectedJobs)
+        {
+            <span class="badge badge-primary" href="">@job <i class="fas fa-backspace cursor-pointer" @onclick="(() => RemoveJob(job))"></i> </span>
+        }
+    </h5>
+    <button class="btn btn-primary" type="submit">@SubmitButtonCaption</button>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public EditScener EditScener { get; set; }
+
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    public IEnumerable<Country> Countries { get; set; } = new List<Country>();
+
+    [Parameter]
+    public string SubmitButtonCaption { get; set; } = "Add scener";
+
+    private async Task OnDataAnnotationsValidated()
+    {
+        await OnValidSubmit.InvokeAsync(null);
+    }
+
+    private void OnSelectJob(ChangeEventArgs e)
+    {
+        if (e.Value.ToString() == "0")
+            return;
+
+        var parsed = (Job)Enum.Parse(typeof(Job), e.Value.ToString());
+
+        if (!EditScener.SelectedJobs.Contains(parsed))
+            EditScener.SelectedJobs.Add(parsed);
+    }
+
+    private void RemoveJob(Job job)
+    {
+        EditScener.SelectedJobs.Remove(job);
+    }
+}
