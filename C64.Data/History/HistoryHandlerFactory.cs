@@ -12,7 +12,7 @@ namespace C64.Data.History
                 HistoryEntity.Production => new ProductionHistoryHandler(unitOfWork, (Production)entity, userId, userIp),
                 HistoryEntity.Group => new GroupHistoryHandler(unitOfWork, (Group)entity, userId, userIp),
                 HistoryEntity.Party => new PartyHistoryHandler(unitOfWork, (Party)entity, userId, userIp),
-                HistoryEntity.Scener => throw new NotImplementedException(),
+                HistoryEntity.Scener => new ScenerHistoryHandler(unitOfWork, (Scener)entity, userId, userIp),
                 _ => throw new NotImplementedException(),
             };
         }

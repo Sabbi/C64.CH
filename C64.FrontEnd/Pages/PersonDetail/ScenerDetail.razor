@@ -1,0 +1,147 @@
+﻿@page "/sceners/{ScenerId:int}"
+@page "/sceners/{ScenerId:int}/{Handle}"
+
+@using Microsoft.Extensions.DependencyInjection
+@inherits OwningComponentBase
+
+@implements IDisposable
+
+@inject IJSRuntime jsRuntime
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IModalService Modal
+@inject IToastService toastService
+
+@if (scener != null)
+{
+    <Box>
+        <Title>
+            Details of @scener.Handle
+            <div class="float-right pr-3 position-absolute" style="right:0; top:5px">
+                <select class="form-control d-inline" id="groupEditSelect" @onchange="OnSelectEdit">
+                    <option value="0">Edit Scener</option>
+                    <option value="general">- General Info</option>
+                    <optgroup label="---------------------------"></optgroup>
+                    <option value="viewHistory">View history</option>
+                </select>
+            </div>
+        </Title>
+        <Content>
+            @if (scener != null)
+            {
+                <table class="table table-prod-list">
+                    <tr><th>Handle:</th><td>@scener.Handle</td></tr>
+                    @if (!string.IsNullOrEmpty(scener.RealName) && scener.ShowRealName)
+                    {
+                        <tr><th>Real name:</th><td>@scener.RealName</td></tr>
+                    }
+
+                    <tr><th>Birthday:</th><td><PartialDateDisplay DateType="scener.BirthdayType" DateValue="scener.Birthday" /></td></tr>
+
+                    <tr><th>Location:</th><td>@(scener.Location != null ? scener.Location : "Unknown")</td></tr>
+                    <tr><th>Country:</th><td>@(scener.Country != null ? scener.Country.Name : "Unknown")</td></tr>
+                    <tr>
+                        <th>Jobs:</th>
+                        <td>
+                            @foreach (var job in scener.Jobs)
+                            {
+                                <EnumDisplayNameAttribute DisplayNameFor="job.Job" /><br />
+                            }
+                        </td>
+                    </tr>
+                    @if (!scener.ScenersGroups.Any())
+                    {
+                        <tr>
+                            <th>Groups:</th>
+                            <td>
+                                None / Unknown
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2">
+                                <p>Groups:</p>
+                                <table class="table table-prod-list">
+                                    <tr><th>Group</th><th>Job(s)</th><th>Joined</th><th>Left</th></tr>
+                                    @foreach (var scenergroup in scener.ScenersGroups)
+                                    {
+                                        <tr>
+                                            <td><a href="/groups/@scenergroup.GroupId/@scenergroup.Group.Name.UrlEncode()">@scenergroup.Group.Name</a></td>
+                                            <td>
+                                                @if (scenergroup.ScenerGroupJobs.Any())
+                                                {
+                                                    @string.Join(", ", scenergroup.ScenerGroupJobs.Select(p => p.Job))
+                                                }
+                                            </td>
+                                            <td><PartialDateDisplay DateValue="@scenergroup.ValidFrom" DateType="@scenergroup.ValidFromType" /></td>
+                                            <td><PartialDateDisplay DateValue="@scenergroup.ValidTo" DateType="@scenergroup.ValidToType" /></td>
+                                        </tr>
+                                    }
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+        </Content>
+    </Box>
+}
+
+@code {
+
+    [Parameter]
+    public int ScenerId { get; set; }
+
+    // Fake, only for nicer URL.
+    [Parameter]
+    public string Handle { get; set; }
+
+    private IUnitOfWork unitOfWork;
+
+    private Scener scener;
+
+    private IEnumerable<int> productionIds;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadScener(ScenerId);
+    }
+
+    private async Task OnSelectEdit(ChangeEventArgs args)
+    {
+        if (httpContext.HttpContext.GetUserId() == null && args.Value.ToString() != "viewHistory")
+        {
+            Modal.Show<LoginModal>();
+            return;
+        }
+        IModalReference reference;
+
+        if (args.Value.ToString() == "general")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditScenerModal.Scener), scener);
+            parameters.Add(nameof(EditScenerModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditScenerModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "viewHistory")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ViewHistoryModal.Scener), scener);
+            reference = Modal.Show<ViewHistoryModal>("", parameters);
+            await reference.Result;
+        }
+        await jsRuntime.InvokeAsync<object>("ResetGroupEditSelect");
+    }
+
+    private async Task LoadScener(int id)
+    {
+
+        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+
+        scener = await unitOfWork.Sceners.GetDetails(id);
+
+        StateHasChanged();
+    }
+}

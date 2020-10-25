@@ -35,6 +35,9 @@
     [Parameter]
     public Party Party { get; set; }
 
+    [Parameter]
+    public Scener Scener { get; set; }
+
     private BootstrapModal bootstrapModal;
 
     private IEnumerable<HistoryRecord> histories = new HashSet<HistoryRecord>();
@@ -52,6 +55,11 @@
         {
             histories = (await unitOfWork.Groups.GetHistory(Group.GroupId)).OrderByDescending(p => p.Applied);
             title = $"History of {Group.Name}";
+        }
+        else if (Scener != null)
+        {
+            histories = (await unitOfWork.Sceners.GetHistory(Scener.ScenerId)).OrderByDescending(p => p.Applied);
+            title = $"History of {Scener.Handle}";
         }
         else
         {

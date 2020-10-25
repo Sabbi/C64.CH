@@ -1,0 +1,28 @@
+﻿@inject IModalService Modal
+@inject IUnitOfWork unitOfWork
+@inject IToastService toastService
+
+<a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddScenerModal" @onclick:preventDefault>
+    @Content
+</a>
+
+@code{
+    [Parameter]
+    public RenderFragment Content { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private async Task OpenAddScenerModal()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(C64.FrontEnd.Page.AddScenerModal.unitOfWork), unitOfWork);
+        var reference = Modal.Show<C64.FrontEnd.Page.AddScenerModal>("", parameters);
+        var result = await reference.Result;
+
+        var scener = (Scener)result.Data;
+
+        if (!result.Cancelled)
+            toastService.ShowSuccess($"Scener {scener.Handle} added");
+    }
+}

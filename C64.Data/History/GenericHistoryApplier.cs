@@ -1,4 +1,6 @@
 ﻿using C64.Data.Entities;
+using C64.Data.Extensions;
+using C64.Data.Models;
 using Newtonsoft.Json;
 using System;
 
@@ -23,7 +25,8 @@ namespace C64.Data.History
                     break;
 
                 default:
-                    throw new NotImplementedException($"GenericHistoryApplier for {historyRecord.AffectedEntity} does not exist");
+                    Apply((Scener)entity, historyRecord);
+                    break;
             }
         }
 
@@ -64,7 +67,8 @@ namespace C64.Data.History
                     break;
 
                 case HistoryEntity.Scener:
-                    throw new NotImplementedException();
+                    historyRecord = CreateHistory(property, (Scener)entity, newValue, status);
+                    break;
             }
             return historyRecord;
         }
@@ -95,11 +99,10 @@ namespace C64.Data.History
 
             if (propertyName.EndsWith("Description"))
                 return "Description";
-
             if (propertyName.StartsWith("Party") && !propertyName.Equals("Party"))
-            {
                 return propertyName.Substring(5);
-            }
+            else if (propertyName.StartsWith("Scener") && !propertyName.Equals("Scener"))
+                return propertyName.Substring(6);
 
             return propertyName;
         }
@@ -111,6 +114,7 @@ namespace C64.Data.History
             int? affectedProductionId = null;
             int? affectedGroupId = null;
             int? affectedPartyId = null;
+            int? affectedScenerId = null;
 
             if (entity is Production)
             {
@@ -127,12 +131,18 @@ namespace C64.Data.History
                 affectedPartyId = (entity as Party).Id;
                 affectedEntity = HistoryEntity.Party;
             }
+            else if (entity is Scener)
+            {
+                affectedScenerId = (entity as Scener).Id;
+                affectedEntity = HistoryEntity.Scener;
+            }
 
             var dbhistory = new HistoryRecord
             {
                 AffectedProductionId = affectedProductionId,
                 AffectedGroupId = affectedGroupId,
                 AffectedPartyId = affectedPartyId,
+                AffectedScenerId = affectedScenerId,
                 AffectedEntity = affectedEntity,
             };
 
@@ -193,6 +203,7 @@ namespace C64.Data.History
 
                 case HistoryEditProperty.CountryId:
                 case HistoryEditProperty.PartyCountryId:
+                case HistoryEditProperty.ScenerCountryId:
                     if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
                         return "Country removed";
 
@@ -221,6 +232,39 @@ namespace C64.Data.History
                         return "Party organizers removed";
 
                     return $"Party organizers changed to '{newValue}'";
+
+                case HistoryEditProperty.ScenerHandle:
+                    return $"Handle changed from '{production.Handle}' to '{newValue}'";
+
+                case HistoryEditProperty.ScenerRealName:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Realname removed";
+
+                    if (string.IsNullOrEmpty(production.RealName))
+                        return $"Realname changed to '{newValue}'";
+
+                    return $"Realname changed from '{production.RealName}' to '{newValue}'";
+
+                case HistoryEditProperty.Birthday:
+                    if ((newValue as PartialDate).Type == DateType.None)
+                        return "Birthday removed";
+
+                    if (production.BirthdayType == DateType.None && (newValue as PartialDate).Type != DateType.None)
+                        return "Birthday changed to " + (newValue as PartialDate).Date.ParseDate((newValue as PartialDate).Type);
+
+                    var birthday = (DateTime?)production.Birthday;
+                    var birthdayType = (DateType)production.BirthdayType;
+
+                    return "Birthday changed from " + (birthday?.ParseDate(birthdayType)) + " to " + (newValue as PartialDate).Date.ParseDate((newValue as PartialDate).Type);
+
+                case HistoryEditProperty.ScenerLocation:
+                    if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
+                        return "Location removed";
+
+                    if (string.IsNullOrEmpty(production.Location))
+                        return $"Location changed to '{newValue}'";
+
+                    return $"Location changed from '{production.Location}' to '{newValue}'";
 
                 default:
                     throw new NotImplementedException($"Description for {property} lacks implementation");

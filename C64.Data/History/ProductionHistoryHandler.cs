@@ -148,6 +148,29 @@ namespace C64.Data.History
         }
     }
 
+    public class ScenerHistoryHandler : HistoryHandler<Scener>
+    {
+        public ScenerHistoryHandler(IUnitOfWork unitOfWork, Scener scener, string userId, string userIp) : base(unitOfWork, scener, userId, userIp)
+        {
+        }
+
+        public override void AddHistory(HistoryEditProperty property, object newValue, HistoryStatus status = HistoryStatus.ToApply)
+        {
+            var applier = HistoryApplierFactory.Get(property);
+
+            var dbhistory = applier.CreateHistory(property, HistoryEntity.Scener, entity, newValue, status);
+
+            if (dbhistory.NewValue == dbhistory.OldValue)
+                return;
+
+            dbhistory.AffectedScenerId = entity.ScenerId;
+            dbhistory.UserId = userId;
+            dbhistory.IpAdress = userIp;
+
+            history.Add(dbhistory);
+        }
+    }
+
     public enum HistoryEditProperty
     {
         Name,
@@ -193,5 +216,16 @@ namespace C64.Data.History
         PartyCountryId,
         PartyLocation,
         PartyOrganizers,
+
+        // Sceners
+
+        AddScener,
+
+        ScenerHandle,
+        ScenerRealName,
+        Birthday,
+        ScenerLocation,
+        ScenerCountryId,
+        ScenerJobs
     }
 }

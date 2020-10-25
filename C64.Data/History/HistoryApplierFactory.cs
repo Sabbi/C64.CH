@@ -17,6 +17,7 @@ namespace C64.Data.History
                 case HistoryEditProperty.ReleaseDate:
                 case HistoryEditProperty.FoundedDate:
                 case HistoryEditProperty.ClosedDate:
+                case HistoryEditProperty.Birthday:
                     return new PartialDateApplier();
 
                 case HistoryEditProperty.JoinedDate:
@@ -55,6 +56,12 @@ namespace C64.Data.History
 
                 case HistoryEditProperty.AddParty:
                     return new AddPartyApplier();
+
+                case HistoryEditProperty.AddScener:
+                    return new AddScenerApplier();
+
+                case HistoryEditProperty.ScenerJobs:
+                    return new ScenerJobsApplier();
 
                 default:
                     return new GenericHistoryApplier();

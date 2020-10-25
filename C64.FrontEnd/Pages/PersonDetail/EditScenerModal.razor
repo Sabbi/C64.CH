@@ -1,0 +1,52 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger;
+@inject IToastService toastService
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit scener {@Scener.Handle}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <ScenerForm OnValidSubmit="OnValidSubmit" Countries="@countries" SubmitButtonCaption="Update scener" EditScener="@editScener" />
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    [Parameter]
+    public Scener Scener { get; set; } = new Scener();
+
+    private EditScener editScener = new EditScener();
+
+    private BootstrapModal bootstrapModal;
+
+    private IEnumerable<Country> countries = new List<Country>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        countries = (await unitOfWork.Countries.Find(p => p.Selectable)).OrderBy(p => p.Name);
+        editScener.LoadScener(Scener);
+    }
+
+    private async Task OnValidSubmit()
+    {
+        var scenerHistory = HistoryHandlerFactory.Get(HistoryEntity.Scener, unitOfWork, Scener, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        scenerHistory.AddHistory(HistoryEditProperty.ScenerHandle, editScener.Handle);
+        scenerHistory.AddHistory(HistoryEditProperty.ScenerRealName, editScener.RealName);
+        scenerHistory.AddHistory(HistoryEditProperty.Birthday, editScener.Birthday);
+        scenerHistory.AddHistory(HistoryEditProperty.ScenerLocation, editScener.Location);
+        scenerHistory.AddHistory(HistoryEditProperty.ScenerCountryId, editScener.CountryId);
+        scenerHistory.AddHistory(HistoryEditProperty.ScenerJobs, editScener.SelectedJobs);
+
+        scenerHistory.Apply();
+        await unitOfWork.Commit();
+
+        await OnClosed.InvokeAsync(null);
+        await bootstrapModal.Close();
+    }
+}

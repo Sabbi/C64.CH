@@ -33,6 +33,12 @@
     <Compile Remove="Migrations\20200818182205_PartyCategory.Designer.cs" />
     <Compile Remove="Migrations\20200818182838_PartyCategory.cs" />
     <Compile Remove="Migrations\20200818182838_PartyCategory.Designer.cs" />
+    <Compile Remove="Migrations\20200923182609_AddFieldsToScener.cs" />
+    <Compile Remove="Migrations\20200923182609_AddFieldsToScener.Designer.cs" />
+    <Compile Remove="Migrations\20200923183220_AddFieldsToScener.cs" />
+    <Compile Remove="Migrations\20200923183220_AddFieldsToScener.Designer.cs" />
+    <Compile Remove="Migrations\20200923183351_AddFieldsToScener.cs" />
+    <Compile Remove="Migrations\20200923183351_AddFieldsToScener.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
