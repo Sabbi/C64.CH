@@ -6,6 +6,8 @@
         public Credit Credit { get; set; }
         public int ScenerId { get; set; }
         public string ScenerHandle { get; set; }
+
+        public string ScenerHandleWithGroups { get; set; }
         public bool Added { get; set; }
         public bool Deleted { get; set; }
     }

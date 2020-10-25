@@ -20,7 +20,7 @@
                         <span style="text-decoration:@(isDeleted ? "line-through": "none")">@editProductionCredits.EditCredits[local].Credit.ToString()</span>
                     </div>
                     <div class="col-5">
-                        <span style="text-decoration:@(isDeleted? "line-through": "none")">@editProductionCredits.EditCredits[local].ScenerHandle.ToString()</span>
+                        <span style="text-decoration:@(isDeleted? "line-through": "none")">@editProductionCredits.EditCredits[local].ScenerHandleWithGroups.ToString()</span>
                     </div>
                     <div class="col-2">
                         <a href="" @onclick:preventDefault @onclick="(() => DeleteCredit(editProductionCredits.EditCredits[local]))">@(isDeleted ? "Undelete" : "Delete")</a>
@@ -89,6 +89,6 @@
         editProductionCredits = new EditProductionCredits();
 
         foreach (var credit in Production.ProductionCredits.OrderBy(p => p.Credit))
-            editProductionCredits.EditCredits.Add(new EditCredit { Credit = credit.Credit, Id = credit.ProductionCreditId, ScenerId = credit.ScenerId, ScenerHandle = credit.Scener.HandleWithGroups() });
+            editProductionCredits.EditCredits.Add(new EditCredit { Credit = credit.Credit, Id = credit.ProductionCreditId, ScenerId = credit.ScenerId, ScenerHandle = credit.Scener.Handle, ScenerHandleWithGroups = credit.Scener.HandleWithGroups() });
     }
 }

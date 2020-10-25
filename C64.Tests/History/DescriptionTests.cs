@@ -295,5 +295,63 @@ namespace C64.Tests.History
 
             Assert.Equal("Added 'NewDemo', a new Demo", addedHistoriesMock.FirstOrDefault().Description);
         }
+
+        [Fact]
+        public void EditCreditsAddRemove()
+        {
+            var production = new Production { ProductionCredits = new List<ProductionCredit>() };
+            production.ProductionCredits.Add(new ProductionCredit { ScenerId = 1, Scener = new Scener { ScenerId = 1, Handle = "Scener1" }, Credit = Credit.Code });
+            production.ProductionCredits.Add(new ProductionCredit { ScenerId = 2, Scener = new Scener { ScenerId = 2, Handle = "Scener2" }, Credit = Credit.Graphics });
+
+            var editCredits = new List<EditCredit>();
+            editCredits.Add(new EditCredit { Added = true, ScenerId = 1, ScenerHandle = "Scener1", Credit = Credit.Loader });
+            editCredits.Add(new EditCredit { Deleted = true, ScenerId = 2, ScenerHandle = "Scener2", Credit = Credit.Graphics });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.1");
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionCredits, editCredits);
+            historyHandler.Apply();
+
+            Assert.Equal(2, production.ProductionCredits.Count());
+            Assert.Equal("Removed credits for Scener2 (Graphics), Added credits for Scener1 (Loader)", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditCreditsAdd()
+        {
+            var production = new Production { ProductionCredits = new List<ProductionCredit>() };
+            production.ProductionCredits.Add(new ProductionCredit { ScenerId = 1, Scener = new Scener { ScenerId = 1, Handle = "Scener1" }, Credit = Credit.Code });
+            production.ProductionCredits.Add(new ProductionCredit { ScenerId = 2, Scener = new Scener { ScenerId = 2, Handle = "Scener2" }, Credit = Credit.Graphics });
+
+            var editCredits = new List<EditCredit>();
+            editCredits.Add(new EditCredit { Added = true, ScenerId = 1, ScenerHandle = "Scener1", Credit = Credit.Loader });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.1");
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionCredits, editCredits);
+            historyHandler.Apply();
+
+            Assert.Equal(3, production.ProductionCredits.Count());
+            Assert.Equal("Added credits for Scener1 (Loader)", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditCreditsRemove()
+        {
+            var production = new Production { ProductionCredits = new List<ProductionCredit>() };
+            production.ProductionCredits.Add(new ProductionCredit { ScenerId = 1, Scener = new Scener { ScenerId = 1, Handle = "Scener1" }, Credit = Credit.Code });
+            production.ProductionCredits.Add(new ProductionCredit { ScenerId = 2, Scener = new Scener { ScenerId = 2, Handle = "Scener2" }, Credit = Credit.Graphics });
+
+            var editCredits = new List<EditCredit>();
+            editCredits.Add(new EditCredit { Deleted = true, ScenerId = 2, ScenerHandle = "Scener2", Credit = Credit.Graphics });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.1");
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionCredits, editCredits);
+            historyHandler.Apply();
+
+            Assert.Single(production.ProductionCredits);
+            Assert.Equal("Removed credits for Scener2 (Graphics)", addedHistoriesMock.FirstOrDefault().Description);
+        }
     }
 }

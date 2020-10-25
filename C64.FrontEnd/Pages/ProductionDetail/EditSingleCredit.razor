@@ -52,7 +52,7 @@
 
     private void Submit()
     {
-        OnSubmit.InvokeAsync(new EditCredit { Id = 0, Added = true, ScenerId = Scener.ScenerId, ScenerHandle = Scener.HandleWithGroups(), Credit = Credit });
+        OnSubmit.InvokeAsync(new EditCredit { Id = 0, Added = true, ScenerId = Scener.ScenerId, ScenerHandle = Scener.Handle, ScenerHandleWithGroups = Scener.HandleWithGroups(), Credit = Credit });
         Scener = null;
         Credit = C64.Data.Credit.Unspecified;
     }
