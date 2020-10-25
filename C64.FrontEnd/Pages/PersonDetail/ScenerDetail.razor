@@ -127,10 +127,10 @@
         }
         else if (args.Value.ToString() == "viewHistory")
         {
-            //var parameters = new ModalParameters();
-            //parameters.Add(nameof(ViewHistoryModal.Party), party);
-            //reference = Modal.Show<ViewHistoryModal>("", parameters);
-            //await reference.Result;
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(ViewHistoryModal.Scener), scener);
+            reference = Modal.Show<ViewHistoryModal>("", parameters);
+            await reference.Result;
         }
         await jsRuntime.InvokeAsync<object>("ResetGroupEditSelect");
     }

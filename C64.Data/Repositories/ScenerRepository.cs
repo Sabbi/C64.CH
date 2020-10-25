@@ -35,5 +35,10 @@ namespace C64.Data.Repositories
 
             return scener;
         }
+
+        public async Task<IEnumerable<HistoryRecord>> GetHistory(int scenerId)
+        {
+            return await context.Set<HistoryRecord>().Where(p => p.AffectedScenerId == scenerId).Include(p => p.User).Include(p => p.AffectedScener).ToListAsync();
+        }
     }
 }
