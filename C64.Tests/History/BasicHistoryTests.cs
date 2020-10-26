@@ -312,19 +312,6 @@ namespace C64.Tests.History
         }
 
         [Fact]
-        public void RemovePicture()
-        {
-            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
-
-            var pictures = new List<ProductionPicture>();
-
-            historyHandler.AddHistory(HistoryEditProperty.ProductionPictures, pictures);
-            historyHandler.Apply();
-
-            Assert.Empty(productionWithRelations.ProductionPictures);
-        }
-
-        [Fact]
         public void EditFiles()
         {
             var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");

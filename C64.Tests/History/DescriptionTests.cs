@@ -353,5 +353,101 @@ namespace C64.Tests.History
             Assert.Single(production.ProductionCredits);
             Assert.Equal("Removed credits for Scener2 (Graphics)", addedHistoriesMock.FirstOrDefault().Description);
         }
+
+        [Fact]
+        public void EditPictures()
+        {
+            var production = new Production();
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 0, Show = true });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var pictures = new List<ProductionPicture>();
+            pictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 0, Show = true });
+            pictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 1, Show = true });
+            pictures.Add(new ProductionPicture { Filename = "Filename3", Sort = 2, Show = true });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionPictures, pictures);
+            historyHandler.Apply();
+
+            Assert.Equal("Added pictures: Filename2, Filename3", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditPictures2()
+        {
+            var production = new Production();
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 0, Show = true });
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 1, Show = true });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var pictures = new List<ProductionPicture>();
+            pictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 1, Show = true });
+            pictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 0, Show = true });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionPictures, pictures);
+            historyHandler.Apply();
+
+            Assert.Equal("Changed order of pictures", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditPictures3()
+        {
+            var production = new Production();
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 0, Show = true });
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 1, Show = true });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var pictures = new List<ProductionPicture>();
+            pictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 0, Show = false });
+            pictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 1, Show = false });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionPictures, pictures);
+            historyHandler.Apply();
+
+            Assert.Equal("Hide pictures: Filename1, Filename2", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditPictures4()
+        {
+            var production = new Production();
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 0, Show = false });
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 1, Show = false });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var pictures = new List<ProductionPicture>();
+            pictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 0, Show = true });
+            pictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 1, Show = true });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionPictures, pictures);
+            historyHandler.Apply();
+
+            Assert.Equal("Unhide pictures: Filename1, Filename2", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditPicturesCombo()
+        {
+            var production = new Production();
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 0, Show = false });
+            production.ProductionPictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 1, Show = false });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var pictures = new List<ProductionPicture>();
+            pictures.Add(new ProductionPicture { Filename = "Filename1", Sort = 2, Show = true });
+            pictures.Add(new ProductionPicture { Filename = "Filename2", Sort = 1, Show = true });
+            pictures.Add(new ProductionPicture { Filename = "Filename3", Sort = 0, Show = true });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionPictures, pictures);
+            historyHandler.Apply();
+
+            Assert.Equal("Added pictures: Filename3, Changed order of pictures, Unhide pictures: Filename1, Filename2", addedHistoriesMock.FirstOrDefault().Description);
+        }
     }
 }
