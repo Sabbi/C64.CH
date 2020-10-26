@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace C64.Data.History
 {
@@ -41,10 +42,147 @@ namespace C64.Data.History
                 OldValue = oldStrippedValues == null ? null : JsonConvert.SerializeObject(oldStrippedValues.OrderBy(p => p.ProductionVideoId)),
                 Status = status,
                 Type = newValue.GetType().FullName,
-                Version = 1M
+                Version = 1M,
+                Description = CreateDescription(oldStrippedValues, newStrippedValues)
             };
 
             return dbhistory;
+        }
+
+        private string CreateDescription(List<ProductionVideo> oldValues, List<ProductionVideo> newValues)
+        {
+            var sbAdded = new StringBuilder();
+            var sbSortChanged = new StringBuilder();
+            var sbRemove = new StringBuilder();
+            var sbHide = new StringBuilder();
+            var sbShow = new StringBuilder();
+
+            if (newValues.Count() > oldValues.Count())
+            {
+                sbAdded.Append("Added videos: ");
+                // Addd pictures?
+                var added = false;
+                foreach (var newValue in newValues)
+                {
+                    if (!oldValues.Select(p => p.VideoId).Contains(newValue.VideoId))
+                    {
+                        added = true;
+                        sbAdded.Append(newValue.VideoId + ", ");
+                    }
+                }
+
+                if (added)
+                {
+                    sbAdded.Remove(sbAdded.Length - 2, 2);
+                }
+                else
+                    sbAdded.Clear();
+            }
+
+            if (newValues.Count() < oldValues.Count())
+            {
+                sbRemove.Append("Removed videos: ");
+
+                var added = false;
+                foreach (var oldValue in oldValues)
+                {
+                    if (!newValues.Select(p => p.VideoId).Contains(oldValue.VideoId))
+                    {
+                        added = true;
+                        sbRemove.Append(oldValue.VideoId + ", ");
+                    }
+                }
+
+                if (added)
+                {
+                    sbRemove.Remove(sbRemove.Length - 2, 2);
+                }
+                else
+                    sbRemove.Clear();
+            }
+
+            // Sort changed?
+            var changedSort = false;
+            for (var i = 0; i < oldValues.Count(); ++i)
+            {
+                try
+                {
+                    if (newValues[i].Sort != oldValues[i].Sort)
+                        changedSort = true;
+                }
+                catch
+                {
+                    // I should not do this...
+                }
+            }
+
+            if (changedSort)
+                sbSortChanged.Append("Changed order of videos");
+
+            // Hide Changed?
+
+            var foundChanged = false;
+
+            foreach (var newValue in newValues.Where(p => p.Show == false))
+            {
+                var oldValue = oldValues.FirstOrDefault(p => p.VideoId == newValue.VideoId);
+
+                if (oldValue != null && oldValue.Show == true)
+                {
+                    if (!foundChanged)
+                        sbHide.Append("Hide videos: ");
+                    foundChanged = true;
+
+                    sbHide.Append(oldValue.VideoId + ", ");
+                }
+            }
+
+            if (foundChanged)
+                sbHide.Remove(sbHide.Length - 2, 2);
+
+            // UnHide Changed?
+
+            foundChanged = false;
+
+            foreach (var newValue in newValues.Where(p => p.Show == true))
+            {
+                var oldValue = oldValues.FirstOrDefault(p => p.VideoId == newValue.VideoId);
+
+                if (oldValue != null && oldValue.Show == false)
+                {
+                    if (!foundChanged)
+                        sbShow.Append("Unhide videos: ");
+                    foundChanged = true;
+
+                    sbShow.Append(oldValue.VideoId + ", ");
+                }
+            }
+
+            if (foundChanged)
+                sbShow.Remove(sbShow.Length - 2, 2);
+
+            var result = sbAdded.ToString();
+
+            var foo = new List<string>();
+
+            if (sbAdded.Length > 0)
+                foo.Add(sbAdded.ToString());
+
+            if (sbRemove.Length > 0)
+                foo.Add(sbRemove.ToString());
+
+            if (sbSortChanged.Length > 0)
+                foo.Add(sbSortChanged.ToString());
+
+            if (sbHide.Length > 0)
+                foo.Add(sbHide.ToString());
+
+            if (sbShow.Length > 0)
+                foo.Add(sbShow.ToString());
+
+            var strResult = string.Join(", ", foo);
+
+            return strResult;
         }
     }
 }

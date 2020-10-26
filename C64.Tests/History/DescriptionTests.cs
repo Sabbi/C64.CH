@@ -449,5 +449,118 @@ namespace C64.Tests.History
 
             Assert.Equal("Added pictures: Filename3, Changed order of pictures, Unhide pictures: Filename1, Filename2", addedHistoriesMock.FirstOrDefault().Description);
         }
+
+        [Fact]
+        public void EditVideos()
+        {
+            var production = new Production();
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = true });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var videos = new List<ProductionVideo>();
+            videos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = true });
+            videos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = true });
+            videos.Add(new ProductionVideo { VideoId = "VideoId3", Sort = 2, Show = true });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionVideos, videos);
+            historyHandler.Apply();
+
+            Assert.Equal("Added videos: VideoId2, VideoId3", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditVideos2()
+        {
+            var production = new Production();
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = true });
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = true });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var videos = new List<ProductionVideo>();
+            videos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 1, Show = true });
+            videos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 0, Show = true });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionVideos, videos);
+            historyHandler.Apply();
+
+            Assert.Equal("Changed order of videos", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditVideos3()
+        {
+            var production = new Production();
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = true });
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = true });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var videos = new List<ProductionVideo>();
+            videos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = false });
+            videos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = false });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionVideos, videos);
+            historyHandler.Apply();
+
+            Assert.Equal("Hide videos: VideoId1, VideoId2", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditVideos4()
+        {
+            var production = new Production();
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = false });
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = false });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var videos = new List<ProductionVideo>();
+            videos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = true });
+            videos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = true });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionVideos, videos);
+            historyHandler.Apply();
+
+            Assert.Equal("Unhide videos: VideoId1, VideoId2", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditVideos5()
+        {
+            var production = new Production();
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = true });
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = true });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var videos = new List<ProductionVideo>();
+            videos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = true });
+
+            historyHandler.AddHistory(HistoryEditProperty.ProductionVideos, videos);
+            historyHandler.Apply();
+
+            Assert.Equal("Removed videos: VideoId2", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditVideosCombo()
+        {
+            var production = new Production();
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 0, Show = false });
+            production.ProductionVideos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = false });
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var videos = new List<ProductionVideo>();
+            videos.Add(new ProductionVideo { VideoId = "VideoId1", Sort = 2, Show = true });
+            videos.Add(new ProductionVideo { VideoId = "VideoId2", Sort = 1, Show = true });
+            videos.Add(new ProductionVideo { VideoId = "VideoId3", Sort = 1, Show = true });
+            historyHandler.AddHistory(HistoryEditProperty.ProductionVideos, videos);
+            historyHandler.Apply();
+
+            Assert.Equal("Added videos: VideoId3, Changed order of videos, Unhide videos: VideoId1, VideoId2", addedHistoriesMock.FirstOrDefault().Description);
+        }
     }
 }
