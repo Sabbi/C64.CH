@@ -562,5 +562,50 @@ namespace C64.Tests.History
 
             Assert.Equal("Added videos: VideoId3, Changed order of videos, Unhide videos: VideoId1, VideoId2", addedHistoriesMock.FirstOrDefault().Description);
         }
+
+        [Fact]
+        public void EditGroups()
+        {
+            var production = new Production();
+
+            production.ProductionsGroups = new List<ProductionsGroups>() { new ProductionsGroups { GroupId = 1, Group = new Group { GroupId = 1, Name = "Group1" } }, new ProductionsGroups { GroupId = 2, Group = new Group { GroupId = 2, Name = "Group2" } } };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            historyHandler.AddHistory(HistoryEditProperty.Groups, new List<Group>() { new Group { GroupId = 1, Name = "Group1" }, new Group { GroupId = 2, Name = "Group2" }, new Group { GroupId = 3, Name = "Group3" } });
+            historyHandler.Apply();
+
+            Assert.Equal("Added groups: Group3", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditGroups2()
+        {
+            var production = new Production();
+
+            production.ProductionsGroups = new List<ProductionsGroups>() { new ProductionsGroups { GroupId = 1, Group = new Group { GroupId = 1, Name = "Group1" } }, new ProductionsGroups { GroupId = 2, Group = new Group { GroupId = 2, Name = "Group2" } } };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            historyHandler.AddHistory(HistoryEditProperty.Groups, new List<Group>() { new Group { GroupId = 1, Name = "Group1" } });
+            historyHandler.Apply();
+
+            Assert.Equal("Removed groups: Group2", addedHistoriesMock.FirstOrDefault().Description);
+        }
+
+        [Fact]
+        public void EditGroups3()
+        {
+            var production = new Production();
+
+            production.ProductionsGroups = new List<ProductionsGroups>() { new ProductionsGroups { GroupId = 1, Group = new Group { GroupId = 1, Name = "Group1" } }, new ProductionsGroups { GroupId = 2, Group = new Group { GroupId = 2, Name = "Group2" } } };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            historyHandler.AddHistory(HistoryEditProperty.Groups, new List<Group>() { new Group { GroupId = 1, Name = "Group1" }, new Group { GroupId = 3, Name = "Group3" } });
+            historyHandler.Apply();
+
+            Assert.Equal("Added groups: Group3, Removed groups: Group2", addedHistoriesMock.FirstOrDefault().Description);
+        }
     }
 }
