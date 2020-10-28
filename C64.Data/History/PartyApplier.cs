@@ -38,6 +38,8 @@ namespace C64.Data.History
             {
                 PartyId = production.ProductionsParties.FirstOrDefault()?.PartyId ?? 0,
                 CategoryId = production.ProductionsParties.FirstOrDefault()?.PartyCategoryId ?? null,
+                PartyName = production.ProductionsParties.FirstOrDefault()?.Party?.Name,
+                CategoryName = production.ProductionsParties.FirstOrDefault()?.PartyCategory?.Name,
                 Rank = production.ProductionsParties.FirstOrDefault()?.Rank ?? 0,
             };
 

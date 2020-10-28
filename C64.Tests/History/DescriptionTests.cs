@@ -189,6 +189,21 @@ namespace C64.Tests.History
         }
 
         [Fact]
+        public void NotChangeParty()
+        {
+            var production = new Production() { ProductionsParties = new List<ProductionsParties>() { new ProductionsParties() { PartyId = 1, Party = new Party { Name = "OldParty" }, PartyCategoryId = 1, PartyCategory = new PartyCategory { Name = "OldCategory" }, Rank = 2 } } };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, production, "1", "127.0.0.0");
+
+            var partyapplierData = new PartyApplierData() { CategoryId = 1, CategoryName = "OldCategory", PartyName = "OldParty", PartyId = 1, Rank = 2 };
+
+            historyHandler.AddHistory(HistoryEditProperty.Party, partyapplierData);
+            historyHandler.Apply();
+
+            Assert.Null(addedHistoriesMock.FirstOrDefault());
+        }
+
+        [Fact]
         public void ChangeRemarks()
         {
             var production = new Production { Remarks = "OldRemark" };
