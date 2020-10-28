@@ -41,7 +41,7 @@ namespace C64.Tests.History
                 Platform = Platform.C64,
                 SubCategory = SubCategory.Demo,
                 ProductionsParties = new List<ProductionsParties>() { new ProductionsParties { PartyId = 1, PartyCategoryId = 2, Rank = 3 } },
-                ProductionsGroups = new List<ProductionsGroups>() { new ProductionsGroups { GroupId = 1 }, new ProductionsGroups { GroupId = 2 } },
+                ProductionsGroups = new List<ProductionsGroups>() { new ProductionsGroups { GroupId = 1, Group = new Group { GroupId = 1, Name = "Group1" } }, new ProductionsGroups { GroupId = 2, Group = new Group { GroupId = 2, Name = "Group2" } } },
                 HiddenParts = new List<HiddenPart>() { new HiddenPart { HiddenPartId = 1, Description = "OldHiddenPart" } },
                 ProductionVideos = new List<ProductionVideo>() { new ProductionVideo { ProductionId = 1, ProductionVideoId = 1, VideoId = "YTID", VideoProvider = VideoProvider.Youtube } },
                 ProductionPictures = new List<ProductionPicture>() { new ProductionPicture { ProductionId = 1, ProductionPictureId = 1, Filename = "Test" } },
@@ -309,19 +309,6 @@ namespace C64.Tests.History
 
             Assert.Single(productionWithRelations.ProductionPictures);
             Assert.Equal("Test2", productionWithRelations.ProductionPictures.FirstOrDefault().Filename);
-        }
-
-        [Fact]
-        public void RemovePicture()
-        {
-            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWorkMock.Object, productionWithRelations, "1", "127.0.0.0");
-
-            var pictures = new List<ProductionPicture>();
-
-            historyHandler.AddHistory(HistoryEditProperty.ProductionPictures, pictures);
-            historyHandler.Apply();
-
-            Assert.Empty(productionWithRelations.ProductionPictures);
         }
 
         [Fact]

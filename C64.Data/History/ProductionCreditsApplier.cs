@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace C64.Data.History
 {
@@ -30,7 +31,7 @@ namespace C64.Data.History
             var oldValues = new List<EditCredit>();
 
             foreach (var productionCredit in production.ProductionCredits)
-                oldValues.Add(new EditCredit { Id = productionCredit.ProductionCreditId, Added = false, Deleted = false, Credit = productionCredit.Credit, ScenerId = productionCredit.ScenerId, ScenerHandle = productionCredit.Scener.HandleWithGroups() });
+                oldValues.Add(new EditCredit { Id = productionCredit.ProductionCreditId, Added = false, Deleted = false, Credit = productionCredit.Credit, ScenerId = productionCredit.ScenerId, ScenerHandle = productionCredit.Scener.Handle });
 
             var dbhistory = new HistoryRecord
             {
@@ -40,10 +41,39 @@ namespace C64.Data.History
                 OldValue = JsonConvert.SerializeObject(oldValues),
                 Status = status,
                 Type = newValue.GetType().FullName,
-                Version = 1M
+                Version = 1M,
+                Description = CreateDescription((List<EditCredit>)newValue)
             };
 
             return dbhistory;
+        }
+
+        private string CreateDescription(List<EditCredit> newValue)
+        {
+            var sb = new StringBuilder();
+
+            if (newValue.Any(p => p.Deleted))
+            {
+                sb.Append("Removed credits for ");
+
+                foreach (var deleted in newValue.Where(p => p.Deleted))
+                    sb.Append($"{deleted.ScenerHandle} ({deleted.Credit}), ");
+
+                if (!newValue.Any(p => p.Added))
+                    sb.Remove(sb.Length - 2, 2);
+            }
+
+            if (newValue.Any(p => p.Added))
+            {
+                sb.Append("Added credits for ");
+
+                foreach (var added in newValue.Where(p => p.Added))
+                    sb.Append($"{added.ScenerHandle} ({added.Credit}), ");
+
+                sb.Remove(sb.Length - 2, 2);
+            }
+
+            return sb.ToString();
         }
     }
 }
