@@ -9,7 +9,7 @@
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 @inject Microsoft.AspNetCore.Identity.SignInManager<User> signInManager
 
-<BootstrapModal Title="Login">
+<BootstrapModal Title="Login" @ref="bootstrapModal">
     <Content>
         <EditForm EditContext="editContext" OnSubmit="OnSubmit">
             <div class="row text-left">
@@ -41,8 +41,8 @@
                     </div>
                 </div>
                 <div class="col-12 mt-2">
-                    <p><a href="/account/forgotpassword">Forgot your password?</a></p>
-                    <p><a href="/account/register">Register as a new user</a></p>
+                    <p><a href="" @onclick:preventDefault @onclick="OnForgotPassword">Forgot your password?</a></p>
+                    <p><a href="" @onclick:preventDefault @onclick="OnRegisterAsNewUser">Register as a new user</a></p>
                 </div>
             </div>
         </EditForm>
@@ -60,6 +60,8 @@
     private EditContext editContext;
     private ValidationMessageStore messageStore;
 
+    private BootstrapModal bootstrapModal;
+
     private string returnUrl;
 
     protected override void OnInitialized()
@@ -69,6 +71,18 @@
         messageStore = new ValidationMessageStore(editContext);
 
         returnUrl = "~/" + navigationManager.ToBaseRelativePath(navigationManager.Uri);
+    }
+
+    private async Task OnForgotPassword()
+    {
+        await bootstrapModal.Close();
+        navigationManager.NavigateTo("/account/forgotpassword");
+    }
+
+    private async Task OnRegisterAsNewUser()
+    {
+        await bootstrapModal.Close();
+        navigationManager.NavigateTo("/account/register");
     }
 
     private async Task OnSubmit()
