@@ -1,18 +1,24 @@
 ﻿@inject IModalService Modal
 
-    <a href="" @attributes="@AllOtherAttributes" @onclick="OpenLoginModal" @onclick:preventDefault>
-        @Content
-    </a>
+<a href="" @attributes="@AllOtherAttributes" @onclick="OpenLoginModal" @onclick:preventDefault>
+    @Content
+</a>
 
-    @code{
-        [Parameter]
-        public RenderFragment Content { get; set; }
+@code{
+    [Parameter]
+    public RenderFragment Content { get; set; }
 
-        [Parameter(CaptureUnmatchedValues = true)]
-        public Dictionary<string, object> AllOtherAttributes { get; set; }
+    [Parameter]
+    public Func<Task> ExecuteBefore { get; set; }
 
-        private void OpenLoginModal()
-        {
-            Modal.Show<LoginModal>();
-        }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private async Task OpenLoginModal()
+    {
+        if (ExecuteBefore != null)
+            await ExecuteBefore.Invoke();
+
+        Modal.Show<LoginModal>();
     }
+}

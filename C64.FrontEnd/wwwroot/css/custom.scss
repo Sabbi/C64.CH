@@ -70,7 +70,8 @@ header {
 
 .header-hamburger {
     position: absolute;
-    right: 20px;
+    right: 25px;
+    top: 25px;
     font-size: 24px;
     cursor: pointer;
 }
@@ -320,14 +321,14 @@ header {
 
     .prodlistitem-header {
         overflow: hidden;
-        padding-left:10px;
+        padding-left: 10px;
         white-space: nowrap;
         border-top: 1px solid $blue;
         border-left: 1px solid $blue;
         position: relative;
 
         a {
-            color:black;
+            color: black;
             font-size: 20px;
             text-decoration: none;
         }
@@ -395,7 +396,7 @@ img.active {
 
 .picture-caption {
     bottom: 0;
-   /* background-color: rgba(255,255,255,0.8);*/
+    /* background-color: rgba(255,255,255,0.8);*/
     text-align: center;
     color: $black;
     width: 100%;
@@ -453,7 +454,6 @@ img.active {
     flex-wrap: unset;
 }
 
-
 #blazor-error-ui {
     height: 100%;
     width: 100%;
@@ -475,8 +475,6 @@ img.active {
     top: 0.5rem;
 }
 
-
-
 .invalid {
     border-color: red !important;
 }
@@ -484,7 +482,6 @@ img.active {
 .checked {
     color: orange;
 }
-
 
 .form-markdown {
     display: flex;
@@ -509,16 +506,14 @@ img.active {
     border-radius: .2rem;
 }
 
-.blazored-toast-container
-{
-    z-index:100000;
+.blazored-toast-container {
+    z-index: 100000;
 }
 
 .blazored-toast-body .blazored-toast-header h5 {
     font-size: 1rem;
 }
 
-.validation-message
-{
+.validation-message {
     color: $red;
 }

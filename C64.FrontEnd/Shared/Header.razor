@@ -1,4 +1,7 @@
-﻿<header>
+﻿@inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
+
+<header>
     <div class="container-fluid">
         <div class="container-fluid" style="max-width:1400px;">
             <div class="grid-wrapper">
@@ -90,33 +93,67 @@
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
                     <div class="navOverlay-content">
                         <ul>
-                            <li><a href="/"><i class="fas fa-home w-25px" title="Home"></i> Home</a></li>
-                            <li><a asp-controller="Productions" asp-action="Demos" asp-route-area=""><i class="fas fa-laptop-code w-25px" title="Demos"></i> Demos</a></li>
-                            @*<li><a href="#"><i class="fas fa-users w-25px" title="Groups"></i> Groups</a></li>*@
-                            <li><a asp-controller="Parties" asp-action="Index" asp-route-area=""><i class="fas fa-glass-cheers w-25px" title="Partis"></i> Parties</a></li>
-                            <li><a asp-controller="Links" asp-action="Index" asp-route-area=""><i class="fas fa-link w-25px" title="Links"></i> Links</a></li>
+                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/"))"><i class="fas fa-home w-25px" title="Home"></i> Home</a></li>
+                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/productions/demos"))"><i class="fas fa-laptop-code w-25px" title="Demos"></i> Demos</a></li>
+                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/parties"))"><i class="fas fa-glass-cheers w-25px" title="Partis"></i> Parties</a></li>
+                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/links"))"><i class="fas fa-link w-25px" title="Links"></i> Links</a></li>
                             <li>
-                                <a class="trigger"><i class="fas fa-microchip w-25px" title="Programming"></i> Programming</a>
-                                <nav class="nav-items">
+                                <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-microchip w-25px" title="Programming"></i> Programming</a>
+                                <nav class="nav-items" style="display:none">
                                     <ul>
-                                        <li><a href="/">Tutorial</a></li>
-                                        <li><a href="/">Sourcecodes</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming"))">Tutorial</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming/sourcecodes"))">Sourcecodes</a></li>
                                     </ul>
                                 </nav>
                             </li>
-                            <li><a asp-controller="Guestbook" asp-action="Index" asp-route-area="" asp-route-id="0"><i class="fas fa-atlas w-25px" title="Guestbook"></i> Guestbook</a></li>
-                            <li class="mb-4">
-                                <a class="trigger"><i class="fas fa-question w-25px" title="Help"></i> Help</a>
-                                <nav class="nav-items">
+                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/guestbook"))"><i class="fas fa-atlas w-25px" title="Guestbook"></i> Guestbook</a></li>
+                            <li>
+                                <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-microchip w-25px" title="Add"></i> Add</a>
+                                <AuthorizeView>
+                                    <Authorized>
+                                        <nav class="nav-items" style="display:none">
+                                            <ul>
+                                                <li><AddProductionLink ExecuteBefore="CloseMenu"><Content>Add Production</Content></AddProductionLink></li>
+                                                <li><AddScenerLink ExecuteBefore="CloseMenu"><Content>Add Scener</Content></AddScenerLink></li>
+                                                <li><AddGroupLink ExecuteBefore="CloseMenu"><Content>Add Group</Content></AddGroupLink></li>
+                                                <li><AddPartyLink ExecuteBefore="CloseMenu"><Content>Add Party</Content></AddPartyLink></li>
+                                                <AuthorizeView Roles="Moderator">
+                                                    <Authorized Context="InnerContext">
+                                                        <li><AddNewsLink class="dropdown-item"><Content>Add News</Content></AddNewsLink></li>
+                                                    </Authorized>
+                                                </AuthorizeView>
+                                            </ul>
+                                        </nav>
+                                    </Authorized>
+                                    <NotAuthorized>
+                                        <nav class="nav-items" style="display:none">
+                                            <ul>
+                                                <li><LoginLink ExecuteBefore="CloseMenu"><Content>Login</Content></LoginLink></li>
+                                            </ul>
+                                        </nav>
+                                    </NotAuthorized>
+                                </AuthorizeView>
+
+                                <nav class="nav-items" style="display:none">
                                     <ul>
-                                        <li><a href="/">FAQ</a></li>
-                                        <li><a href="/">Feedback</a></li>
-                                        <li><a href="/">Contribute</a></li>
-                                        <li><a href="/">Changelog</a></li>
-                                        <li><a href="/">Donations</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming"))">Tutorial</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming/sourcecodes"))">Sourcecodes</a></li>
+                                    </ul>
+                                </nav>
+                            </li>
+
+                            <li class="mb-4">
+                                <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-question w-25px" title="Help"></i> Help</a>
+                                <nav class="nav-items" style="display:none">
+                                    <ul>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/faq"))">FAQ</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/feedback"))">Feedback</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/contribute"))">Contribute</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/changelog"))">Changelog</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/donations"))">Donations</a></li>
                                         <li><div class="dropdown-divider"></div></li>
-                                        <li><a href="/">About</a></li>
-                                        <li><a href="/">Technical</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/about"))">About</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/technical"))">Technical</a></li>
                                     </ul>
                                 </nav>
                             </li>
@@ -128,3 +165,16 @@
         </div>
     </div>
 </header>
+
+@code {
+    private async Task CloseMenu()
+    {
+        await jsRuntime.InvokeVoidAsync("closeNav");
+    }
+
+    private async Task NavigateTo(string url)
+    {
+        await CloseMenu();
+        navigationManager.NavigateTo(url);
+    }
+}

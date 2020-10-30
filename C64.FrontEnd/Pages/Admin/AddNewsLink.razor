@@ -10,11 +10,17 @@
     [Parameter]
     public RenderFragment Content { get; set; }
 
+    [Parameter]
+    public Func<Task> ExecuteBefore { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> AllOtherAttributes { get; set; }
 
-    private void OpenAddNewsModal()
+    private async Task OpenAddNewsModal()
     {
+        if (ExecuteBefore != null)
+            await ExecuteBefore.Invoke();
+
         Modal.Show<AddNewsModal>();
     }
 }

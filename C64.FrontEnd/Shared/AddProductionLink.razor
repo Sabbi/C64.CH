@@ -11,11 +11,18 @@
     [Parameter]
     public RenderFragment Content { get; set; }
 
+    [Parameter]
+    public Func<Task> ExecuteBefore { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> AllOtherAttributes { get; set; }
 
     private async Task OpenAddProductionModal()
     {
+
+        if (ExecuteBefore != null)
+            await ExecuteBefore.Invoke();
+
         var parameters = new ModalParameters();
         parameters.Add(nameof(EditProductionModal.Production), new Production());
         parameters.Add(nameof(EditProductionModal.unitOfWork), unitOfWork);

@@ -9,6 +9,13 @@ function closeNav() {
 }
 
 $(".nav-items").slideUp();
+
+function onTrigger(element) {
+    var current = $(element).next(".nav-items");
+    $(".nav-items").not(current).slideUp();
+    current.slideToggle();
+}
+
 $(".trigger").click(function () {
     var current = $(this).next(".nav-items");
     $(".nav-items").not(current).slideUp();

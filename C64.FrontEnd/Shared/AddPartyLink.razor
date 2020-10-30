@@ -12,11 +12,18 @@
     [Parameter]
     public RenderFragment Content { get; set; }
 
+    [Parameter]
+    public Func<Task> ExecuteBefore { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> AllOtherAttributes { get; set; }
 
     private async Task OpenAddPartyModal()
     {
+
+        if (ExecuteBefore != null)
+            await ExecuteBefore.Invoke();
+
         var parameters = new ModalParameters();
         parameters.Add(nameof(AddPartyModal.unitOfWork), unitOfWork);
         var reference = Modal.Show<AddPartyModal>("", parameters);
