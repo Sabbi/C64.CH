@@ -90,61 +90,67 @@
     <Title>More top lists</Title>
     <Content>
         <div class="row">
-            <div class="col-sm-6">
-                <h5 class="text-center">Most Active Groups</h5>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Group</th>
-                            <th class="text-right">Releases</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (var i = 0; i < 10; i++)
-                        {
-                            var currentGroup = groups.OrderByDescending(p => p.NumberOfReleases).ElementAt(i);
+            @if (groups.Count >= 10)
+            {
+                <div class="col-sm-6">
+                    <h5 class="text-center">Most Active Groups</h5>
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>@(i+1)</td>
-                                <td>
-                                    <a href="/groups/@currentGroup.GroupId/@currentGroup.Name.UrlEncode()">
-                                        @currentGroup.Name
-                                    </a>
-                                </td>
-                                <td class="text-right">@currentGroup.NumberOfReleases</td>
+                                <th>Rank</th>
+                                <th>Group</th>
+                                <th class="text-right">Releases</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-6">
-                <h5 class="text-center">Top Rated Groups (20 ratings min.)</h5>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Group</th>
-                            <th class="text-right">Rating</th>
-                            <th class="text-right">No. of Ratings</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (var i = 0; i < 10; i++)
-                        {
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < 10; i++)
+                            {
+                                var currentGroup = groups.OrderByDescending(p => p.NumberOfReleases)?.ElementAt(i);
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>
+                                        <a href="/groups/@currentGroup.GroupId/@currentGroup.Name.UrlEncode()">
+                                            @currentGroup.Name
+                                        </a>
+                                    </td>
+                                    <td class="text-right">@currentGroup.NumberOfReleases</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            @if (topRatedGroups.Count >= 10)
+            {
+                <div class="col-sm-6">
+                    <h5 class="text-center">Top Rated Groups (20 ratings min.)</h5>
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>@(i+1)</td>
-                                <td>
-                                    <a href="/groups/@topRatedGroups.ElementAt(i).GroupId/@topRatedGroups.ElementAt(i).Name.UrlEncode()">
-                                        @topRatedGroups.ElementAt(i).Name
-                                    </a>
-                                </td>
-                                <td class="text-right">@topRatedGroups.ElementAt(i).AverageRating.ToString("0.##")</td>
-                                <td class="text-right">@topRatedGroups.ElementAt(i).NumberOfRatings</td>
+                                <th>Rank</th>
+                                <th>Group</th>
+                                <th class="text-right">Rating</th>
+                                <th class="text-right">No. of Ratings</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < 10; i++)
+                            {
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>
+                                        <a href="/groups/@topRatedGroups.ElementAt(i).GroupId/@topRatedGroups.ElementAt(i).Name.UrlEncode()">
+                                            @topRatedGroups.ElementAt(i).Name
+                                        </a>
+                                    </td>
+                                    <td class="text-right">@topRatedGroups.ElementAt(i).AverageRating.ToString("0.##")</td>
+                                    <td class="text-right">@topRatedGroups.ElementAt(i).NumberOfRatings</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
         </div>
     </Content>
 </Box>
