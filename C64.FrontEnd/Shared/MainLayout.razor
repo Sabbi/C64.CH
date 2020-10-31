@@ -8,24 +8,28 @@
 
 @if (Allowed)
 {
-    <Header />
-    <div class="container-fluid" style="max-width:1400px">
-        <main role="main" class="pb-3">
-            <div class="row">
-                <div class="col-12 col-md-9 col-lg-10" style="padding-left:5px; padding-right:5px">
-                    @Body
-                </div>
-                <div class="col-12 col-md-3 col-lg-2" style="padding-left:5px; padding-right:5px">
-                    <div class="pb-5 d-block d-md-none"></div>
-                    <SideBarDemoRand />
-                    <SideBarTopRated />
-                    <SideBarLatest />
-                    <SideBarTopDownloaded />
-                </div>
+    <div id="page-container">
+        <div id="content-wrap">
+            <Header />
+            <div class="container-fluid" style="max-width:1400px">
+                <main role="main" class="pb-3">
+                    <div class="row">
+                        <div class="col-12 col-md-9 col-lg-10" style="padding-left:5px; padding-right:5px">
+                            @Body
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-2" style="padding-left:5px; padding-right:5px">
+                            <div class="pb-5 d-block d-md-none"></div>
+                            <SideBarDemoRand />
+                            <SideBarTopRated />
+                            <SideBarLatest />
+                            <SideBarTopDownloaded />
+                        </div>
+                    </div>
+                </main>
             </div>
-        </main>
+        </div>
+        <Footer />
     </div>
-    <Footer />
 }
 else
 {
