@@ -39,6 +39,8 @@
     <Compile Remove="Migrations\20200923183220_AddFieldsToScener.Designer.cs" />
     <Compile Remove="Migrations\20200923183351_AddFieldsToScener.cs" />
     <Compile Remove="Migrations\20200923183351_AddFieldsToScener.Designer.cs" />
+    <Compile Remove="Migrations\20201031132619_tools.cs" />
+    <Compile Remove="Migrations\20201031132619_tools.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

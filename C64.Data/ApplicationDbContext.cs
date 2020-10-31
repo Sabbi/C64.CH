@@ -73,6 +73,8 @@ namespace C64.Data
 
         public virtual DbSet<HistoryRecord> HistoryRecords { get; set; }
 
+        public virtual DbSet<Tool> Tools { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -141,6 +143,7 @@ namespace C64.Data
             modelBuilder.Entity<Download>().HasIndex(p => new { p.DownloadedOn });
             modelBuilder.Entity<Download>().HasIndex(p => new { p.ProductionFileId, p.DownloadedOn });
             modelBuilder.Entity<DbFile>().HasIndex(p => new { p.Container, p.FileName });
+            modelBuilder.Entity<Tool>().HasIndex(p => new { p.Show });
 
             modelBuilder.Entity<Country>().HasData(GetCountries());
             modelBuilder.Entity<LinkCategory>().HasData(GetLinkCategories());

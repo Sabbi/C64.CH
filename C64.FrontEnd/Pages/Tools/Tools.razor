@@ -1,0 +1,36 @@
+﻿@page  "/tools"
+
+@inject IUnitOfWork unitOfWork;
+
+<Box MarginBottom="4">
+    <Title>Emulators</Title>
+    <Content>
+        <table class="table">
+            @foreach (var emu in toolList.Where(p => p.ToolCategory == ToolCategory.Emulator).OrderBy(p => p.Sort))
+            {
+                <tr><th><a target="_blank" href="@emu.Homepage">@emu.Name</a></th><td><a target="_blank" href="@emu.Homepage">@emu.Homepage</a></td></tr>
+            }
+        </table>
+    </Content>
+</Box>
+
+<Box>
+    <Title>Tools</Title>
+    <Content>
+        <table class="table">
+            @foreach (var emu in toolList.Where(p => p.ToolCategory == ToolCategory.Tool).OrderBy(p => p.Sort))
+            {
+                <tr><th><a target="_blank" href="@emu.Homepage">@emu.Name</a></th><td><a target="_blank" href="@emu.Homepage">@emu.Homepage</a></td></tr>
+            }
+        </table>
+    </Content>
+</Box>
+@code{
+
+    private IEnumerable<Tool> toolList = new List<Tool>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        toolList = await unitOfWork.Tools.Find(p => p.Show);
+    }
+}
