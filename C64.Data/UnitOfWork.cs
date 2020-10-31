@@ -22,6 +22,8 @@ namespace C64.Data
 
         public IUserRepository Users { get; private set; }
 
+        public IToolRepository Tools { get; private set; }
+
         public UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger)
         {
             this.context = context;
@@ -36,6 +38,7 @@ namespace C64.Data
             Countries = new CountryRepository(context, logger);
             Sceners = new ScenerRepository(context, logger);
             Users = new UserRepository(context, logger);
+            Tools = new ToolRepository(context, logger);
         }
 
         public async Task<int> Commit()

@@ -21,6 +21,8 @@ namespace C64.Data
 
         IUserRepository Users { get; }
 
+        IToolRepository Tools { get; }
+
         Task<int> Commit();
     }
 }
