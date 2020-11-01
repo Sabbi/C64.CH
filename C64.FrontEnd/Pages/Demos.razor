@@ -39,20 +39,20 @@
         <div class="text-center">
             <h5>Show demos by name</h5>
             <h5>
-                <a class="badge badge-primary" href="/productions/demos/namestart/other">#</a>
+                <a class="badge badge-primary" href="/productions/demos/demoname/other">#</a>
                 @for (int i = 65; i < 91; i++)
                 {
                     <span>&nbsp;</span>
-                    <a class="badge badge-primary" href="/productions/demos/namestart/@((char)i)">@((char)i)</a>
+                    <a class="badge badge-primary" href="/productions/demos/demoname/@((char)i)">@((char)i)</a>
                 }
             </h5>
             <h5>Show demos by group</h5>
             <h5>
-                <a class="badge badge-primary" href="/productions/demos/groupstart/other">#</a>
+                <a class="badge badge-primary" href="/productions/demos/groupname/other">#</a>
                 @for (int i = 65; i < 91; i++)
                 {
                     <span>&nbsp;</span>
-                    <a class="badge badge-primary" href="/productions/demos/groupstart/@((char)i)">@((char)i)</a>
+                    <a class="badge badge-primary" href="/productions/demos/groupname/@((char)i)">@((char)i)</a>
                 }
             </h5>
         </div>
@@ -180,7 +180,7 @@
         if (string.IsNullOrEmpty(simpleSearchTerm))
             return;
 
-        navigationManager.NavigateTo($"/search/?search={simpleSearchTerm}");
+        navigationManager.NavigateTo($"/productions/demos/search/?search={simpleSearchTerm}");
     }
 
     private void GroupSelect(string group)
@@ -230,7 +230,7 @@
         if (selectedYear != null && selectedYear != "0")
         {
 
-            navigationManager.NavigateTo($"/years/{selectedYear}");
+            navigationManager.NavigateTo($"/productions/demos/year/{selectedYear}");
         }
     }
 
