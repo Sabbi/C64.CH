@@ -180,7 +180,7 @@
         if (string.IsNullOrEmpty(simpleSearchTerm))
             return;
 
-        navigationManager.NavigateTo($"/search/?search={simpleSearchTerm}");
+        navigationManager.NavigateTo($"/productions/demos/search/?search={simpleSearchTerm}");
     }
 
     private void GroupSelect(string group)
@@ -230,7 +230,7 @@
         if (selectedYear != null && selectedYear != "0")
         {
 
-            navigationManager.NavigateTo($"/years/{selectedYear}");
+            navigationManager.NavigateTo($"/productions/demos/year/{selectedYear}");
         }
     }
 

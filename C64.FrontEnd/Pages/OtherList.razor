@@ -1,6 +1,8 @@
 ﻿@page "/productions/{ProdType}/{ListBy}/{StartLetter}"
 @page "/productions/{ProdType}/{ListBy}"
 
+@inject NavigationManager navigationManager
+
 @inject IUnitOfWork unitOfWork
 <Box>
     <Title>@title</Title>
@@ -103,6 +105,14 @@
                 }
                 productionIds = prodIds;
 
+                break;
+            case "year":
+
+                if (!int.TryParse(StartLetter, out var year))
+                    navigationManager.NavigateTo("/productions/demos");
+
+                title = $"Demos released in {year}";
+                productionIds = (await unitOfWork.Productions.Find(p => p.ReleaseDate.Year == year)).Select(p => p.ProductionId).ToList();
                 break;
             default:
                 throw new Exception("Invalid ListBy-Parameter");
