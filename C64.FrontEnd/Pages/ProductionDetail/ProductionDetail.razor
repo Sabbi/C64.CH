@@ -393,7 +393,9 @@
         else
             CommentsBlocked = false;
 
-        isFavorite = await unitOfWork.Users.IsFavorite(httpContext.HttpContext.GetUserId(), ProductionId);
+        // Hack - fixes an InvalidOperationException when fast (re-)loading a new production
+        var spareUnitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        isFavorite = await spareUnitOfWork.Users.IsFavorite(httpContext.HttpContext.GetUserId(), ProductionId);
 
         StateHasChanged();
     }

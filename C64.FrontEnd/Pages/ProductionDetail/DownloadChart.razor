@@ -1,5 +1,8 @@
 ﻿@namespace C64.FrontEnd.Pages
 
+@using Microsoft.Extensions.DependencyInjection
+@inherits OwningComponentBase
+
 @using ChartJs.Blazor.Charts
 @using ChartJs.Blazor.ChartJS.LineChart;
 @using ChartJs.Blazor.ChartJS.Common;
@@ -8,7 +11,6 @@
 @using ChartJs.Blazor.ChartJS.BarChart
 
 @inject ILogger<DownloadChart> logger
-@inject IUnitOfWork unitOfWork
 
 @if (_config != null)
 {
@@ -25,8 +27,11 @@
 
     private BarDataset<Point> barSet;
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnParametersSetAsync()
     {
+        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
         var downloads = await unitOfWork.Productions.GetDownloads(ProductionId);
 
         var chartDownloads = new List<int>();

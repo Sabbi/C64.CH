@@ -20,9 +20,9 @@ namespace C64.Data.Repositories
             return context.Set<User>().Include(p => p.Favorites).FirstOrDefaultAsync(p => p.Id == userId);
         }
 
-        public async Task<bool> IsFavorite(string userId, int productionId)
+        public Task<bool> IsFavorite(string userId, int productionId)
         {
-            return await context.Set<UserFavorite>().AnyAsync(p => p.ProductionId == productionId && p.UserId == userId);
+            return context.Set<UserFavorite>().AnyAsync(p => p.ProductionId == productionId && p.UserId == userId);
         }
 
         public void SetFavorite(string userId, int productionId, bool set)

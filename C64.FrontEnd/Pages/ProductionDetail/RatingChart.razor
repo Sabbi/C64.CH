@@ -1,5 +1,8 @@
 ﻿@namespace C64.FrontEnd.Pages
 
+@using Microsoft.Extensions.DependencyInjection
+@inherits OwningComponentBase
+
 @using ChartJs.Blazor.Charts
 @using ChartJs.Blazor.ChartJS.LineChart;
 @using ChartJs.Blazor.ChartJS.Common;
@@ -11,7 +14,6 @@
 @using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
 
 @inject ILogger<DownloadChart> logger
-@inject IUnitOfWork unitOfWork
 
 @if (_config != null)
 {
@@ -35,7 +37,7 @@
 
     public async Task Update(bool external = true)
     {
-
+        var unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
         var ratings = await unitOfWork.Productions.GetRatings(ProductionId);
 
         var chartNumberOfRatings = new List<int>();
