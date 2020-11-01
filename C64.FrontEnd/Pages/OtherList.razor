@@ -1,6 +1,8 @@
 ﻿@page "/productions/{ProdType}/{ListBy}/{StartLetter}"
 @page "/productions/{ProdType}/{ListBy}"
 
+@inject NavigationManager navigationManager
+
 @inject IUnitOfWork unitOfWork
 <Box>
     <Title>@title</Title>
@@ -66,7 +68,7 @@
                 defaultSortedAscending = false;
                 title = "Top downloaded demos";
                 break;
-            case "namestart":
+            case "demoname":
                 if (StartLetter.Equals("other", StringComparison.OrdinalIgnoreCase))
                 {
                     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -79,7 +81,7 @@
                     title = $"Demos starting with {StartLetter}";
                 }
                 break;
-            case "groupstart":
+            case "groupname":
                 var groups = new List<Group>();
 
                 if (StartLetter.Equals("other", StringComparison.OrdinalIgnoreCase))
@@ -103,6 +105,14 @@
                 }
                 productionIds = prodIds;
 
+                break;
+            case "year":
+
+                if (!int.TryParse(StartLetter, out var year))
+                    navigationManager.NavigateTo("/productions/demos");
+
+                title = $"Demos released in {year}";
+                productionIds = (await unitOfWork.Productions.Find(p => p.ReleaseDate.Year == year)).Select(p => p.ProductionId).ToList();
                 break;
             default:
                 throw new Exception("Invalid ListBy-Parameter");
