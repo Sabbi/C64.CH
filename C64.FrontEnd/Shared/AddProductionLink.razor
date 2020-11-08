@@ -1,7 +1,10 @@
 ﻿@inject IModalService Modal
-@inject IUnitOfWork unitOfWork;
+@inject IUnitOfWork unitOfWork
 @inject IToastService toastService
 @inject NavigationManager navigationManager
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
+
+@inherits ProtectedLink
 
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddProductionModal" @onclick:preventDefault>
     @Content
@@ -23,6 +26,9 @@
         if (ExecuteBefore != null)
             await ExecuteBefore.Invoke();
 
+        if (!CheckAccess())
+            return;
+
         var parameters = new ModalParameters();
         parameters.Add(nameof(EditProductionModal.Production), new Production());
         parameters.Add(nameof(EditProductionModal.unitOfWork), unitOfWork);
@@ -36,4 +42,5 @@
             navigationManager.NavigateTo($"/productions/{production.ProductionId}/{production.Name.UrlEncode()}");
         }
     }
+
 }

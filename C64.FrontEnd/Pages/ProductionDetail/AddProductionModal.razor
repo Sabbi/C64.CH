@@ -1,7 +1,9 @@
 ﻿@namespace C64.FrontEnd.Pages
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
-@inject ILogger<WriteComment>  logger;
+@inject ILogger<WriteComment>  logger
+@inject NavigationManager navigationManager
+@inject IToastService toastService
 
 <BootstrapModal @ref="bootstrapModal" Title="Add new production" Size="BootstrapModal.ModalSize.Large">
     <Content>
@@ -178,6 +180,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!httpContext.HttpContext.CanEdit())
+        {
+            navigationManager.NavigateTo("/help/contribute");
+            toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
+            return;
+        }
 
         partyCategories = await unitOfWork.Parties.GetCategories();
 

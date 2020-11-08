@@ -4,6 +4,8 @@
 
 @inject NavigationManager navigationManager
 
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
+
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddPartyModal" @onclick:preventDefault>
     @Content
 </a>
@@ -23,6 +25,12 @@
 
         if (ExecuteBefore != null)
             await ExecuteBefore.Invoke();
+
+        if (!httpContextAccessor.HttpContext.IsLoggedIn())
+        {
+            Modal.Show<LoginModal>();
+            return;
+        }
 
         var parameters = new ModalParameters();
         parameters.Add(nameof(AddPartyModal.unitOfWork), unitOfWork);
