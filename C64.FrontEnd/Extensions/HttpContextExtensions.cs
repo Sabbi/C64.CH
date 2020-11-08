@@ -14,6 +14,11 @@ namespace C64.FrontEnd.Extensions
             return httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
+        public static bool IsLoggedIn(this HttpContext httpContext)
+        {
+            return httpContext.GetUserId() != null;
+        }
+
         public static string Referer(this HttpContext httpContext)
         {
             return string.IsNullOrEmpty(httpContext.Request.Headers["Referer"].ToString()) ? null : httpContext.Request.Headers["Referer"].ToString();

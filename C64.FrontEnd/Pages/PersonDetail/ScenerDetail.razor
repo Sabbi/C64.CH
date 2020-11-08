@@ -10,6 +10,8 @@
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IModalService Modal
 @inject IToastService toastService
+@inject NavigationManager naviagationManager
+@inject NavigationManager navigationManager
 
 @if (scener != null)
 {
@@ -115,6 +117,14 @@
             Modal.Show<LoginModal>();
             return;
         }
+
+        if (!httpContext.HttpContext.CanEdit())
+        {
+            navigationManager.NavigateTo("/help/contribute");
+            toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
+            return;
+        }
+
         IModalReference reference;
 
         if (args.Value.ToString() == "general")
