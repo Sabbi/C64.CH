@@ -3,6 +3,7 @@
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger;
 @inject IToastService toastService
+@inject NavigationManager navigationManager
 
 <BootstrapModal @ref="bootstrapModal" Title="Add new group" Size="BootstrapModal.ModalSize.Large">
     <Content>
@@ -87,6 +88,13 @@
 
     protected override void OnInitialized()
     {
+        if (!httpContext.HttpContext.CanEdit())
+        {
+            navigationManager.NavigateTo("/help/contribute");
+            toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
+            return;
+        }
+
         editGroup.Name = Group.Name;
         editGroup.Aka = Group.Aka;
         editGroup.FoundedDate = new PartialDate(Group.FoundedDate, Group.FoundedDateType);

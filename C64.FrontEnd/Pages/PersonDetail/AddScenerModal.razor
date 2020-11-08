@@ -1,8 +1,9 @@
 ﻿@namespace C64.FrontEnd.Page
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
-@inject ILogger<WriteComment>  logger;
+@inject ILogger<WriteComment>  logger
 @inject IToastService toastService
+@inject NavigationManager navigationManager
 
 <BootstrapModal @ref="bootstrapModal" Title="Add new scener" Size="BootstrapModal.ModalSize.Large">
     <Content>
@@ -61,6 +62,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!httpContext.HttpContext.CanEdit())
+        {
+            navigationManager.NavigateTo("/help/contribute");
+            toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
+            return;
+        }
+
         countries = (await unitOfWork.Countries.Find(p => p.Selectable)).OrderBy(p => p.Name);
         editScener = new EditScener();
         editScener.ShowRealName = true;

@@ -2,6 +2,8 @@
 @inject IUnitOfWork unitOfWork
 @inject IToastService toastService
 
+@inherits ProtectedLink
+
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddScenerModal" @onclick:preventDefault>
     @Content
 </a>
@@ -21,6 +23,9 @@
 
         if (ExecuteBefore != null)
             await ExecuteBefore.Invoke();
+
+if (!CheckAccess())
+return;
 
         var parameters = new ModalParameters();
         parameters.Add(nameof(C64.FrontEnd.Page.AddScenerModal.unitOfWork), unitOfWork);

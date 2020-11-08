@@ -48,32 +48,32 @@
                         <li class="nav-item">
                             <a href="/guestbook" class="nav-link">Guestbook</a>
                         </li>
-                        <AuthorizeView>
-                            <Authorized>
-                                <li class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Add</a>
-                                    <div class="dropdown-menu">
-                                        <AddProductionLink class="dropdown-item"><Content>Add Production</Content></AddProductionLink>
-                                        <AddScenerLink class="dropdown-item"><Content>Add Scener</Content></AddScenerLink>
-                                        <AddGroupLink class="dropdown-item"><Content>Add Group</Content></AddGroupLink>
-                                        <AddPartyLink class="dropdown-item"><Content>Add Party</Content></AddPartyLink>
-                                        <AuthorizeView Roles="Moderator">
-                                            <Authorized Context="InnerContext">
-                                                <AddNewsLink class="dropdown-item"><Content>Add News</Content></AddNewsLink>
-                                            </Authorized>
-                                        </AuthorizeView>
-                                    </div>
-                                </li>
-                            </Authorized>
-                            <NotAuthorized>
-                                <li class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Add</a>
-                                    <div class="dropdown-menu">
-                                        <LoginLink class="dropdown-item"><Content>Login</Content></LoginLink>
-                                    </div>
-                                </li>
-                            </NotAuthorized>
-                        </AuthorizeView>
+                        @*<AuthorizeView>
+                            <Authorized>*@
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Add</a>
+                            <div class="dropdown-menu">
+                                <AddProductionLink class="dropdown-item"><Content>Add Production</Content></AddProductionLink>
+                                <AddScenerLink class="dropdown-item"><Content>Add Scener</Content></AddScenerLink>
+                                <AddGroupLink class="dropdown-item"><Content>Add Group</Content></AddGroupLink>
+                                <AddPartyLink class="dropdown-item"><Content>Add Party</Content></AddPartyLink>
+                                <AuthorizeView Roles="Moderator">
+                                    <Authorized Context="InnerContext">
+                                        <AddNewsLink class="dropdown-item"><Content>Add News</Content></AddNewsLink>
+                                    </Authorized>
+                                </AuthorizeView>
+                            </div>
+                        </li>
+                        @*</Authorized>
+                                <NotAuthorized>
+                                    <li class="nav-item dropdown">
+                                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Add</a>
+                                        <div class="dropdown-menu">
+                                            <LoginLink class="dropdown-item"><Content>Login</Content></LoginLink>
+                                        </div>
+                                    </li>
+                                </NotAuthorized>
+                            </AuthorizeView>*@
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Help</a>
                             <div class="dropdown-menu">
@@ -111,31 +111,30 @@
                             <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/guestbook"))"><i class="fas fa-atlas w-25px" title="Guestbook"></i> Guestbook</a></li>
                             <li>
                                 <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-microchip w-25px" title="Add"></i> Add</a>
-                                <AuthorizeView>
-                                    <Authorized>
-                                        <nav class="nav-items" style="display:none">
-                                            <ul>
-                                                <li><AddProductionLink ExecuteBefore="CloseMenu"><Content>Add Production</Content></AddProductionLink></li>
-                                                <li><AddScenerLink ExecuteBefore="CloseMenu"><Content>Add Scener</Content></AddScenerLink></li>
-                                                <li><AddGroupLink ExecuteBefore="CloseMenu"><Content>Add Group</Content></AddGroupLink></li>
-                                                <li><AddPartyLink ExecuteBefore="CloseMenu"><Content>Add Party</Content></AddPartyLink></li>
-                                                <AuthorizeView Roles="Moderator">
-                                                    <Authorized Context="InnerContext">
-                                                        <li><AddNewsLink class="dropdown-item"><Content>Add News</Content></AddNewsLink></li>
-                                                    </Authorized>
-                                                </AuthorizeView>
-                                            </ul>
-                                        </nav>
-                                    </Authorized>
-                                    <NotAuthorized>
-                                        <nav class="nav-items" style="display:none">
-                                            <ul>
-                                                <li><LoginLink ExecuteBefore="CloseMenu"><Content>Login</Content></LoginLink></li>
-                                            </ul>
-                                        </nav>
-                                    </NotAuthorized>
-                                </AuthorizeView>
-
+                                @*<AuthorizeView>
+                                    <Authorized>*@
+                                <nav class="nav-items" style="display:none">
+                                    <ul>
+                                        <li><AddProductionLink ExecuteBefore="CloseMenu"><Content>Add Production</Content></AddProductionLink></li>
+                                        <li><AddScenerLink ExecuteBefore="CloseMenu"><Content>Add Scener</Content></AddScenerLink></li>
+                                        <li><AddGroupLink ExecuteBefore="CloseMenu"><Content>Add Group</Content></AddGroupLink></li>
+                                        <li><AddPartyLink ExecuteBefore="CloseMenu"><Content>Add Party</Content></AddPartyLink></li>
+                                        <AuthorizeView Roles="Moderator">
+                                            <Authorized Context="InnerContext">
+                                                <li><AddNewsLink class="dropdown-item"><Content>Add News</Content></AddNewsLink></li>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                    </ul>
+                                </nav>
+                                @*</Authorized>
+                                        <NotAuthorized>
+                                            <nav class="nav-items" style="display:none">
+                                                <ul>
+                                                    <li><LoginLink ExecuteBefore="CloseMenu"><Content>Login</Content></LoginLink></li>
+                                                </ul>
+                                            </nav>
+                                        </NotAuthorized>
+                                    </AuthorizeView>*@
                                 <nav class="nav-items" style="display:none">
                                     <ul>
                                         <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming"))">Tutorial</a></li>
