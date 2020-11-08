@@ -2,6 +2,9 @@
 @inject IJSRuntime jsRuntime
 @inject IEmailSender mailSender
 
+@inject HttpContextAccessor httpContextAccessor
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+
 <Box>
     <Title>Contribute</Title>
     <Content>
@@ -72,7 +75,15 @@
         showForm = await jsRuntime.CanRedoAction("Contribution", TimeSpan.FromMinutes(10));
 
         if (!showForm)
-            message = "We've already received your contribution some minutes ago, Thank you! Please wait some minutes until you can try again.s";
+            message = "We've already received your contribution some minutes ago, Thank you! Please wait some minutes until you can try again.";
+
+        feedbackModel.Name = httpContextAccessor.HttpContext.GetUserName();
+
+        if (!string.IsNullOrEmpty(feedbackModel.Name))
+        {
+            var user = await userManager.FindByIdAsync(httpContextAccessor.HttpContext.GetUserId());
+            feedbackModel.Email = user.Email;
+        }
 
     }
 
