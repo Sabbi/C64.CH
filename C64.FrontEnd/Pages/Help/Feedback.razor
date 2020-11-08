@@ -1,6 +1,9 @@
 ﻿@page "/help/feedback"
 @inject IJSRuntime jsRuntime
 @inject IEmailSender mailSender
+
+@inject HttpContextAccessor httpContextAccessor
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 <Box>
     <Title>Please send us your feedback about c64.ch</Title>
     <Content>
@@ -50,6 +53,14 @@
 
         if (!showForm)
             message = "We've already received your feedback some minutes ago, Thank you!";
+
+        feedbackModel.Name = httpContextAccessor.HttpContext.GetUserName();
+
+        if (!string.IsNullOrEmpty(feedbackModel.Name))
+        {
+            var user = await userManager.FindByIdAsync(httpContextAccessor.HttpContext.GetUserId());
+            feedbackModel.Email = user.Email;
+        }
     }
 
     private async Task OnValidSubmit()
