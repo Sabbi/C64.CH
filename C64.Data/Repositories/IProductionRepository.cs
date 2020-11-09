@@ -19,6 +19,8 @@ namespace C64.Data.Repositories
 
         Task<ProductionFile> GetFile(int productionFileId);
 
+        Task<IEnumerable<Production>> GetForScener(int scenerId);
+
         Task<IEnumerable<HistoryRecord>> GetHistory(int productionId);
 
         Task<PaginatedResult<Production>> GetPaginatedWithGroups(Expression<Func<Production, bool>> predicate, string orderBy, bool isSortedAscending, int page, int pageSize);

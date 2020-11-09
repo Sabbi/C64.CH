@@ -15,7 +15,7 @@
 
 @if (scener != null)
 {
-    <Box>
+    <Box MarginBottom="4">
         <Title>
             Details of @scener.Handle
             <div class="float-right pr-3 position-absolute" style="right:0; top:5px">
@@ -88,6 +88,13 @@
             }
         </Content>
     </Box>
+    <Box>
+        <Title>Credited for:</Title>
+        <Content>
+            <PersonReleasesList Productions="scenerProductions" ScenerId="ScenerId" />
+        </Content>
+    </Box>
+
 }
 
 @code {
@@ -103,7 +110,7 @@
 
     private Scener scener;
 
-    private IEnumerable<int> productionIds;
+    private IEnumerable<Production> scenerProductions;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -147,10 +154,10 @@
 
     private async Task LoadScener(int id)
     {
-
         unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
 
         scener = await unitOfWork.Sceners.GetDetails(id);
+        scenerProductions = await unitOfWork.Productions.GetForScener(id);
 
         StateHasChanged();
     }

@@ -56,6 +56,12 @@ namespace C64.Data.Repositories
             return productionFiles.OrderByDescending(p => p.ProductionFileId).FirstOrDefault();
         }
 
+        public async Task<IEnumerable<Production>> GetForScener(int scenerId)
+        {
+            var productions = await context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionPictures).Include(p => p.ProductionCredits).ThenInclude(p => p.Scener).Where(p => p.ProductionCredits.Any(q => q.ScenerId == scenerId)).ToListAsync();
+            return productions;
+        }
+
         public async Task AddDownload(string filename, string remoteIp, string referer, string userId = null)
         {
             var productionFile = await context.Set<ProductionFile>().FirstOrDefaultAsync(p => p.Filename == filename);
