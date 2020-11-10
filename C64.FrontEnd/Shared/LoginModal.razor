@@ -106,7 +106,15 @@
                 else
                 {
                     logger.LogInformation("Known user tried to login, but did not succeed ({Result}) for {User} / {Password}", checkpw, userInfo.Email, userInfo.Password);
-                    messageStore.Add(editContext.Field("Email"), checkpw.ToString());
+                    if (checkpw.IsLockedOut)
+                        messageStore.Add(editContext.Field("Email"), "Account locked due to too many failed logins, please try again in 15 minutes!");
+                    else if (checkpw.ToString() == "Failed")
+                    {
+                        messageStore.Add(editContext.Field("Email"), "Invalid EMail / Password");
+                        messageStore.Add(editContext.Field("Password"), "Invalid EMail / Password");
+                    }
+                    else
+                        messageStore.Add(editContext.Field("Email"), "Cannot login: " + checkpw.ToString());
                 }
             }
             else
