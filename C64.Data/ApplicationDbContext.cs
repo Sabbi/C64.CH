@@ -79,6 +79,10 @@ namespace C64.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Set all tablenames to lower case for better linux compatibility
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+                entity.SetTableName(entity.GetTableName().ToLower());
+
             // Many-To-Many-Relation: Production <-> Group
             modelBuilder.Entity<ProductionsGroups>()
                 .HasKey(p => new { p.ProductionId, p.GroupId });
