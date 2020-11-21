@@ -36,7 +36,8 @@ namespace C64.FrontEnd
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), p => p.MigrationsAssembly("C64.Data")), contextLifetime: ServiceLifetime.Transient);
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), p => p.MigrationsAssembly("C64.Data")), contextLifetime: ServiceLifetime.Transient);
 
             services.AddSession(options =>
             {

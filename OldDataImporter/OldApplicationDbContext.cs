@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using OldDataImporter.Models;
 
@@ -16,13 +15,6 @@ namespace OldDataImporter
         {
             _loggerFactory = loggerFactory;
             Database.SetCommandTimeout(300);
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-#pragma warning disable CS0612 // Type or member is obsolete
-            optionsBuilder.UseLoggerFactory(_loggerFactory).ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.IncludeIgnoredWarning));
-#pragma warning restore CS0612 // Type or member is obsolete
         }
 
         public virtual DbSet<OldParty> OldParties { get; set; }
