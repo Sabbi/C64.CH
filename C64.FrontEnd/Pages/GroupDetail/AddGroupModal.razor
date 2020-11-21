@@ -81,9 +81,7 @@
 
         await unitOfWork.Commit();
 
-        await OnClosed.InvokeAsync(null);
-
-        await bootstrapModal.Close();
+        navigationManager.NavigateTo($"/groups/{Group.GroupId}/{Group.Name.UrlEncode()}");
     }
 
     protected override void OnInitialized()
