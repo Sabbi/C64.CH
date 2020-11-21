@@ -55,9 +55,7 @@
         scenerHistory.Apply();
         await unitOfWork.Commit();
 
-        await OnClosed.InvokeAsync(null);
-        await bootstrapModal.Close(scener);
-
+        navigationManager.NavigateTo($"/sceners/{scener.ScenerId}/{scener.Handle.UrlEncode()}");
     }
 
     protected override async Task OnInitializedAsync()
