@@ -45,8 +45,12 @@ namespace OldDataImporter
             var services = new ServiceCollection();
 
             services.AddSingleton<IConfiguration>(_configuration);
-            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_configuration.GetConnectionString("DefaultConnection")), contextLifetime: ServiceLifetime.Transient);
-            services.AddDbContext<OldApplicationDbContext>(options => options.UseMySql(_configuration.GetConnectionString("OldConnection")), contextLifetime: ServiceLifetime.Transient);
+
+            var defaultConnectionString = _configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(defaultConnectionString, ServerVersion.AutoDetect(defaultConnectionString), p => p.MigrationsAssembly("C64.Data")), contextLifetime: ServiceLifetime.Transient);
+
+            var oldConnectionString = _configuration.GetConnectionString("OldConnection");
+            services.AddDbContext<OldApplicationDbContext>(options => options.UseMySql(oldConnectionString, ServerVersion.AutoDetect(oldConnectionString), p => p.MigrationsAssembly("C64.Data")), contextLifetime: ServiceLifetime.Transient);
 
             services.AddIdentity<User, IdentityRole>(options =>
             {
