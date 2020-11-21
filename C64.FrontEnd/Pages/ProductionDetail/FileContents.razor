@@ -2,9 +2,14 @@
 
 @inject IFileStorageService fileStorageService
 @inject IArchiveService archiveService
+@inject IFallbackArchiveService fallbackArchiveService
 
 <BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
     <Content>
+        @if (!string.IsNullOrEmpty(warning))
+        {
+            <p>@warning</p>
+        }
         @if (archiveService.ArchiveInfo != null)
         {
             @if (archiveService.ArchiveInfo.CompressedFileInfos.Any())
@@ -74,14 +79,27 @@
 
     private BootstrapModal bootstrapModal;
 
+    private string warning;
+
     private int size { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        warning = string.Empty;
         var file = await fileStorageService.GetFileContents("productionfiles", ProductionFilename);
-
         size = file.Length;
-        archiveService.Load(file);
+        try
+        {
+
+            archiveService.Load(file);
+            _ = archiveService.ArchiveInfo;
+        }
+        catch
+        {
+            archiveService = fallbackArchiveService;
+            archiveService.Load(file);
+            warning = "Note: Ancient PKZIP-File, using fallback archive-service!";
+        }
     }
 
     private async Task Close()

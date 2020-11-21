@@ -10,4 +10,7 @@
 
         byte[] AddFileId();
     }
+
+    public interface IFallbackArchiveService : IArchiveService
+    { }
 }

@@ -54,5 +54,19 @@ namespace C64.Tests
 
             Assert.True(true);
         }
+
+        [Fact]
+        public void OpenOldPkZipFile()
+        {
+            var testBytes = TestResources.pkzip_zip;
+            var mockLogger = new Mock<ILogger<FallbackArchiveService>>();
+
+            var zipService = new FallbackArchiveService(mockLogger.Object);
+            zipService.Load(testBytes);
+
+            var d64Images = zipService.ArchiveInfo.NumberOfD64Files;
+
+            Assert.Equal(2, d64Images);
+        }
     }
 }

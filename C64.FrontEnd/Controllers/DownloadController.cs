@@ -67,18 +67,26 @@ namespace C64.FrontEnd.Controllers
         }
 
         [Route("/data/productions/diskimage/d64-{fileId}-{counter}.png")]
-        public async Task<IActionResult> GetD64Image(int fileId, int counter, [FromServices] IArchiveService archiveService)
+        public async Task<IActionResult> GetD64Image(int fileId, int counter, [FromServices] IArchiveService archiveService, [FromServices] IFallbackArchiveService fallbackArchiveService)
         {
             var productionFile = await unitOfWork.Productions.GetFile(fileId);
 
             var fileData = await fileStorageService.GetFileContents(productionContainer, productionFile.Filename);
 
-            archiveService.Load(fileData);
-
-            var d64FileName = archiveService.ArchiveInfo.CompressedFileInfos.Where(p => p.IsD64).ElementAt(counter).FileName;
-            var d64Reader = new D64ReaderCore(archiveService.GetFile(d64FileName));
-
-            return new FileContentResult(d64Reader.Render(new D64PngRenderer()), "image/png");
+            try
+            {
+                archiveService.Load(fileData);
+                var d64FileName = archiveService.ArchiveInfo.CompressedFileInfos.Where(p => p.IsD64).ElementAt(counter).FileName;
+                var d64Reader = new D64ReaderCore(archiveService.GetFile(d64FileName));
+                return new FileContentResult(d64Reader.Render(new D64PngRenderer()), "image/png");
+            }
+            catch
+            {
+                fallbackArchiveService.Load(fileData);
+                var d64FileName = fallbackArchiveService.ArchiveInfo.CompressedFileInfos.Where(p => p.IsD64).ElementAt(counter).FileName;
+                var d64Reader = new D64ReaderCore(fallbackArchiveService.GetFile(d64FileName));
+                return new FileContentResult(d64Reader.Render(new D64PngRenderer()), "image/png");
+            }
         }
 
         [Route("data/thumbnails/{x}x{y}")]

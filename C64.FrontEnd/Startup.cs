@@ -77,6 +77,7 @@ namespace C64.FrontEnd
 
             services.AddTransient<IFileStorageService, DbFileStorageService>();
             services.AddTransient<IArchiveService, SharpZipArchiveService>();
+            services.AddTransient<IFallbackArchiveService, FallbackArchiveService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IEmailSender, MailKitSender>();
 
