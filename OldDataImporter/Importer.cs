@@ -107,6 +107,12 @@ namespace OldDataImporter
             _countryLookup.Add(219, "GB");
         }
 
+        public Task<bool> CreateDatabase()
+        {
+            _dbContext.Database.Migrate();
+            return Task.FromResult(true);
+        }
+
         public async Task<bool> ImportUserAsync()
         {
             //return Content("already done");

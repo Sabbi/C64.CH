@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.Tasks;
 
 namespace OldDataImporter
@@ -24,6 +25,12 @@ namespace OldDataImporter
 
                 switch (selection)
                 {
+                    case 0:
+                        Console.WriteLine("Create new database and tables");
+                        await importer.CreateDatabase();
+                        Console.WriteLine("Create new database and tables finished");
+                        break;
+
                     case 1:
                         Console.WriteLine("Starting UserImport");
                         await importer.ImportUserAsync();
@@ -142,6 +149,10 @@ namespace OldDataImporter
     {
         public void DisplayMenu()
         {
+            var _configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+            var defaultConnectionString = _configuration.GetConnectionString("DefaultConnection");
+            var oldConnectionString = _configuration.GetConnectionString("OldConnection");
+
             Console.WriteLine("");
             Console.WriteLine("C64 Old Data Importer (C) 2020 Sabbi / C64.CH");
             Console.WriteLine("---------------------------------------------");
@@ -149,7 +160,12 @@ namespace OldDataImporter
             Console.WriteLine("Note: Must be started inside the data-Directory of the old c64.ch - Otherwise pictures and demos cannot be imported!");
             Console.WriteLine("Note2: Download-Table must be fixed with 'update downloads set Datum = From_UnixTime(0) where Datum = \"\" and ID > 0'");
             Console.WriteLine("ALTER TABLE downloads; CHANGE COLUMN `Datum` `Datum` DATETIME NOT NULL DEFAULT '1970-01-01';");
+            Console.WriteLine("Note3: Strange DbNull to String null fail? Del the party with null name...");
             Console.WriteLine("");
+            Console.WriteLine($"Old connection: {oldConnectionString}");
+            Console.WriteLine($"New connection: {defaultConnectionString}");
+            Console.WriteLine("");
+            Console.WriteLine(" 0 - Create database and tables");
             Console.WriteLine(" 1 - Users");
             Console.WriteLine(" 2 - Roles / Admin2Sabbi");
             Console.WriteLine(" 3 - Guestbook");

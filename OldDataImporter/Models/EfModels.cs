@@ -9,6 +9,7 @@ namespace OldDataImporter.Models
     public class OldUser
     {
         [Key]
+        [Column("ID")]
         public int ID { get; set; }
 
         public string Username { get; set; }
