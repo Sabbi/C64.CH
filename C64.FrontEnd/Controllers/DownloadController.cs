@@ -3,6 +3,7 @@ using C64.Data.Archive;
 using C64.Data.Storage;
 using D64Reader;
 using D64Reader.Renderers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
@@ -86,6 +87,28 @@ namespace C64.FrontEnd.Controllers
                 var d64FileName = fallbackArchiveService.ArchiveInfo.CompressedFileInfos.Where(p => p.IsD64).ElementAt(counter).FileName;
                 var d64Reader = new D64ReaderCore(fallbackArchiveService.GetFile(d64FileName));
                 return new FileContentResult(d64Reader.Render(new D64PngRenderer()), "image/png");
+            }
+        }
+
+        [Route("/data/productions/archive/{fileId}-{counter}.bin")]
+        public async Task<IActionResult> GetArchiveFile(int fileId, int counter, [FromServices] IHttpContextAccessor contextAccessor, [FromServices] IArchiveService archiveService, [FromServices] IFallbackArchiveService fallbackArchiveService)
+        {
+            var productionFile = await unitOfWork.Productions.GetFile(fileId);
+            var fileData = await fileStorageService.GetFileContents(productionContainer, productionFile.Filename);
+
+            try
+            {
+                archiveService.Load(fileData);
+                var fileName = archiveService.ArchiveInfo.CompressedFileInfos.ElementAt(counter).FileName;
+                var fileContents = archiveService.GetFile(fileName);
+                return new FileContentResult(fileContents, "application/octet-stream");
+            }
+            catch
+            {
+                fallbackArchiveService.Load(fileData);
+                var fileName = fallbackArchiveService.ArchiveInfo.CompressedFileInfos.ElementAt(counter).FileName;
+                var fileContents = fallbackArchiveService.GetFile(fileName);
+                return new FileContentResult(fileContents, "application/octet-stream");
             }
         }
 

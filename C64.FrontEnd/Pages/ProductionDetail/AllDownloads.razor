@@ -1,6 +1,7 @@
 ﻿@namespace C64.FrontEnd.Pages
 
 @inject IModalService modal
+@inject IUnitOfWork unitOfWork
 
 @if (ProductionFiles.Any(p => p.Show))
 {
@@ -9,7 +10,12 @@
         <DownloadProduction ProductionFile="@download" />
         @if (download.IsArchive)
         {
-            <p><a href="" @onclick="(() => ShowFileContents(download.ProductionFileId, download.Filename))" @onclick:preventDefault><i class="far fa-list-alt"></i> Show File-Contents</a></p>
+            <p>
+                <a href="" @onclick="(() => ShowFileContents(download.ProductionFileId, download.Filename))" @onclick:preventDefault><i class="far fa-list-alt"></i> Show File-Contents</a>
+            </p>
+            <p>
+                <a href="" @onclick="(() => StartEmulator(download.ProductionFileId))" @onclick:preventDefault><i class="far fa-list-alt"></i> Emulate in Browser (Experimental)</a>
+            </p>
         }
         <hr />
     }
@@ -30,5 +36,14 @@ else
         parameters.Add(nameof(FileContents.ProductionFilename), productionFilename);
 
         modal.Show<FileContents>("Contents of " + productionFilename, parameters);
+    }
+
+    private async Task StartEmulator(int productionFileId)
+    {
+        var productionFile = await unitOfWork.Productions.GetFile(productionFileId);
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(EmuModal.ProductionFile), productionFile);
+        var reference = modal.Show<EmuModal>("", parameters);
     }
 }

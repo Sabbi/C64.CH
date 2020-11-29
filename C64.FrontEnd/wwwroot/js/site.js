@@ -131,3 +131,168 @@ window.scrollToElementId = (elementId) => {
     element.scrollIntoView();
     return true;
 }
+
+/* VICE.JS HACKS */
+var inited = false;
+var emulator;
+var isStarted = false;
+
+function setupEmu() {
+    emulator = new Emulator(document.querySelector("#canvas"),
+        null,
+        new VICELoader(VICELoader.emulatorJS("/js/x64-2.js"),
+            VICELoader.nativeResolution(0, 0),
+            VICELoader.extraArgs([
+                "-soundfragsize", "4",
+                "-soundrate", "48000",
+                "-soundsync", "2",
+                "-soundbufsize", "150",
+                "-residsamp", "0",
+                "-config", "/emulator/vice.ini"]),
+            VICELoader.mountFile("eod-0.d64",
+                VICELoader.fetchFile("Edge of Disgrace Boot",
+                    "/data/eod-0.txt")),
+            VICELoader.mountFile("eod-1.d64",
+                VICELoader.fetchFile("Edge of Disgrace 1a",
+                    "/data/eod-1.txt")),
+            VICELoader.mountFile("eod-2.d64",
+                VICELoader.fetchFile("Edge of Disgrace 1b",
+                    "/data/eod-2.txt")),
+
+            VICELoader.mountFile("vice.ini",
+                VICELoader.fetchFile("Configuration",
+                    "/data/vice.txt")),
+            VICELoader.fliplist([["eod-2.d64", "eod-1.d64"]]),
+
+            VICELoader.autoLoad("eod-0.d64")))
+}
+
+function setupEmu(diskimages, fliplist) {
+    console.log(diskimages);
+    var mountFiles = new Array();
+
+    for (var i = 0; i < diskimages.length; i++) {
+        console.log(i + " - Diskimage: " + diskimages[i]);
+
+        mountFiles[i] = VICELoader.mountFile("disk" + (i + 1) + ".d64", VICELoader.fetchFile("disk" + (i + 1) + ".d64", "/data/productions/archive/" + diskimages[i]));
+    }
+    var autoLoad = VICELoader.autoLoad("disk1.d64");
+
+    var finalFlipList = new Array();
+    for (var i = 0; i < fliplist.length; i++) {
+        finalFlipList[i] = "disk" + fliplist[i] + ".d64";
+    }
+
+    console.log(finalFlipList);
+
+    // var autoLoad = VICELoader.autoLoad("eod-0.d64");
+    //mountFiles[0] = VICELoader.mountFile("eod-0.d64", VICELoader.fetchFile("Edge of Disgrace Boot", "/data/eod-0.txt"));
+    //mountFiles[1] = VICELoader.mountFile("eod-1a.d64", VICELoader.fetchFile("Edge of Disgrace Disk 1a", "/data/eod-1.txt"));
+    //mountFiles[2] = VICELoader.mountFile("eod-1a.d64", VICELoader.fetchFile("Edge of Disgrace Disk 1b", "/data/eod-2.txt"));
+    //mountFiles[3] = null;
+    //mountFiles[4] = null;
+
+    var viceLoader = new VICELoader(VICELoader.emulatorJS("/js/x64-2.js"),
+        VICELoader.nativeResolution(0, 0),
+        VICELoader.extraArgs([
+            "-soundfragsize", "4",
+            "-soundrate", "48000",
+            "-soundsync", "2",
+            "-soundbufsize", "150",
+            "-residsamp", "0",
+            "-config", "/emulator/vice.ini"]),
+
+        VICELoader.mountFile("vice.ini",
+            VICELoader.fetchFile("Configuration",
+                "/data/vice.txt")),
+        mountFiles[0],
+        mountFiles[1],
+        mountFiles[2],
+        mountFiles[3],
+        mountFiles[4],
+        VICELoader.fliplist([finalFlipList]),
+        //   VICELoader.autoLoad("eod-1.d64"),
+        autoLoad
+    );
+
+    //  viceLoader.autoLoad = VICELoader.autoLoad("eod-1.d64");
+
+    emulator = new Emulator(document.querySelector("#canvas"), null, viceLoader);
+}
+
+function startEmu() {
+    emulator.start({ waitAfterDownloading: false });
+    $("#canvas").css("display", "block");
+    isStarted = true;
+}
+
+function exitEmu() {
+    try {
+        Module.exit(1);
+    }
+    catch {
+    }
+    isStarted = false;
+
+    var keyboardListeningElement = Module["keyboardListeningElement"] || document;
+    keyboardListeningElement.removeEventListener("keydown", SDL.receiveEvent);
+    keyboardListeningElement.removeEventListener("keyup", SDL.receiveEvent);
+    keyboardListeningElement.removeEventListener("keypress", SDL.receiveEvent);
+    window.removeEventListener("focus", SDL.receiveEvent);
+    window.removeEventListener("blur", SDL.receiveEvent);
+    document.removeEventListener("visibilitychange", SDL.receiveEvent);
+    window.removeEventListener("unload", SDL.receiveEvent);
+}
+
+function goFullScreen() {
+    try {
+        if (isStarted)
+            emulator.requestFullScreen();
+    }
+    catch { }
+}
+
+//var db;
+
+cleanDb();
+
+function cleanDb() {
+    console.log("CleanDB");
+    var DBOpenRequest = window.indexedDB.open("emularity", 4);
+
+    DBOpenRequest.onsuccess = function (event) {
+        console.log('<li>Database initialised.</li>');
+
+        // store the result of opening the database in the db variable.
+        // This is used a lot below
+        db = DBOpenRequest.result;
+
+        // Clear all the data form the object store
+        clearData();
+    };
+}
+
+function clearData() {
+    // open a read/write db transaction, ready for clearing the data
+    var transaction = db.transaction(["emularity"], "readwrite");
+
+    // report on the success of the transaction completing, when everything is done
+    transaction.oncomplete = function (event) {
+        console.log('<li>Transaction completed.</li>');
+    };
+
+    transaction.onerror = function (event) {
+        console.log('<li>Transaction not opened due to error: ' + transaction.error + '</li>');
+    };
+
+    // create an object store on the transaction
+    var objectStore = transaction.objectStore("emularity");
+
+    // Make a request to clear all the data out of the object store
+    var objectStoreRequest = objectStore.clear();
+
+    objectStoreRequest.onsuccess = function (event) {
+        // report the success of our request
+        console.log('<li>Request successful.</li>');
+    };
+};
