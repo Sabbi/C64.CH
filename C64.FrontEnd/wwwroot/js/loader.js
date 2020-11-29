@@ -1525,7 +1525,7 @@ var Module = null;
                 splash.splashElt = document.createElement('div');
                 splash.splashElt.classList.add("emularity-splash-screen");
                 if (!globalOptions.hasCustomCSS) {
-                   // splash.splashElt.style.position = 'absolute';
+                    // splash.splashElt.style.position = 'absolute';
                     splash.splashElt.style.top = '0';
                     splash.splashElt.style.left = '0';
                     splash.splashElt.style.right = '0';
@@ -1621,7 +1621,7 @@ var Module = null;
         var drawsplash = function () {
             canvas.setAttribute('moz-opaque', '');
             if (!splash.splashimg.src) {
-                splash.splashimg.src = "http://c64.ch/img/title2.gif";
+                splash.splashimg.src = "/images/vicelogo.png";
             }
         };
 
