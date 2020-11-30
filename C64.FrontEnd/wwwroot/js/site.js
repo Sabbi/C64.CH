@@ -242,6 +242,13 @@ function exitEmu() {
     window.removeEventListener("blur", SDL.receiveEvent);
     document.removeEventListener("visibilitychange", SDL.receiveEvent);
     window.removeEventListener("unload", SDL.receiveEvent);
+
+    // Start fix https://github.com/Sabbi/C64/issues/119
+    function keypress(e) {
+        return true;
+    }
+    window.onkeydown = keypress;
+    // End fix
 }
 
 function goFullScreen() {
