@@ -11,11 +11,7 @@
 <BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
     <Content>
         <p>
-            @if (!started)
-            {
-                <button class="btn btn-primary" type="button" @onclick="Start">Start</button>
-            }
-            else
+            @if (started)
             {
                 <button class="btn btn-primary" type="button" @onclick="FullScreen">Fullscreen</button>
             }
@@ -128,6 +124,9 @@
 
             flipList.Reverse();
             await jsRuntime.InvokeVoidAsync("setupEmu", list, flipList);
+            await jsRuntime.InvokeVoidAsync("startEmu");
+            started = true;
+            StateHasChanged();
         }
     }
 
