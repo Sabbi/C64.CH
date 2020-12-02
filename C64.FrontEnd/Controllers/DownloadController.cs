@@ -1,8 +1,10 @@
 ﻿using C64.Data;
 using C64.Data.Archive;
 using C64.Data.Storage;
+using C64.FrontEnd.Extensions;
 using D64Reader;
 using D64Reader.Renderers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
@@ -24,16 +26,17 @@ namespace C64.FrontEnd.Controllers
         private readonly IUnitOfWork unitOfWork;
         private readonly IFileStorageService fileStorageService;
         private readonly ILogger<DownloadController> logger;
-
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly string productionContainer = "productionfiles";
         private readonly string pictureContainer = "productionpictures";
         private static int cacheTtl = 24 * 60 * 60 * 365; // 1 year
 
-        public DownloadController(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, ILogger<DownloadController> logger)
+        public DownloadController(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, ILogger<DownloadController> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.unitOfWork = unitOfWork;
             this.fileStorageService = fileStorageService;
             this.logger = logger;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [Route("/demos/download.php")]
@@ -54,7 +57,7 @@ namespace C64.FrontEnd.Controllers
                 var file = await fileStorageService.GetFileContents(container, fileName);
                 if (container == productionContainer)
                 {
-                    await unitOfWork.Productions.AddDownload(fileName, RemoteIp, Referer, UserId);
+                    await unitOfWork.Productions.AddDownload(fileName, httpContextAccessor.HttpContext.RemoteIp(), httpContextAccessor.HttpContext.Referer(), httpContextAccessor.HttpContext.GetUserId());
                     await unitOfWork.Commit();
                 }
 
@@ -86,6 +89,28 @@ namespace C64.FrontEnd.Controllers
                 var d64FileName = fallbackArchiveService.ArchiveInfo.CompressedFileInfos.Where(p => p.IsD64).ElementAt(counter).FileName;
                 var d64Reader = new D64ReaderCore(fallbackArchiveService.GetFile(d64FileName));
                 return new FileContentResult(d64Reader.Render(new D64PngRenderer()), "image/png");
+            }
+        }
+
+        [Route("/data/productions/archive/{fileId}-{counter}.bin")]
+        public async Task<IActionResult> GetArchiveFile(int fileId, int counter, [FromServices] IHttpContextAccessor contextAccessor, [FromServices] IArchiveService archiveService, [FromServices] IFallbackArchiveService fallbackArchiveService)
+        {
+            var productionFile = await unitOfWork.Productions.GetFile(fileId);
+            var fileData = await fileStorageService.GetFileContents(productionContainer, productionFile.Filename);
+
+            try
+            {
+                archiveService.Load(fileData);
+                var fileName = archiveService.ArchiveInfo.CompressedFileInfos.ElementAt(counter).FileName;
+                var fileContents = archiveService.GetFile(fileName);
+                return new FileContentResult(fileContents, "application/octet-stream");
+            }
+            catch
+            {
+                fallbackArchiveService.Load(fileData);
+                var fileName = fallbackArchiveService.ArchiveInfo.CompressedFileInfos.ElementAt(counter).FileName;
+                var fileContents = fallbackArchiveService.GetFile(fileName);
+                return new FileContentResult(fileContents, "application/octet-stream");
             }
         }
 
