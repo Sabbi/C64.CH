@@ -78,7 +78,7 @@ namespace C64.Data.Archive
                     {
                         foreach (var entry in archive.Entries)
                         {
-                            if (!entry.Name.Equals("file_id.diz"))
+                            if (!entry.Name.Equals("file_id.diz") && !entry.Name.StartsWith("__MACOSX/", StringComparison.OrdinalIgnoreCase))
                             {
                                 var isD64 = entry.Name.EndsWith(".d64", StringComparison.OrdinalIgnoreCase);
                                 retVal.Add(new CompressedFileInfo { Created = entry.LastWriteTime.UtcDateTime, FileName = entry.Name, Size = entry.Length, CompressedSize = entry.CompressedLength, IsD64 = isD64 });
