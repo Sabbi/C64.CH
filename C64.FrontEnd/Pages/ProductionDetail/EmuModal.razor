@@ -74,6 +74,9 @@
             }
         }
 
+        await unitOfWork.Productions.AddDownload(productionFile.Filename, httpContext.HttpContext.RemoteIp(), httpContext.HttpContext.Referer(), httpContext.HttpContext.GetUserId());
+        await unitOfWork.Commit();
+
         archiveService.Load(fileData);
 
         var archiveInfo = archiveService.ArchiveInfo;
