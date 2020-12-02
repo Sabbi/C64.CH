@@ -1,5 +1,5 @@
-﻿using C64.Data.Archive;
-using C64.Data.Entities;
+﻿using C64.Data.Entities;
+using C64.Services.Archive;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;

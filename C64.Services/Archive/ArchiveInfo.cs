@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace C64.Data.Archive
+namespace C64.Services.Archive
 {
     /// <summary>
     /// Contains information about an archive

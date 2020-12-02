@@ -1,6 +1,7 @@
 ﻿using C64.Data;
-using C64.Data.Archive;
 using C64.Data.Storage;
+using C64.FrontEnd.Extensions;
+using C64.Services.Archive;
 using D64Reader;
 using D64Reader.Renderers;
 using Microsoft.AspNetCore.Http;
@@ -25,16 +26,17 @@ namespace C64.FrontEnd.Controllers
         private readonly IUnitOfWork unitOfWork;
         private readonly IFileStorageService fileStorageService;
         private readonly ILogger<DownloadController> logger;
-
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly string productionContainer = "productionfiles";
         private readonly string pictureContainer = "productionpictures";
         private static int cacheTtl = 24 * 60 * 60 * 365; // 1 year
 
-        public DownloadController(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, ILogger<DownloadController> logger)
+        public DownloadController(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, ILogger<DownloadController> logger, IHttpContextAccessor httpContextAccessor)
         {
             this.unitOfWork = unitOfWork;
             this.fileStorageService = fileStorageService;
             this.logger = logger;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         [Route("/demos/download.php")]
@@ -55,7 +57,7 @@ namespace C64.FrontEnd.Controllers
                 var file = await fileStorageService.GetFileContents(container, fileName);
                 if (container == productionContainer)
                 {
-                    await unitOfWork.Productions.AddDownload(fileName, RemoteIp, Referer, UserId);
+                    await unitOfWork.Productions.AddDownload(fileName, httpContextAccessor.HttpContext.RemoteIp(), httpContextAccessor.HttpContext.Referer(), httpContextAccessor.HttpContext.GetUserId());
                     await unitOfWork.Commit();
                 }
 
