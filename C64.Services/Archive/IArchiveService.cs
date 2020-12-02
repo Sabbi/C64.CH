@@ -1,4 +1,4 @@
-﻿namespace C64.Data.Archive
+﻿namespace C64.Services.Archive
 {
     public interface IArchiveService
     {

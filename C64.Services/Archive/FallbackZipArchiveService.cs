@@ -5,7 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace C64.Data.Archive
+namespace C64.Services.Archive
 {
     public class FallbackArchiveService : BaseArchiveService, IArchiveService, IFallbackArchiveService
     {

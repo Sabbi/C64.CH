@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace C64.Data.Archive
+namespace C64.Services.Archive
 {
     public class SharpZipArchiveService : BaseArchiveService, IArchiveService
     {
