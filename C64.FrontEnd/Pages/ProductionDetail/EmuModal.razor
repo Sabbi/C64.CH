@@ -1,4 +1,4 @@
-﻿@namespace C64.FrontEnd.Pages
+@namespace C64.FrontEnd.Pages
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IJSRuntime jsRuntime
@@ -10,10 +10,10 @@
 
 <BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
     <Content>
-        <p>
+        <p class="float-right">
             @if (started)
             {
-                <button class="btn btn-primary" type="button" @onclick="FullScreen">Fullscreen</button>
+                <button class="btn btn-primary" type="button" @onclick="FullScreen">Go fullscreen</button>
             }
         </p>
         <div id="emularity-splash-screen"></div>
@@ -21,7 +21,7 @@
         <ul>
             <li>Demos should autostart, fullscreen only available after emulator has started</li>
             <li>To insert next disk, click inside the emu, press Alt-N OR use F12 to enter Vice-Menu and choose a disk yourself (in emulator-folder)</li>
-            <li>Alt-W to speed up, Joy (Port 2) = Keypad, ESC or Alt-Tab to get back your mouse cursor</li>
+            <li>Alt-W to speed up, Joystick = Keypad+0, press ALT-J to switch ports, ESC or Alt-Tab to get back your mouse cursor</li>
             <li>Sorry, no mute button</li>
         </ul>
     </Content>
