@@ -6,6 +6,8 @@
 @inject IFallbackArchiveService archiveService
 @inject IFileStorageService fileStorageService
 
+@using C64.Services.ViceLoader
+
 @implements IDisposable
 
 <BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
@@ -47,26 +49,18 @@
         if (!firstRender)
             return;
 
-        // Bi Ba Baschtel
-
-        var fileIndexesToLoad = new List<int>();
-        var productionFile = ProductionFile;
-
-        var fileName = productionFile.Filename;
-
-        byte[] fileData = null;
-
         // Concurrent connections otherwise, I don't know why (yet)
+        byte[] fileData = null;
         try
         {
-            fileData = await fileStorageService.GetFileContents("productionfiles", fileName);
+            fileData = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
         }
         catch
         {
             try
             {
                 System.Threading.Thread.Sleep(50);
-                fileData = await fileStorageService.GetFileContents("productionfiles", fileName);
+                fileData = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
             }
             catch
             {
@@ -74,63 +68,15 @@
             }
         }
 
-        await unitOfWork.Productions.AddDownload(productionFile.Filename, httpContext.HttpContext.RemoteIp(), httpContext.HttpContext.Referer(), httpContext.HttpContext.GetUserId());
+        await unitOfWork.Productions.AddDownload(ProductionFile.Filename, httpContext.HttpContext.RemoteIp(), httpContext.HttpContext.Referer(), httpContext.HttpContext.GetUserId());
         await unitOfWork.Commit();
 
-        archiveService.Load(fileData);
-
-        var archiveInfo = archiveService.ArchiveInfo;
-        var arcl = archiveInfo.CompressedFileInfos.ToList();
-        if (archiveInfo.NumberOfD64Files == 1)
-        {
-            var fileInfo = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.IsD64);
-            fileIndexesToLoad.Add(arcl.IndexOf(fileInfo));
-        }
-        else if (archiveInfo.NumberOfD64Files > 1)
-        {
-            foreach (var fileInfo in archiveInfo.CompressedFileInfos.Where(p => p.IsD64).OrderBy(p => p.FileName))
-            {
-                fileIndexesToLoad.Add(arcl.IndexOf(fileInfo));
-            }
-        }
-        else
-        {
-            // if no d64-Files, load first prg, t64, p00 or t00-file
-            var prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".prg", StringComparison.OrdinalIgnoreCase));
-            if (prg == null)
-                prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".t64", StringComparison.OrdinalIgnoreCase));
-            if (prg == null)
-                prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".p00", StringComparison.OrdinalIgnoreCase));
-            if (prg == null)
-                prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".t00", StringComparison.OrdinalIgnoreCase));
-
-            fileIndexesToLoad.Add(arcl.IndexOf(prg));
-        }
-
-        var list = new List<string>();
-        var flipList = new List<int>();
-
-        if (fileIndexesToLoad.Any())
-        {
-            foreach (var indexToLoad in fileIndexesToLoad)
-            {
-                list.Add($"{ProductionFile.ProductionFileId}-{indexToLoad}.bin");
-            }
-
-            if (fileIndexesToLoad.Count > 1)
-            {
-                for (var i = 1; i < fileIndexesToLoad.Count + 1; i++)
-                {
-                    flipList.Insert(0, i);
-                }
-            }
-
-            flipList.Reverse();
-            await jsRuntime.InvokeVoidAsync("setupEmu", list, flipList);
-            await jsRuntime.InvokeVoidAsync("startEmu");
-            started = true;
-            StateHasChanged();
-        }
+        var viceLoader = new DefaultViceLoader(archiveService);
+        var emuParmeters = viceLoader.ProcessFile(ProductionFile.ProductionFileId, fileData);
+        await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters);
+        await jsRuntime.InvokeVoidAsync("startEmu");
+        started = true;
+        StateHasChanged();
     }
 
     private async Task Start()

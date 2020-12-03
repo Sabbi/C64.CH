@@ -136,39 +136,13 @@ window.scrollToElementId = (elementId) => {
 var inited = false;
 var emulator;
 var isStarted = false;
+function setupEmu(params) {
+    var diskimages = params[0];
+    var fliplist = params[1];
 
-function setupEmu() {
-    emulator = new Emulator(document.querySelector("#canvas"),
-        null,
-        new VICELoader(VICELoader.emulatorJS("/js/x64-2.js"),
-            VICELoader.nativeResolution(0, 0),
-            VICELoader.extraArgs([
-                "-soundfragsize", "4",
-                "-soundrate", "48000",
-                "-soundsync", "2",
-                "-soundbufsize", "150",
-                "-residsamp", "0",
-                "-config", "/emulator/vice.ini"]),
-            VICELoader.mountFile("eod-0.d64",
-                VICELoader.fetchFile("Edge of Disgrace Boot",
-                    "/data/eod-0.txt")),
-            VICELoader.mountFile("eod-1.d64",
-                VICELoader.fetchFile("Edge of Disgrace 1a",
-                    "/data/eod-1.txt")),
-            VICELoader.mountFile("eod-2.d64",
-                VICELoader.fetchFile("Edge of Disgrace 1b",
-                    "/data/eod-2.txt")),
+    //console.log(diskimages);
+    //console.log(fliplist);
 
-            VICELoader.mountFile("vice.ini",
-                VICELoader.fetchFile("Configuration",
-                    "/data/vice.txt")),
-            VICELoader.fliplist([["eod-2.d64", "eod-1.d64"]]),
-
-            VICELoader.autoLoad("eod-0.d64")))
-}
-
-function setupEmu(diskimages, fliplist) {
-    console.log(diskimages);
     var mountFiles = new Array();
 
     for (var i = 0; i < diskimages.length; i++) {
@@ -183,14 +157,7 @@ function setupEmu(diskimages, fliplist) {
         finalFlipList[i] = "disk" + fliplist[i] + ".d64";
     }
 
-    console.log(finalFlipList);
-
-    // var autoLoad = VICELoader.autoLoad("eod-0.d64");
-    //mountFiles[0] = VICELoader.mountFile("eod-0.d64", VICELoader.fetchFile("Edge of Disgrace Boot", "/data/eod-0.txt"));
-    //mountFiles[1] = VICELoader.mountFile("eod-1a.d64", VICELoader.fetchFile("Edge of Disgrace Disk 1a", "/data/eod-1.txt"));
-    //mountFiles[2] = VICELoader.mountFile("eod-1a.d64", VICELoader.fetchFile("Edge of Disgrace Disk 1b", "/data/eod-2.txt"));
-    //mountFiles[3] = null;
-    //mountFiles[4] = null;
+    //console.log(finalFlipList);
 
     var viceLoader = new VICELoader(VICELoader.emulatorJS("/js/x64-2.js"),
         VICELoader.nativeResolution(0, 0),
@@ -214,8 +181,6 @@ function setupEmu(diskimages, fliplist) {
         //   VICELoader.autoLoad("eod-1.d64"),
         autoLoad
     );
-
-    //  viceLoader.autoLoad = VICELoader.autoLoad("eod-1.d64");
 
     emulator = new Emulator(document.querySelector("#canvas"), null, viceLoader);
 }
@@ -258,8 +223,6 @@ function goFullScreen() {
     }
     catch { }
 }
-
-//var db;
 
 cleanDb();
 
