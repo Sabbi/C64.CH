@@ -177,7 +177,6 @@ namespace C64.Tests.History
             historyHandler.Apply();
 
             Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
-            Assert.Equal(2, addedHistoriesMock.FirstOrDefault().AffectedScenerId);
             Assert.True(group.ScenerGroups.Any());
         }
 
@@ -203,7 +202,6 @@ namespace C64.Tests.History
             historyHandler.Apply();
 
             Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedGroupId);
-            Assert.Equal(1, addedHistoriesMock.FirstOrDefault().AffectedScenerId);
 
             Assert.Equal(1, group.ScenerGroups.Count);
             Assert.Equal(3, group.ScenerGroups.FirstOrDefault().ScenerGroupJobs.Count());
