@@ -17,23 +17,30 @@
             </p>
             <p>
                 <a href="" @onclick="(() => StartEmulator(download.ProductionFileId))" @onclick:preventDefault><i class="fas fa-gamepad"></i> Emulate in Browser (Experimental)</a><br />
-                <div class="row">
-                    <div class="col-6">
-                        <select @bind="sidModel" class="form-control">
-                            <option value="0">Sid 6581</option>
-                            <option value="1">Sid 8580</option>
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <select @bind="driveSounds" class="form-control">
-                            <option value="0">No drive sounds</option>
-                            <option value="1">Drive sounds</option>
-                        </select>
-                    </div>
-                </div>
             </p>
         }
         <hr />
+    }
+
+    @if (ProductionFiles.Any(p => p.Show && p.IsArchive))
+    {
+        <div class="row">
+            <div class="col-12">
+                Emulator-Settings:
+            </div>
+            <div class="col-6">
+                <select @bind="sidModel" class="form-control">
+                    <option value="0">Sid 6581</option>
+                    <option value="1">Sid 8580</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <select @bind="driveSounds" class="form-control">
+                    <option value="0">No drive sounds</option>
+                    <option value="1">Drive sounds</option>
+                </select>
+            </div>
+        </div>
     }
 }
 else
