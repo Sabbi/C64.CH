@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace C64.FrontEnd.Controllers
@@ -162,7 +163,7 @@ namespace C64.FrontEnd.Controllers
                     {
                         // Set JPG-quality the Microsoft-Way....
                         var encoderParameters = new EncoderParameters(1);
-                        encoderParameters.Param[0] = new EncoderParameter(Encoder.Quality, 90L);
+                        encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
 
                         image.Save(stream, GetEncoder(ImageFormat.Jpeg), encoderParameters);
 
@@ -175,6 +176,25 @@ namespace C64.FrontEnd.Controllers
                         };
                     }
                 }
+            }
+        }
+
+        [Route("/data/vice.ini")]
+        public IActionResult DownloadViceIni(int sidModel = 0, int driveSoundEmulation = 0, int driveSoundEmulationVolume = 0)
+        {
+            try
+            {
+                var content = System.IO.File.ReadAllLines("Data/vice.ini").ToList();
+
+                content.Add($"SidModel={sidModel}");
+                content.Add($"DriveSoundEmulation={driveSoundEmulation}");
+                content.Add($"DriveSoundEmulationVolume={driveSoundEmulationVolume}");
+
+                return new FileContentResult(Encoding.ASCII.GetBytes(string.Join("\n", content)), "text/plain");
+            }
+            catch (FileNotFoundException)
+            {
+                return NotFound();
             }
         }
 
