@@ -314,7 +314,7 @@ namespace C64.Tests.History
         [Fact]
         public void EditCreditsAddRemove()
         {
-            var production = new Production { ProductionCredits = new List<ProductionCredit>() };
+            var production = new Production { Name = "ProdName", ProductionCredits = new List<ProductionCredit>() };
             production.ProductionCredits.Add(new ProductionCredit { ScenerId = 1, Scener = new Scener { ScenerId = 1, Handle = "Scener1" }, Credit = Credit.Code });
             production.ProductionCredits.Add(new ProductionCredit { ScenerId = 2, Scener = new Scener { ScenerId = 2, Handle = "Scener2" }, Credit = Credit.Graphics });
 
@@ -328,13 +328,13 @@ namespace C64.Tests.History
             historyHandler.Apply();
 
             Assert.Equal(2, production.ProductionCredits.Count());
-            Assert.Equal("Removed credits for Scener2 (Graphics), Added credits for Scener1 (Loader)", addedHistoriesMock.FirstOrDefault().Description);
+            Assert.Equal("Removed credits for Scener2 (Graphics), Added credits for Scener1 (Loader) to ProdName", addedHistoriesMock.FirstOrDefault().Description);
         }
 
         [Fact]
         public void EditCreditsAdd()
         {
-            var production = new Production { ProductionCredits = new List<ProductionCredit>() };
+            var production = new Production { Name = "ProdName", ProductionCredits = new List<ProductionCredit>() };
             production.ProductionCredits.Add(new ProductionCredit { ScenerId = 1, Scener = new Scener { ScenerId = 1, Handle = "Scener1" }, Credit = Credit.Code });
             production.ProductionCredits.Add(new ProductionCredit { ScenerId = 2, Scener = new Scener { ScenerId = 2, Handle = "Scener2" }, Credit = Credit.Graphics });
 
@@ -347,13 +347,13 @@ namespace C64.Tests.History
             historyHandler.Apply();
 
             Assert.Equal(3, production.ProductionCredits.Count());
-            Assert.Equal("Added credits for Scener1 (Loader)", addedHistoriesMock.FirstOrDefault().Description);
+            Assert.Equal("Added credits for Scener1 (Loader) to ProdName", addedHistoriesMock.FirstOrDefault().Description);
         }
 
         [Fact]
         public void EditCreditsRemove()
         {
-            var production = new Production { ProductionCredits = new List<ProductionCredit>() };
+            var production = new Production { Name = "ProdName", ProductionCredits = new List<ProductionCredit>() };
             production.ProductionCredits.Add(new ProductionCredit { ScenerId = 1, Scener = new Scener { ScenerId = 1, Handle = "Scener1" }, Credit = Credit.Code });
             production.ProductionCredits.Add(new ProductionCredit { ScenerId = 2, Scener = new Scener { ScenerId = 2, Handle = "Scener2" }, Credit = Credit.Graphics });
 
@@ -366,7 +366,7 @@ namespace C64.Tests.History
             historyHandler.Apply();
 
             Assert.Single(production.ProductionCredits);
-            Assert.Equal("Removed credits for Scener2 (Graphics)", addedHistoriesMock.FirstOrDefault().Description);
+            Assert.Equal("Removed credits for Scener2 (Graphics) from ProdName", addedHistoriesMock.FirstOrDefault().Description);
         }
 
         [Fact]
