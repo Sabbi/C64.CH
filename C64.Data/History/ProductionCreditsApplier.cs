@@ -42,13 +42,13 @@ namespace C64.Data.History
                 Status = status,
                 Type = newValue.GetType().FullName,
                 Version = 1M,
-                Description = CreateDescription((List<EditCredit>)newValue)
+                Description = CreateDescription((List<EditCredit>)newValue, production.Name)
             };
 
             return dbhistory;
         }
 
-        private string CreateDescription(List<EditCredit> newValue)
+        private string CreateDescription(List<EditCredit> newValue, string prodName)
         {
             var sb = new StringBuilder();
 
@@ -72,6 +72,15 @@ namespace C64.Data.History
 
                 sb.Remove(sb.Length - 2, 2);
             }
+
+            if (newValue.Any(p => p.Deleted) && newValue.Any(predicate => predicate.Added))
+                sb.Append(" to ");
+            else if (newValue.Any(p => p.Deleted))
+                sb.Append(" from ");
+            else if (newValue.Any(p => p.Added))
+                sb.Append(" to ");
+
+            sb.Append(prodName);
 
             return sb.ToString();
         }

@@ -27,6 +27,7 @@ namespace C64.Data.History
             var dbhistory = new HistoryRecord
             {
                 AffectedProductionId = group.GroupId,
+                AffectedScenerId = toDelete,
                 AffectedEntity = historyentity,
                 Property = "DeleteGroupMember",
                 NewValue = null,

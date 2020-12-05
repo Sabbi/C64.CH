@@ -39,6 +39,7 @@ namespace C64.Data.History
             var dbhistory = new HistoryRecord
             {
                 AffectedProductionId = group.GroupId,
+                AffectedScenerId = newMember.Scener.ScenerId,
                 AffectedEntity = historyentity,
                 Property = "AddGroupMember",
                 NewValue = JsonConvert.SerializeObject(newMember, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }),
