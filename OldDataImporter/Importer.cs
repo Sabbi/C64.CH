@@ -68,7 +68,7 @@ namespace OldDataImporter
             services.AddLogging(options => options.AddDebug());
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<C64.Data.Archive.IArchiveService, C64.Data.Archive.SharpZipArchiveService>();
+            services.AddScoped<C64.Services.Archive.IArchiveService, C64.Services.Archive.SharpZipArchiveService>();
             services.AddScoped<IFileStorageService, DbFileStorageService>();
 
             _serviceProvider = services.BuildServiceProvider();
