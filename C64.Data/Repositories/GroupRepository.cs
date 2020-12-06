@@ -1,9 +1,11 @@
 ﻿using C64.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace C64.Data.Repositories
@@ -27,6 +29,21 @@ namespace C64.Data.Repositories
             group.ScenerGroups = members;
 
             return group;
+        }
+
+        public async Task<IEnumerable<Scener>> FindWithGroups(Expression<Func<Scener, bool>> predicate)
+        {
+            var sceners = await context.Set<Scener>()
+               .Include(p => p.ScenersGroups).ThenInclude(p => p.Group)
+               .Where(predicate).ToListAsync();
+
+            return sceners;
+        }
+
+        public async Task<IEnumerable<Group>> FindWithSceners(Expression<Func<Group, bool>> predicate)
+        {
+            var groups = await context.Set<Group>().Include(p => p.ScenerGroups).ThenInclude(p => p.Scener).Where(predicate).ToListAsync();
+            return groups;
         }
 
         public async Task<IEnumerable<HistoryRecord>> GetHistory(int groupId)
