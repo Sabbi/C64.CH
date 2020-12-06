@@ -22,6 +22,8 @@
                 <select class="form-control d-inline" id="groupEditSelect" @onchange="OnSelectEdit">
                     <option value="0">Edit Scener</option>
                     <option value="general">- General Info</option>
+                    <option value="addgroup">- Add Groups</option>
+                    <option value="editgroup">- Edit Groups</option>
                     <optgroup label="---------------------------"></optgroup>
                     <option value="viewHistory">View history</option>
                 </select>
@@ -140,6 +142,22 @@
             parameters.Add(nameof(EditScenerModal.Scener), scener);
             parameters.Add(nameof(EditScenerModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditScenerModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "addgroup")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(AddScenerGroupsModal.Scener), scener);
+            parameters.Add(nameof(AddScenerGroupsModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<AddScenerGroupsModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "editgroup")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(EditScenerGroupsModal.Scener), scener);
+            parameters.Add(nameof(EditScenerGroupsModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<EditScenerGroupsModal>("", parameters);
             await reference.Result;
         }
         else if (args.Value.ToString() == "viewHistory")
