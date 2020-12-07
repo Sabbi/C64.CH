@@ -29,13 +29,22 @@
 
     private IUnitOfWork unitOfWork;
 
+    private List<int> chartDownloads;
+    private List<string> chartDates;
+
+    public async Task AddDownload()
+    {
+        await OnParametersSetAsync();
+        StateHasChanged();
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
         var downloads = await unitOfWork.Productions.GetDownloads(ProductionId);
 
-        var chartDownloads = new List<int>();
-        var chartDates = new List<string>();
+        chartDownloads = new List<int>();
+        chartDates = new List<string>();
 
         for (var i = 11; i >= 0; i--)
         {

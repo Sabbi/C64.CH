@@ -2,6 +2,7 @@
 
 @inject IModalService modal
 @inject IUnitOfWork unitOfWork
+@inject IHttpContextAccessor httpContextAccessor
 
 @inject IJSRuntime jsRuntime
 
@@ -9,7 +10,7 @@
 {
     @foreach (var download in ProductionFiles.Where(p => p.Show))
     {
-        <DownloadProduction ProductionFile="@download" />
+        <DownloadProduction ProductionFile="@download" OnDownload="DownloadClicked" />
         @if (download.IsArchive)
         {
             <p>
@@ -52,8 +53,16 @@ else
     [Parameter]
     public ICollection<ProductionFile> ProductionFiles { get; set; }
 
+    [Parameter]
+    public EventCallback<int> OnDownload { get; set; }
+
     private int _sidModel = 0;
     private int _driveSounds = 0;
+
+    private async Task DownloadClicked(int fileId)
+    {
+        await OnDownload.InvokeAsync(fileId);
+    }
 
     private int sidModel
     {
@@ -97,6 +106,11 @@ else
 
         await jsRuntime.SetInLocalStorage("SidModel", sidModel.ToString());
         await jsRuntime.SetInLocalStorage("DriveSounds", driveSounds.ToString());
+
+        await unitOfWork.Productions.AddDownload(productionFile.Filename, httpContextAccessor.HttpContext.RemoteIp(), httpContextAccessor.HttpContext.Referer(), httpContextAccessor.HttpContext.GetUserId());
+        await unitOfWork.Commit();
+
+        await OnDownload.InvokeAsync(productionFileId);
 
         var parameters = new ModalParameters();
         parameters.Add(nameof(EmuModal.ProductionFile), productionFile);
