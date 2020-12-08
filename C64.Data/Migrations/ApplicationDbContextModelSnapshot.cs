@@ -14,8 +14,8 @@ namespace C64.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.4")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .HasAnnotation("ProductVersion", "3.1.4");
 
             modelBuilder.Entity("C64.Data.Entities.Comment", b =>
                 {
@@ -27,19 +27,19 @@ namespace C64.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Ip")
-                        .HasColumnType("varchar(40) CHARACTER SET utf8mb4")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40) CHARACTER SET utf8mb4");
 
                     b.Property<int>("ProductionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(65535);
+                        .HasMaxLength(65535)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.HasKey("CommentId");
 
@@ -53,12 +53,12 @@ namespace C64.Data.Migrations
             modelBuilder.Entity("C64.Data.Entities.Country", b =>
                 {
                     b.Property<string>("CountryId")
-                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4")
-                        .HasMaxLength(2);
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(63) CHARACTER SET utf8mb4")
-                        .HasMaxLength(63);
+                        .HasMaxLength(63)
+                        .HasColumnType("varchar(63) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("Selectable")
                         .HasColumnType("tinyint(1)");
@@ -1524,8 +1524,8 @@ namespace C64.Data.Migrations
 
                     b.Property<string>("Container")
                         .IsRequired()
-                        .HasColumnType("varchar(127) CHARACTER SET utf8mb4")
-                        .HasMaxLength(127);
+                        .HasMaxLength(127)
+                        .HasColumnType("varchar(127) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -1536,8 +1536,8 @@ namespace C64.Data.Migrations
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasColumnType("varchar(254) CHARACTER SET utf8mb4")
-                        .HasMaxLength(254);
+                        .HasMaxLength(254)
+                        .HasColumnType("varchar(254) CHARACTER SET utf8mb4");
 
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
@@ -1559,19 +1559,19 @@ namespace C64.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Ip")
-                        .HasColumnType("varchar(40) CHARACTER SET utf8mb4")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40) CHARACTER SET utf8mb4");
 
                     b.Property<int>("ProductionFileId")
                         .HasColumnType("int");
 
                     b.Property<string>("Referer")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(2047);
+                        .HasMaxLength(2047)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.HasKey("DownloadId");
 
@@ -1599,8 +1599,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Aka")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<decimal>("AverageRating")
                         .HasColumnType("decimal(65,30)");
@@ -1612,19 +1612,19 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CountryId")
-                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4")
-                        .HasMaxLength(2);
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(65535);
+                        .HasMaxLength(65535)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("Downloads")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("FoundedDate")
                         .HasColumnType("datetime(6)");
@@ -1639,8 +1639,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int>("NumberOfRatings")
                         .HasColumnType("int");
@@ -1652,8 +1652,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Url")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int>("Views")
                         .HasColumnType("int");
@@ -1674,28 +1674,28 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(65535);
+                        .HasMaxLength(65535)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Email")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Homepage")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Ip")
-                        .HasColumnType("varchar(40) CHARACTER SET utf8mb4")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("WrittenAt")
                         .HasColumnType("datetime(6)");
@@ -1714,8 +1714,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(65535);
+                        .HasMaxLength(65535)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("ProductionId")
                         .HasColumnType("int");
@@ -1752,12 +1752,12 @@ namespace C64.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(4096);
+                        .HasMaxLength(4096)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("IpAdress")
-                        .HasColumnType("varchar(46) CHARACTER SET utf8mb4")
-                        .HasMaxLength(46);
+                        .HasMaxLength(46)
+                        .HasColumnType("varchar(46) CHARACTER SET utf8mb4");
 
                     b.Property<string>("NewValue")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -1776,8 +1776,8 @@ namespace C64.Data.Migrations
 
                     b.Property<string>("TransactionId")
                         .IsRequired()
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Type")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -1786,8 +1786,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.Property<decimal>("Version")
                         .HasColumnType("decimal(65,30)");
@@ -1823,12 +1823,12 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Url")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("LinkId");
 
@@ -1844,8 +1844,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(63) CHARACTER SET utf8mb4")
-                        .HasMaxLength(63);
+                        .HasMaxLength(63)
+                        .HasColumnType("varchar(63) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("Selectable")
                         .HasColumnType("tinyint(1)");
@@ -1938,35 +1938,35 @@ namespace C64.Data.Migrations
                         .HasColumnType("varchar(2) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(65535);
+                        .HasMaxLength(65535)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Email")
-                        .HasColumnType("varchar(63) CHARACTER SET utf8mb4")
-                        .HasMaxLength(63);
+                        .HasMaxLength(63)
+                        .HasColumnType("varchar(63) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("From")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Location")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Organizers")
-                        .HasColumnType("varchar(1023) CHARACTER SET utf8mb4")
-                        .HasMaxLength(1023);
+                        .HasMaxLength(1023)
+                        .HasColumnType("varchar(1023) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("To")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Url")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("PartyId");
 
@@ -1982,13 +1982,13 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("varchar(1024) CHARACTER SET utf8mb4")
-                        .HasMaxLength(1024);
+                        .HasMaxLength(1024)
+                        .HasColumnType("varchar(1024) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("Selectable")
                         .HasColumnType("tinyint(1)");
@@ -2008,8 +2008,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Aka")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<decimal>("AverageRating")
                         .HasColumnType("decimal(65,30)");
@@ -2021,8 +2021,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int>("NumberOfComments")
                         .HasColumnType("int");
@@ -2046,15 +2046,15 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Remarks")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(65535);
+                        .HasMaxLength(65535)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("SubCategory")
                         .HasColumnType("int");
 
                     b.Property<string>("Submitter")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("SubmitterUserId")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
@@ -2066,12 +2066,12 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Uploader")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.Property<int>("VideoType")
                         .HasColumnType("int");
@@ -2119,15 +2119,15 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int>("Downloads")
                         .HasColumnType("int");
 
                     b.Property<string>("Filename")
-                        .HasColumnType("varchar(1023) CHARACTER SET utf8mb4")
-                        .HasMaxLength(1023);
+                        .HasMaxLength(1023)
+                        .HasColumnType("varchar(1023) CHARACTER SET utf8mb4");
 
                     b.Property<int>("ProductionId")
                         .HasColumnType("int");
@@ -2155,8 +2155,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Filename")
-                        .HasColumnType("varchar(511) CHARACTER SET utf8mb4")
-                        .HasMaxLength(511);
+                        .HasMaxLength(511)
+                        .HasColumnType("varchar(511) CHARACTER SET utf8mb4");
 
                     b.Property<int>("ProductionId")
                         .HasColumnType("int");
@@ -2250,8 +2250,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Ip")
-                        .HasColumnType("varchar(40) CHARACTER SET utf8mb4")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40) CHARACTER SET utf8mb4");
 
                     b.Property<int>("ProductionId")
                         .HasColumnType("int");
@@ -2260,8 +2260,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.Property<int>("Value")
                         .HasColumnType("int");
@@ -2288,8 +2288,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CountryId")
-                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4")
-                        .HasMaxLength(2);
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Handle")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -2298,8 +2298,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("RealName")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("ShowRealName")
                         .HasColumnType("tinyint(1)");
@@ -2413,20 +2413,20 @@ namespace C64.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Text")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(65535);
+                        .HasMaxLength(65535)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Title")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Writer")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("SiteInfoId");
 
@@ -2442,20 +2442,20 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Facebook")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Homepage")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Repository")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("Show")
                         .HasColumnType("tinyint(1)");
@@ -2488,53 +2488,53 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Blabla")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4")
-                        .HasMaxLength(65535);
+                        .HasMaxLength(65535)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("CountryId")
-                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4")
-                        .HasMaxLength(2);
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("Digest")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("FavDemos")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("FavGroups")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Groups")
-                        .HasColumnType("varchar(1023) CHARACTER SET utf8mb4")
-                        .HasMaxLength(1023);
+                        .HasMaxLength(1023)
+                        .HasColumnType("varchar(1023) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Homepage")
-                        .HasColumnType("varchar(1023) CHARACTER SET utf8mb4")
-                        .HasMaxLength(1023);
+                        .HasMaxLength(1023)
+                        .HasColumnType("varchar(1023) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Icq")
-                        .HasColumnType("varchar(63) CHARACTER SET utf8mb4")
-                        .HasMaxLength(63);
+                        .HasMaxLength(63)
+                        .HasColumnType("varchar(63) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("LastLogin")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Location")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");
@@ -2546,16 +2546,16 @@ namespace C64.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Occupation")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int>("OldId")
                         .HasColumnType("int");
@@ -2579,8 +2579,8 @@ namespace C64.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Realname")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<DateTime>("Registered")
                         .HasColumnType("datetime(6)");
@@ -2595,23 +2595,23 @@ namespace C64.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Watching")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CountryId");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
+                        .HasDatabaseName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex");
+                        .HasDatabaseName("UserNameIndex");
 
                     b.HasIndex("ScenerId");
 
@@ -2646,18 +2646,18 @@ namespace C64.Data.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4");
 
                     b.Property<string>("NormalizedName")
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -2775,6 +2775,10 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Production");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.Download", b =>
@@ -2788,6 +2792,10 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("ProductionFile");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.Group", b =>
@@ -2799,6 +2807,10 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId");
+
+                    b.Navigation("AddedBy");
+
+                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.GuestbookEntry", b =>
@@ -2806,6 +2818,8 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.HiddenPart", b =>
@@ -2815,6 +2829,8 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ProductionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Production");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.HistoryRecord", b =>
@@ -2838,6 +2854,16 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("AffectedGroup");
+
+                    b.Navigation("AffectedParty");
+
+                    b.Navigation("AffectedProduction");
+
+                    b.Navigation("AffectedScener");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.Link", b =>
@@ -2847,6 +2873,8 @@ namespace C64.Data.Migrations
                         .HasForeignKey("LinkCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("LinkCategory");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.PartiesGroups", b =>
@@ -2862,6 +2890,10 @@ namespace C64.Data.Migrations
                         .HasForeignKey("PartyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Party");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.PartiesSceners", b =>
@@ -2881,6 +2913,10 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ScenerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Party");
+
+                    b.Navigation("Scener");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.Party", b =>
@@ -2888,6 +2924,8 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId");
+
+                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.Production", b =>
@@ -2899,6 +2937,10 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("SubmitterUser");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ProductionCredit", b =>
@@ -2914,6 +2956,10 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ScenerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Production");
+
+                    b.Navigation("Scener");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ProductionFile", b =>
@@ -2923,6 +2969,8 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ProductionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Production");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ProductionPicture", b =>
@@ -2932,6 +2980,8 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ProductionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Production");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ProductionVideo", b =>
@@ -2941,6 +2991,8 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ProductionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Production");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ProductionsGroups", b =>
@@ -2956,6 +3008,10 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ProductionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Production");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ProductionsParties", b =>
@@ -2975,6 +3031,12 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ProductionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Party");
+
+                    b.Navigation("PartyCategory");
+
+                    b.Navigation("Production");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.Rating", b =>
@@ -2988,6 +3050,10 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Production");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.Scener", b =>
@@ -2995,6 +3061,8 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId");
+
+                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ScenerGroupJob", b =>
@@ -3017,6 +3085,10 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ScenerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Scener");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ScenersJobs", b =>
@@ -3026,6 +3098,8 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ScenerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Scener");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.ScenersSceners", b =>
@@ -3035,6 +3109,8 @@ namespace C64.Data.Migrations
                         .HasForeignKey("ScenerToId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ScenerTo");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.SiteInfo", b =>
@@ -3042,6 +3118,8 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.User", b =>
@@ -3053,6 +3131,10 @@ namespace C64.Data.Migrations
                     b.HasOne("C64.Data.Entities.Scener", "Scener")
                         .WithMany()
                         .HasForeignKey("ScenerId");
+
+                    b.Navigation("Country");
+
+                    b.Navigation("Scener");
                 });
 
             modelBuilder.Entity("C64.Data.Entities.UserFavorite", b =>
@@ -3068,6 +3150,10 @@ namespace C64.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Production");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -3119,6 +3205,70 @@ namespace C64.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("C64.Data.Entities.Group", b =>
+                {
+                    b.Navigation("PartiesGroups");
+
+                    b.Navigation("PartiesSceners");
+
+                    b.Navigation("ProductionsGroups");
+
+                    b.Navigation("ScenerGroups");
+                });
+
+            modelBuilder.Entity("C64.Data.Entities.Party", b =>
+                {
+                    b.Navigation("PartiesGroups");
+
+                    b.Navigation("PartiesSceners");
+
+                    b.Navigation("ProductionsParties");
+                });
+
+            modelBuilder.Entity("C64.Data.Entities.Production", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("HiddenParts");
+
+                    b.Navigation("ProductionCredits");
+
+                    b.Navigation("ProductionFiles");
+
+                    b.Navigation("ProductionPictures");
+
+                    b.Navigation("ProductionsGroups");
+
+                    b.Navigation("ProductionsParties");
+
+                    b.Navigation("ProductionVideos");
+
+                    b.Navigation("Ratings");
+
+                    b.Navigation("UserFavorites");
+                });
+
+            modelBuilder.Entity("C64.Data.Entities.Scener", b =>
+                {
+                    b.Navigation("AlterEgos");
+
+                    b.Navigation("Jobs");
+
+                    b.Navigation("PartiesSceners");
+
+                    b.Navigation("ScenersGroups");
+                });
+
+            modelBuilder.Entity("C64.Data.Entities.ScenersGroups", b =>
+                {
+                    b.Navigation("ScenerGroupJobs");
+                });
+
+            modelBuilder.Entity("C64.Data.Entities.User", b =>
+                {
+                    b.Navigation("Favorites");
                 });
 #pragma warning restore 612, 618
         }

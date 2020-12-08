@@ -70,7 +70,7 @@ namespace C64.Data.Entities
 
         public ICollection<ProductionsGroups> ProductionsGroups { get; set; } = new HashSet<ProductionsGroups>();
 
-        public ICollection<ScenersGroups> ScenerGroups { get; set; } = new HashSet<ScenersGroups>();
+        public ICollection<ScenersGroups> ScenersGroups { get; set; } = new HashSet<ScenersGroups>();
 
         public ICollection<PartiesGroups> PartiesGroups { get; set; } = new HashSet<PartiesGroups>();
         public ICollection<PartiesSceners> PartiesSceners { get; set; } = new HashSet<PartiesSceners>();

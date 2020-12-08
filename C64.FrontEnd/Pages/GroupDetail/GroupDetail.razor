@@ -58,12 +58,12 @@
                 }
             </table>
 
-            @if (group.ScenerGroups.Any())
+            @if (group.ScenersGroups.Any())
             {
                 <h5>Members:</h5>
                 <table class="table table-prod-list">
                     <tr><th>Handle</th><th>Jobs</th><th>Joined</th><th>Left</th></tr>
-                    @foreach (var scenergroup in group.ScenerGroups)
+                    @foreach (var scenergroup in group.ScenersGroups)
                     {
                         <tr>
                             <td><a href="/sceners/@scenergroup.ScenerId/@scenergroup.Scener.Handle.UrlEncode()">@scenergroup.Scener.Handle</a></td>

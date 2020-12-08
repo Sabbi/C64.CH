@@ -9,7 +9,7 @@ namespace C64.Data.History
     {
         public void Apply(object entity, HistoryRecord historyProduction)
         {
-            var scenersGroups = ((Group)entity).ScenerGroups;
+            var scenersGroups = ((Group)entity).ScenersGroups;
 
             var newValues = JsonConvert.DeserializeObject<IEnumerable<Job>>(historyProduction.NewValue);
 
@@ -32,7 +32,7 @@ namespace C64.Data.History
 
             var newValues = (AddGroupMember)newValue;
 
-            var oldValues = group.ScenerGroups.FirstOrDefault(p => p.ScenerId == newValues.Scener.ScenerId).ScenerGroupJobs.Select(p => p.Job);
+            var oldValues = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == newValues.Scener.ScenerId).ScenerGroupJobs.Select(p => p.Job);
 
             var dbhistory = new HistoryRecord
             {
@@ -46,7 +46,7 @@ namespace C64.Data.History
                 Status = status,
                 Type = typeof(IEnumerable<int>).FullName,
                 Version = 1M,
-                Description = $"Member jobs of '{group.ScenerGroups.FirstOrDefault().Scener.Handle}' changed to '{string.Join(", ", newValues.SelectedJobs)}'"
+                Description = $"Member jobs of '{group.ScenersGroups.FirstOrDefault().Scener.Handle}' changed to '{string.Join(", ", newValues.SelectedJobs)}'"
             };
 
             return dbhistory;
