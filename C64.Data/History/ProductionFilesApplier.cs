@@ -41,9 +41,40 @@ namespace C64.Data.History
                 OldValue = oldStrippedValues == null ? null : JsonConvert.SerializeObject(oldStrippedValues.OrderBy(p => p.ProductionFileId)),
                 Status = status,
                 Type = newValue.GetType().FullName,
+                Description = CreateDescription(oldStrippedValues, newStrippedValues),
                 Version = 1M
             };
             return dbhistory;
+        }
+
+        private string CreateDescription(List<ProductionFile> oldValues, List<ProductionFile> newValues)
+        {
+            var modifications = new List<string>();
+
+            // Added ? -> all with ID 0 ;)
+            foreach (var added in newValues.Where(p => p.ProductionFileId == 0))
+            {
+                modifications.Add($"added new download '{added.Filename}'");
+            }
+
+            // Hidden/Show?
+            foreach (var changed in newValues.Where(p => p.ProductionFileId > 0))
+            {
+                var old = oldValues.FirstOrDefault(p => p.ProductionFileId == changed.ProductionFileId);
+
+                if (old != null && old.Show && !changed.Show)
+                    modifications.Add($"hide file '{changed.Filename}'");
+                else if (old != null && !old.Show && changed.Show)
+                    modifications.Add($"show file '{changed.Filename}'");
+            }
+
+            if (modifications.Any())
+            {
+                var joined = string.Join(", ", modifications);
+                return joined.Substring(0, 1).ToUpper() + joined[1..];
+            }
+
+            return null;
         }
     }
 }
