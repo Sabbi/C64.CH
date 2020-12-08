@@ -16,13 +16,13 @@ namespace C64.Data.History
 
             if (historyRecord.Property == "JoinedDate")
             {
-                group.ScenerGroups.FirstOrDefault(p => p.ScenerId == historyRecord.AffectedScenerId).ValidFrom = newValues.Date;
-                group.ScenerGroups.FirstOrDefault(p => p.ScenerId == historyRecord.AffectedScenerId).ValidFromType = newValues.Type;
+                group.ScenersGroups.FirstOrDefault(p => p.ScenerId == historyRecord.AffectedScenerId).ValidFrom = newValues.Date;
+                group.ScenersGroups.FirstOrDefault(p => p.ScenerId == historyRecord.AffectedScenerId).ValidFromType = newValues.Type;
             }
             else
             {
-                group.ScenerGroups.FirstOrDefault(p => p.ScenerId == historyRecord.AffectedScenerId).ValidTo = newValues.Date;
-                group.ScenerGroups.FirstOrDefault(p => p.ScenerId == historyRecord.AffectedScenerId).ValidToType = newValues.Type;
+                group.ScenersGroups.FirstOrDefault(p => p.ScenerId == historyRecord.AffectedScenerId).ValidTo = newValues.Date;
+                group.ScenersGroups.FirstOrDefault(p => p.ScenerId == historyRecord.AffectedScenerId).ValidToType = newValues.Type;
             }
         }
 
@@ -32,7 +32,7 @@ namespace C64.Data.History
 
             var newValues = (AddGroupMember)newValue;
 
-            var oldValues = group.ScenerGroups.FirstOrDefault(p => p.ScenerId == newValues.Scener.ScenerId);
+            var oldValues = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == newValues.Scener.ScenerId);
 
             PartialDate defNewValues, defOldValues;
 

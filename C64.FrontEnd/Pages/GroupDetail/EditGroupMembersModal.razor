@@ -14,11 +14,11 @@
                         Member:
                     </div>
                     <div class="col-8">
-                        @if (Group.ScenerGroups.Any())
+                        @if (Group.ScenersGroups.Any())
                         {
                             <select @onchange="OnSelectMember" class="form-control">
                                 <option value="0">Select scener:</option>
-                                @foreach (var member in Group.ScenerGroups.Select(p => p.Scener))
+                                @foreach (var member in Group.ScenersGroups.Select(p => p.Scener))
                                 {
                                     <option value="@member.ScenerId">@member.Handle</option>
                                 }
@@ -109,7 +109,7 @@
 
         if (selectedScenerId > 0)
         {
-            var selectedScener = Group.ScenerGroups.FirstOrDefault(p => p.ScenerId == selectedScenerId);
+            var selectedScener = Group.ScenersGroups.FirstOrDefault(p => p.ScenerId == selectedScenerId);
             addGroupMemberModel.Joined = new PartialDate(selectedScener.ValidFrom, selectedScener.ValidFromType);
             addGroupMemberModel.Left = new PartialDate(selectedScener.ValidTo, selectedScener.ValidToType);
             addGroupMemberModel.Scener = selectedScener.Scener;

@@ -11,8 +11,8 @@ namespace C64.Data.History
             var group = (Group)entity;
             var toDelete = JsonConvert.DeserializeObject<AddGroupMember>(historyProduction.OldValue);
 
-            var toDeleteLinked = group.ScenerGroups.FirstOrDefault(p => p.ScenerId == toDelete.Scener.ScenerId);
-            group.ScenerGroups.Remove(toDeleteLinked);
+            var toDeleteLinked = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == toDelete.Scener.ScenerId);
+            group.ScenersGroups.Remove(toDeleteLinked);
 
             return;
         }
@@ -22,7 +22,7 @@ namespace C64.Data.History
             var group = (Group)entity;
             var toDelete = (int)newValue;
 
-            var oldMemberData = group.ScenerGroups.FirstOrDefault(p => p.ScenerId == toDelete);
+            var oldMemberData = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == toDelete);
 
             var dbhistory = new HistoryRecord
             {

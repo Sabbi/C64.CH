@@ -26,7 +26,7 @@ namespace C64.Data.Repositories
             var group = await GetWithProductions(groupId);
 
             var members = await context.Set<ScenersGroups>().Include(p => p.Scener).Include(p => p.ScenerGroupJobs).Where(p => p.GroupId == groupId).ToListAsync();
-            group.ScenerGroups = members;
+            group.ScenersGroups = members;
 
             return group;
         }
@@ -42,7 +42,7 @@ namespace C64.Data.Repositories
 
         public async Task<IEnumerable<Group>> FindWithSceners(Expression<Func<Group, bool>> predicate)
         {
-            var groups = await context.Set<Group>().Include(p => p.ScenerGroups).ThenInclude(p => p.Scener).Where(predicate).ToListAsync();
+            var groups = await context.Set<Group>().Include(p => p.ScenersGroups).ThenInclude(p => p.Scener).Where(predicate).ToListAsync();
             return groups;
         }
 

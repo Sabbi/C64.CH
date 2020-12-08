@@ -70,9 +70,9 @@
             {
                 <button class="btn btn-primary" type="submit">Add as Member</button>
             }
-        <div class="float-right">
-            <button class="btn btn-warning" type="button" @onclick="(() => bootstrapModal.Cancel())">Cancel</button>
-        </div>
+            <div class="float-right">
+                <button class="btn btn-warning" type="button" @onclick="(() => bootstrapModal.Cancel())">Cancel</button>
+            </div>
         </EditForm>
     </Content>
 </BootstrapModal>
@@ -124,7 +124,7 @@
         var sceners = (await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText, StringComparison.OrdinalIgnoreCase))).ToList();
 
         // TODO: Linqify
-        foreach (var inGroup in Group.ScenerGroups.Select(p => p.Scener))
+        foreach (var inGroup in Group.ScenersGroups.Select(p => p.Scener))
             sceners.Remove(inGroup);
 
         return sceners;

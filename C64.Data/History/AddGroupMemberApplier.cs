@@ -24,7 +24,7 @@ namespace C64.Data.History
             foreach (var job in newMember.SelectedJobs)
                 newScenersGroups.ScenerGroupJobs.Add(new ScenerGroupJob { Job = job });
 
-            group.ScenerGroups.Add(newScenersGroups);
+            group.ScenersGroups.Add(newScenersGroups);
             return;
         }
 

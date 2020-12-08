@@ -12,7 +12,7 @@ namespace C64.Data.History
             var group = (Group)entity;
             var newMember = JsonConvert.DeserializeObject<AddGroupMember>(historyProduction.NewValue);
 
-            var affectedMember = group.ScenerGroups.FirstOrDefault(p => p.ScenerId == newMember.Scener.ScenerId);
+            var affectedMember = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == newMember.Scener.ScenerId);
 
             affectedMember.ValidFrom = newMember.JoinedDate;
             affectedMember.ValidFromType = newMember.JoinedDateType;
@@ -35,7 +35,7 @@ namespace C64.Data.History
             if (newMemberData.LeftDateType == DateType.None)
                 newMemberData.LeftDate = DateTime.MaxValue;
 
-            var oldMemberData = group.ScenerGroups.FirstOrDefault(p => p.ScenerId == newMemberData.Scener.ScenerId);
+            var oldMemberData = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == newMemberData.Scener.ScenerId);
 
             var dbhistory = new HistoryRecord
             {
