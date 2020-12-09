@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,7 +18,11 @@ namespace C64.Data.Entities
             set => ScenerId = value;
         }
 
+        [MaxLength(255)]
         public string Handle { get; set; }
+
+        [MaxLength(255)]
+        public string Aka { get; set; }
 
         [MaxLength(255)]
         public string RealName { get; set; }
