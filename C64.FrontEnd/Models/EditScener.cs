@@ -12,6 +12,8 @@ namespace C64.FrontEnd.Models
         [Required]
         public string Handle { get; set; }
 
+        public string Aka { get; set; }
+
         public string RealName { get; set; }
 
         public PartialDate Birthday { get; set; } = new PartialDate();
@@ -27,6 +29,7 @@ namespace C64.FrontEnd.Models
         public void LoadScener(Scener scener)
         {
             Handle = scener.Handle;
+            Aka = scener.Aka;
             RealName = scener.RealName;
             ShowRealName = scener.ShowRealName;
             CountryId = scener.CountryId;

@@ -222,6 +222,7 @@ namespace C64.Data.History
         AddScener,
 
         ScenerHandle,
+        ScenerAka,
         ScenerRealName,
         Birthday,
         ScenerLocation,

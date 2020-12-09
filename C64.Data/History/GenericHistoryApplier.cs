@@ -236,6 +236,9 @@ namespace C64.Data.History
                 case HistoryEditProperty.ScenerHandle:
                     return $"Handle changed from '{production.Handle}' to '{newValue}'";
 
+                case HistoryEditProperty.ScenerAka:
+                    return $"Aka changed from '{production.Aka}' to '{newValue}'";
+
                 case HistoryEditProperty.ScenerRealName:
                     if (newValue == null || string.IsNullOrEmpty(newValue.ToString()))
                         return "Realname removed";
