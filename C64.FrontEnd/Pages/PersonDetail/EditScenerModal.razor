@@ -37,6 +37,7 @@
     {
         var scenerHistory = HistoryHandlerFactory.Get(HistoryEntity.Scener, unitOfWork, Scener, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
         scenerHistory.AddHistory(HistoryEditProperty.ScenerHandle, editScener.Handle);
+        scenerHistory.AddHistory(HistoryEditProperty.ScenerAka, editScener.Aka);
         scenerHistory.AddHistory(HistoryEditProperty.ScenerRealName, editScener.RealName);
         scenerHistory.AddHistory(HistoryEditProperty.Birthday, editScener.Birthday);
         scenerHistory.AddHistory(HistoryEditProperty.ScenerLocation, editScener.Location);

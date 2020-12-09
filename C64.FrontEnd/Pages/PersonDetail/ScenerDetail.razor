@@ -34,6 +34,10 @@
             {
                 <table class="table table-prod-list">
                     <tr><th>Handle:</th><td>@scener.Handle</td></tr>
+                    @if (!string.IsNullOrEmpty(scener.Aka))
+                    {
+                        <tr><th>Aka:</th><td>@scener.Aka</td></tr>
+                    }
                     @if (!string.IsNullOrEmpty(scener.RealName) && scener.ShowRealName)
                     {
                         <tr><th>Real name:</th><td>@scener.RealName</td></tr>

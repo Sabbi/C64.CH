@@ -54,6 +54,24 @@ namespace C64.Tests.History
         }
 
         [Fact]
+        public void ChangeScenerAka()
+        {
+            var scener = new Scener { ScenerId = 1, Aka = "Aka" };
+
+            var historyHandler = HistoryHandlerFactory.Get(HistoryEntity.Scener, unitOfWorkMock.Object, scener, "1", "127.0.0.0");
+
+            historyHandler.AddHistory(HistoryEditProperty.ScenerAka, "NewAka");
+            historyHandler.Apply();
+
+            Assert.Equal("Aka", JsonConvert.DeserializeObject<string>(addedScenersMock.FirstOrDefault().OldValue));
+            Assert.Equal("NewAka", JsonConvert.DeserializeObject<string>(addedScenersMock.FirstOrDefault().NewValue));
+            Assert.Equal(HistoryEntity.Scener, addedScenersMock.FirstOrDefault().AffectedEntity);
+            Assert.Equal(1, addedScenersMock.FirstOrDefault().AffectedScenerId);
+            Assert.Null(addedScenersMock.FirstOrDefault().AffectedProductionId);
+            Assert.Equal("NewAka", scener.Aka);
+        }
+
+        [Fact]
         public void ChangeScenerRealname()
         {
             var scener = new Scener { ScenerId = 1, RealName = "Realname" };
