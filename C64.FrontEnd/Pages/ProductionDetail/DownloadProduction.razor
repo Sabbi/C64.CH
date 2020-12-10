@@ -22,6 +22,9 @@
     [Parameter]
     public ProductionFile ProductionFile { get; set; }
 
+    [Parameter]
+    public EventCallback<int> OnDownload { get; set; }
+
     private async Task DownloadFile()
     {
         await unitOfWork.Productions.AddDownload(ProductionFile.Filename, null, null, httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -29,5 +32,6 @@
         ProductionFile.Downloads++;
         var file = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
         await FileUtil.SaveAs(jsRuntime, ProductionFile.Filename, file);
+        await OnDownload.InvokeAsync(ProductionFile.ProductionFileId);
     }
 }

@@ -74,9 +74,6 @@
             }
         }
 
-        await unitOfWork.Productions.AddDownload(ProductionFile.Filename, httpContext.HttpContext.RemoteIp(), httpContext.HttpContext.Referer(), httpContext.HttpContext.GetUserId());
-        await unitOfWork.Commit();
-
         var viceLoader = new DefaultViceLoader(archiveService);
         var emuParmeters = viceLoader.ProcessFile(ProductionFile.ProductionFileId, fileData);
         await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, SidModel, DriveSounds, 1000);

@@ -153,7 +153,7 @@
                         <tr>
                             <th>Downloads:</th>
                             <td>
-                                <AllDownloads ProductionFiles="@production.ProductionFiles" />
+                                <AllDownloads ProductionFiles="@production.ProductionFiles" OnDownload="DownloadFile" />
                             </td>
                         </tr>
                         <tr><th><span class="text-nowrap">Total Downloads:</span></th><td>@production.Downloads</td></tr>
@@ -162,7 +162,7 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <DownloadChart ProductionId="@production.ProductionId" />
+                    <DownloadChart @ref="downloadChart" ProductionId="@production.ProductionId" />
                 </div>
                 <div class="col-md-6">
                     <RatingChart @ref="ratingChart" ProductionId="@production.ProductionId" />
@@ -218,6 +218,13 @@
     private IUnitOfWork unitOfWork;
 
     private bool isFavorite = false;
+
+    private DownloadChart downloadChart;
+
+    private async Task DownloadFile(int fileId)
+    {
+        await downloadChart.AddDownload();
+    }
 
     private async Task SetFavorite(bool value)
     {
