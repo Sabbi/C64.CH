@@ -1,0 +1,104 @@
+@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IJSRuntime jsRuntime
+@inject IUnitOfWork unitOfWork
+@inject IFallbackArchiveService archiveService
+@inject IFileStorageService fileStorageService
+
+@using C64.Services.ViceLoader
+
+@implements IDisposable
+
+<BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <p class="float-right">
+            @if (started)
+            {
+                <button class="btn btn-primary" type="button" @onclick="FullScreen">Go fullscreen</button>
+            }
+        </p>
+        <div id="emularity-splash-screen"></div>
+        <canvas id="canvas" style="display: none; margin: 0 auto; background-color:#eeeeee" />
+        <ul>
+            <li>Demos should autostart, fullscreen only available after emulator has started</li>
+            <li>To insert next disk, click inside the emu, press Alt-N OR use F12 to enter Vice-Menu and choose a disk yourself (in emulator-folder)</li>
+            <li>Alt-W to speed up, Joystick = Keypad+0, press ALT-J to switch ports, ESC or Alt-Tab to get back your mouse cursor</li>
+            <li>Sorry, no mute button</li>
+        </ul>
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [Parameter]
+    public ProductionFile ProductionFile { get; set; }
+
+    [Parameter]
+    public int SidModel { get; set; } = 0;
+
+    [Parameter]
+    public int DriveSounds { get; set; } = 0;
+
+    private BootstrapModal bootstrapModal;
+    private string title = "";
+
+    private bool started = false;
+
+    protected override void OnInitialized()
+    {
+        title += $"Emulating  {ProductionFile.Filename}";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        // Concurrent connections otherwise, I don't know why (yet)
+        byte[] fileData = null;
+        try
+        {
+            fileData = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
+        }
+        catch
+        {
+            try
+            {
+                System.Threading.Thread.Sleep(50);
+                fileData = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        await unitOfWork.Productions.AddDownload(ProductionFile.Filename, httpContext.HttpContext.RemoteIp(), httpContext.HttpContext.Referer(), httpContext.HttpContext.GetUserId());
+        await unitOfWork.Commit();
+
+        var viceLoader = new DefaultViceLoader(archiveService);
+        var emuParmeters = viceLoader.ProcessFile(ProductionFile.ProductionFileId, fileData);
+        await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, SidModel, DriveSounds, 1000);
+        await jsRuntime.InvokeVoidAsync("startEmu");
+        started = true;
+        StateHasChanged();
+    }
+
+    private async Task Start()
+    {
+        await jsRuntime.InvokeVoidAsync("startEmu");
+        started = true;
+    }
+
+    public void Dispose()
+    {
+        jsRuntime.InvokeVoidAsync("exitEmu");
+    }
+
+    public async Task FullScreen()
+    {
+        await jsRuntime.InvokeVoidAsync("goFullScreen");
+    }
+
+}

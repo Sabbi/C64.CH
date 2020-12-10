@@ -1,4 +1,4 @@
-﻿using C64.Data.Entities;
+using C64.Data.Entities;
 using C64.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

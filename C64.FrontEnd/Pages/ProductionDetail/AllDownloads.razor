@@ -1,6 +1,9 @@
 ﻿@namespace C64.FrontEnd.Pages
 
 @inject IModalService modal
+@inject IUnitOfWork unitOfWork
+
+@inject IJSRuntime jsRuntime
 
 @if (ProductionFiles.Any(p => p.Show))
 {
@@ -9,9 +12,35 @@
         <DownloadProduction ProductionFile="@download" />
         @if (download.IsArchive)
         {
-            <p><a href="" @onclick="(() => ShowFileContents(download.ProductionFileId, download.Filename))" @onclick:preventDefault><i class="far fa-list-alt"></i> Show File-Contents</a></p>
+            <p>
+                <a href="" @onclick="(() => ShowFileContents(download.ProductionFileId, download.Filename))" @onclick:preventDefault><i class="far fa-list-alt"></i> Show File-Contents</a>
+            </p>
+            <p>
+                <a href="" @onclick="(() => StartEmulator(download.ProductionFileId))" @onclick:preventDefault><i class="fas fa-gamepad"></i> Emulate in Browser (Experimental)</a><br />
+            </p>
         }
         <hr />
+    }
+
+    @if (ProductionFiles.Any(p => p.Show && p.IsArchive))
+    {
+        <div class="row">
+            <div class="col-12">
+                Emulator-Settings:
+            </div>
+            <div class="col-6">
+                <select @bind="sidModel" class="form-control">
+                    <option value="0">Sid 6581</option>
+                    <option value="1">Sid 8580</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <select @bind="driveSounds" class="form-control">
+                    <option value="0">No drive sounds</option>
+                    <option value="1">Drive sounds</option>
+                </select>
+            </div>
+        </div>
     }
 }
 else
@@ -23,6 +52,36 @@ else
     [Parameter]
     public ICollection<ProductionFile> ProductionFiles { get; set; }
 
+    private int _sidModel = 0;
+    private int _driveSounds = 0;
+
+    private int sidModel
+    {
+        get
+        {
+            return _sidModel;
+        }
+
+        set
+        {
+            _sidModel = value;
+            jsRuntime.SetInLocalStorage("SidModel", sidModel.ToString());
+        }
+    }
+
+    private int driveSounds
+    {
+        get
+        {
+            return _driveSounds;
+        }
+        set
+        {
+            _driveSounds = value;
+            jsRuntime.SetInLocalStorage("DriveSounds", _driveSounds.ToString());
+        }
+    }
+
     private void ShowFileContents(int productionFileId, string productionFilename)
     {
         var parameters = new ModalParameters();
@@ -30,5 +89,34 @@ else
         parameters.Add(nameof(FileContents.ProductionFilename), productionFilename);
 
         modal.Show<FileContents>("Contents of " + productionFilename, parameters);
+    }
+
+    private async Task StartEmulator(int productionFileId)
+    {
+        var productionFile = await unitOfWork.Productions.GetFile(productionFileId);
+
+        await jsRuntime.SetInLocalStorage("SidModel", sidModel.ToString());
+        await jsRuntime.SetInLocalStorage("DriveSounds", driveSounds.ToString());
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(EmuModal.ProductionFile), productionFile);
+        parameters.Add(nameof(EmuModal.SidModel), sidModel);
+        parameters.Add(nameof(EmuModal.DriveSounds), driveSounds);
+
+        var reference = modal.Show<EmuModal>("", parameters);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (int.TryParse(await jsRuntime.GetFromLocalStorage("SidModel"), out int parsedModel))
+                _sidModel = parsedModel;
+
+            if (int.TryParse(await jsRuntime.GetFromLocalStorage("DriveSounds"), out int parsedSounds))
+                _driveSounds = parsedSounds;
+
+            StateHasChanged();
+        }
     }
 }
