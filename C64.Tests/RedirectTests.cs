@@ -110,7 +110,7 @@ namespace C64.Tests
         {
             var redirectController = CreateController();
             var result = (RedirectResult)await redirectController.List("search", search: "leterm");
-            Assert.Equal("/productions/demos/search/?search=search=leterm", result.Url);
+            Assert.Equal("/productions/demos/search/?search=leterm", result.Url);
         }
 
         [Fact]
