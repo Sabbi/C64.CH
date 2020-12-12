@@ -78,12 +78,12 @@ namespace C64.Tests
         }
 
         [Fact]
-        // /demos/list.php?demoname=x&source=demoname -> /productions/demos/namestart/{letter}
+        // /demos/list.php?demoname=x&source=demoname -> /productions/demos/demoname/{letter}
         public async Task List_by_starting_letter()
         {
             var redirectController = CreateController();
             var result = (RedirectResult)await redirectController.List("demoname", demoname: "a");
-            Assert.Equal("/productions/demos/namestart/a", result.Url);
+            Assert.Equal("/productions/demos/demoname/a", result.Url);
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace C64.Tests
         {
             var redirectController = CreateController();
             var result = (RedirectResult)await redirectController.List("groupname", groupname: "a");
-            Assert.Equal("/productions/demos/groupstart/a", result.Url);
+            Assert.Equal("/productions/demos/groupname/a", result.Url);
         }
 
         [Fact]
@@ -105,12 +105,12 @@ namespace C64.Tests
         }
 
         [Fact]
-        // /demos/list.php?search=search&source=search -> /search/?search={search}
+        // /demos/list.php?search=search&source=search -> /productions/demos/search/?search={search}
         public async Task List_by_search()
         {
             var redirectController = CreateController();
             var result = (RedirectResult)await redirectController.List("search", search: "leterm");
-            Assert.Equal("/search/?search=leterm", result.Url);
+            Assert.Equal("/productions/demos/search/?search=search=leterm", result.Url);
         }
 
         [Fact]

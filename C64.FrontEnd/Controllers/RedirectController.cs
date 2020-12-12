@@ -113,13 +113,13 @@ namespace C64.FrontEnd.Controllers
                     return DoRedirect($"/productions/demos/year/{year}");
 
                 case "groupname":
-                    return DoRedirect($"/productions/demos/groupstart/{groupname}");
+                    return DoRedirect($"/productions/demos/groupname/{groupname}");
 
                 case "demoname":
-                    return DoRedirect($"/productions/demos/namestart/{demoname}");
+                    return DoRedirect($"/productions/demos/demoname/{demoname}");
 
                 case "search":
-                    return DoRedirect($"/search/?search={search}");
+                    return DoRedirect($"/productions/demos/search/?search={search}");
 
                 default:
                     throw new ArgumentException($"Source {source} invalid");
@@ -134,7 +134,7 @@ namespace C64.FrontEnd.Controllers
         }
 
         // /register/lostpw.php -> /account/forgotpassword
-        [Route("/user/changepw.php")]
+        [Route("/register/lostpw.php")]
         public IActionResult AccountForgotPassword()
         {
             return DoRedirect($"/account/forgotpassword");
