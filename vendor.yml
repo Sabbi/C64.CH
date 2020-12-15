@@ -380,3 +380,6 @@
 
 # Jenkins Pipeline
 - (^|/)Jenkinsfile$
+
+- x64-2.js
+- loader.js
