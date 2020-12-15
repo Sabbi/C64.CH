@@ -136,7 +136,7 @@ window.scrollToElementId = (elementId) => {
 var inited = false;
 var emulator;
 var isStarted = false;
-function setupEmu(params, sidModel = 0, driveSoundEmulation = 0, driveSoundEmulationVolume = 0) {
+function setupEmu(params, sidModel = 0, driveSoundEmulation = 0, driveSoundEmulationVolume = 0, crtEmulation = 0) {
     var diskimages = params[0];
     var fliplist = params[1];
 
@@ -171,7 +171,7 @@ function setupEmu(params, sidModel = 0, driveSoundEmulation = 0, driveSoundEmula
 
         VICELoader.mountFile("vice.ini",
             VICELoader.fetchFile("Configuration",
-                "/data/vice.ini?sidModel=" + sidModel + "&driveSoundEmulation=" + driveSoundEmulation + "&driveSoundEmulationVolume=" + driveSoundEmulationVolume)),
+                "/data/vice.ini?sidModel=" + sidModel + "&driveSoundEmulation=" + driveSoundEmulation + "&driveSoundEmulationVolume=" + driveSoundEmulationVolume + "&crtEmulation=" + crtEmulation)),
         mountFiles[0],
         mountFiles[1],
         mountFiles[2],
