@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "wwwroot/js/x64-2.min.js",
+    "inputFiles": [
+      "wwwroot/js/x64-2.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/loader.min.js",
+    "inputFiles": [
+      "wwwroot/js/loader.js"
+    ]
+  }
+]

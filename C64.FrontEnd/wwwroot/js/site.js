@@ -159,7 +159,7 @@ function setupEmu(params, sidModel = 0, driveSoundEmulation = 0, driveSoundEmula
 
     //console.log(finalFlipList);
 
-    var viceLoader = new VICELoader(VICELoader.emulatorJS("/js/x64-2.js"),
+    var viceLoader = new VICELoader(VICELoader.emulatorJS("/js/x64-2.min.js"),
         VICELoader.nativeResolution(0, 0),
         VICELoader.extraArgs([
             "-soundfragsize", "4",
