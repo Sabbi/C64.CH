@@ -38,7 +38,10 @@
     public int SidModel { get; set; } = 0;
 
     [Parameter]
-    public int DriveSounds { get; set; } = 0;
+    public bool DriveSounds { get; set; } = false;
+
+    [Parameter]
+    public bool CrtEmulation { get; set; } = false;
 
     private BootstrapModal bootstrapModal;
     private string title = "";
@@ -76,7 +79,7 @@
 
         var viceLoader = new DefaultViceLoader(archiveService);
         var emuParmeters = viceLoader.ProcessFile(ProductionFile.ProductionFileId, fileData);
-        await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, SidModel, DriveSounds, 1000);
+        await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, SidModel, DriveSounds ? "1" : "0", 1000, CrtEmulation ? "1" : "0");
         await jsRuntime.InvokeVoidAsync("startEmu");
         started = true;
         StateHasChanged();

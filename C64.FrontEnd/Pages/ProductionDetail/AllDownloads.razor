@@ -35,11 +35,11 @@
                     <option value="1">Sid 8580</option>
                 </select>
             </div>
-            <div class="col-6">
-                <select @bind="driveSounds" class="form-control">
-                    <option value="0">No drive sounds</option>
-                    <option value="1">Drive sounds</option>
-                </select>
+            <div class="col-3">
+                <input type="checkbox" @bind="driveSounds" id="driveSounds">&nbsp;<label for="driveSounds">Drive sounds</label>
+            </div>
+            <div class="col-3">
+                <input type="checkbox" @bind="crtEmulation" id="crtEmulation">&nbsp;<label for="crtEmulation">CRT emulation</label>
             </div>
         </div>
     }
@@ -57,11 +57,26 @@ else
     public EventCallback<int> OnDownload { get; set; }
 
     private int _sidModel = 0;
-    private int _driveSounds = 0;
+    private bool _driveSounds = false;
+
+    private bool _crtEmulation = false;
 
     private async Task DownloadClicked(int fileId)
     {
         await OnDownload.InvokeAsync(fileId);
+    }
+
+    private bool crtEmulation
+    {
+        get
+        {
+            return _crtEmulation;
+        }
+        set
+        {
+            _crtEmulation = value;
+            jsRuntime.SetInLocalStorage("CrtEmulation", crtEmulation.ToString());
+        }
     }
 
     private int sidModel
@@ -78,7 +93,7 @@ else
         }
     }
 
-    private int driveSounds
+    private bool driveSounds
     {
         get
         {
@@ -116,6 +131,7 @@ else
         parameters.Add(nameof(EmuModal.ProductionFile), productionFile);
         parameters.Add(nameof(EmuModal.SidModel), sidModel);
         parameters.Add(nameof(EmuModal.DriveSounds), driveSounds);
+        parameters.Add(nameof(EmuModal.CrtEmulation), crtEmulation);
 
         var reference = modal.Show<EmuModal>("", parameters);
     }
@@ -124,11 +140,17 @@ else
     {
         if (firstRender)
         {
+            // Set to enabled if no data present in localstorage
+            _crtEmulation = true;
+
             if (int.TryParse(await jsRuntime.GetFromLocalStorage("SidModel"), out int parsedModel))
                 _sidModel = parsedModel;
 
-            if (int.TryParse(await jsRuntime.GetFromLocalStorage("DriveSounds"), out int parsedSounds))
+            if (bool.TryParse(await jsRuntime.GetFromLocalStorage("DriveSounds"), out bool parsedSounds))
                 _driveSounds = parsedSounds;
+
+            if (bool.TryParse(await jsRuntime.GetFromLocalStorage("CrtEmulation"), out bool parsedCrtEmulation))
+                _crtEmulation = parsedCrtEmulation;
 
             StateHasChanged();
         }
