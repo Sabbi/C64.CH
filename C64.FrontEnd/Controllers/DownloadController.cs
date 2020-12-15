@@ -180,7 +180,7 @@ namespace C64.FrontEnd.Controllers
         }
 
         [Route("/data/vice.ini")]
-        public IActionResult DownloadViceIni(int sidModel = 0, int driveSoundEmulation = 0, int driveSoundEmulationVolume = 0)
+        public IActionResult DownloadViceIni(int sidModel = 0, int driveSoundEmulation = 0, int driveSoundEmulationVolume = 0, int crtEmulation = 0)
         {
             try
             {
@@ -189,6 +189,7 @@ namespace C64.FrontEnd.Controllers
                 content.Add($"SidModel={sidModel}");
                 content.Add($"DriveSoundEmulation={driveSoundEmulation}");
                 content.Add($"DriveSoundEmulationVolume={driveSoundEmulationVolume}");
+                content.Add($"VICIIFilter={crtEmulation}");
 
                 return new FileContentResult(Encoding.ASCII.GetBytes(string.Join("\n", content)), "text/plain");
             }
