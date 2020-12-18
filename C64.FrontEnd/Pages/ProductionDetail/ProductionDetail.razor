@@ -34,6 +34,7 @@
                     <option value="0">Edit Production</option>
                     <option value="general">- General</option>
                     <option value="pictures">- Screenshots</option>
+                    <option value="emupictures">- Screenshots by Emu&trade;</option>
                     <option value="videos">- Videos</option>
                     <option value="downloads">- Downloads</option>
                     <option value="credits">- Credits</option>
@@ -292,6 +293,14 @@
             parameters.Add(nameof(EditRemarksModal.Production), production);
             parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditPictureModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "emupictures")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(AddPicturesWithEmuModal.Production), production);
+            parameters.Add(nameof(AddPicturesWithEmuModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<AddPicturesWithEmuModal>("", parameters);
             await reference.Result;
         }
         else if (args.Value.ToString() == "downloads")

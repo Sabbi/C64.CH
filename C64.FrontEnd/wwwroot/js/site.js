@@ -1,4 +1,4 @@
-﻿function openNav() {
+function openNav() {
     document.getElementById("mobileNav").style.width = "100%";
     $("body").addClass("no-scroll");
 }
@@ -266,3 +266,8 @@ function clearData() {
         console.log('<li>Request successful.</li>');
     };
 };
+
+function grabEmuScreenshot() {
+    var dataUrl = canvas.toDataURL()
+    return dataUrl;
+}

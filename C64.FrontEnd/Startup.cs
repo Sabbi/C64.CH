@@ -86,6 +86,11 @@ namespace C64.FrontEnd
 
             services.AddHostedService<StatsUpdater>();
 
+            services.AddSignalR(hubOptions =>
+            {
+                hubOptions.MaximumReceiveMessageSize = 1024 * 1024;
+            });
+
             // Use en-US as culture, but tweak some to a more readable format.
             // -------------------------------------------------------------------------------------------------------------
             var cultureInfo = new CultureInfo("en-US");
