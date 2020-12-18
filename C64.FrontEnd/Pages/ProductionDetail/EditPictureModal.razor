@@ -60,7 +60,7 @@
 
     protected override void OnInitialized()
     {
-        foreach (var picture in Production.ProductionPictures)
+        foreach (var picture in Production.ProductionPictures.OrderBy(p => p.Sort))
         {
             editProductionPictures.ProductionPictures.Add(new ProductionPictureExtended { Filename = picture.Filename, ProductionId = picture.ProductionId, ProductionPictureId = picture.ProductionPictureId, Show = picture.Show, Size = picture.Size, Sort = picture.Sort });
         }
