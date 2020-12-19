@@ -19,7 +19,7 @@
         <Title>
             @production.Name<br />
             by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
-            <div class="float-right pr-3 position-absolute" style="right:220px; top:5px">
+            <div class="float-right pr-3 position-absolute" style="right:250px; top:5px">
                 @if (isFavorite)
                 {
                     <a title="Remove from favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(false))"><i class="fas fa-heart red" title="Remove from favorites"></i></a>
@@ -33,9 +33,10 @@
                 <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
                     <option value="0">Edit Production</option>
                     <option value="general">- General</option>
-                    <option value="pictures">- Screenshots</option>
-                    <option value="videos">- Videos</option>
                     <option value="downloads">- Downloads</option>
+                    <option value="pictures">- Add/Edit Screenshots</option>
+                    <option value="emupictures">- Add Screenshots with Emu&trade;</option>
+                    <option value="videos">- Videos</option>
                     <option value="credits">- Credits</option>
                     <option value="additional">- Additional info</option>
                     <optgroup label="---------------------------"></optgroup>
@@ -292,6 +293,14 @@
             parameters.Add(nameof(EditRemarksModal.Production), production);
             parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditPictureModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "emupictures")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(AddPicturesWithEmuModal.Production), production);
+            parameters.Add(nameof(AddPicturesWithEmuModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<AddPicturesWithEmuModal>("", parameters);
             await reference.Result;
         }
         else if (args.Value.ToString() == "downloads")

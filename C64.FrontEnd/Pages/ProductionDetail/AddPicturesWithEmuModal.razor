@@ -1,0 +1,210 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using C64.Services.ViceLoader
+@using System.Text
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IJSRuntime jsRuntime
+
+@inject IFileStorageService fileStorageService
+@inject IFallbackArchiveService archiveService
+
+@implements IDisposable
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Add pictures for {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        @if (state == "NoFiles")
+        {
+            <p>No files found, please add some downloads first!</p>
+        }
+
+        @if (state == "Emulation")
+        {
+            <div class="row mb-1">
+                <div class="col-6">
+                    <button class="btn btn-primary" @onclick="TakeScreenshot">Take Screenshot</button>
+                </div>
+                <div class="col-6 text-right">
+                    <button class="btn btn-primary" @onclick="SaveScreenshots">Save and add</button>
+                </div>
+            </div>
+            <div id="emularity-splash-screen"></div>
+            <canvas id="canvas" style="display: none; margin: 0 auto; background-color:#eeeeee" />
+
+            <div class="row">
+
+                @for (var i = 0; i < screenshots.Count; i++)
+                {
+                    var local = i;
+                    <div class="col-2 m-0 p-1">
+                        <img class="slidethumb w-100" src="@screenshots[local]" @onclick="@(() => RemoveScreenshot(screenshots[local]))" />
+                    </div>
+                }
+            </div>
+
+        }
+        @if (state == "ShowFileDropDown")
+        {
+            <p>This production contains multiple files. Please select the one you want to take screenshots from:</p>
+            <p>
+                <select class="form-control" @onchange="OnChangeSelectedFile">
+                    <option value="0">Select file:</option>
+                    @foreach (var file in Production.ProductionFiles.Where(p => p.Show))
+                    {
+                        <option value="@file.ProductionFileId">@file.Filename</option>
+                    }
+                </select>
+            </p>
+        }
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; } = new Production();
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private string state = "";
+
+    private ProductionFile productionFile;
+
+    private BootstrapModal bootstrapModal;
+
+    private List<string> screenshots = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var numberOfFiles = Production.ProductionFiles.Count(p => p.Show);
+
+        if (numberOfFiles == 0)
+            state = "NoFiles";
+        else if (numberOfFiles == 1)
+        {
+            state = "Emulation";
+            productionFile = Production.ProductionFiles.First(p => p.Show);
+        }
+        else
+        {
+            state = "ShowFileDropDown";
+        }
+
+    }
+
+    private async Task OnChangeSelectedFile(ChangeEventArgs changeEventArgs)
+    {
+        var selected = changeEventArgs.Value.ToString();
+
+        if (selected == "0")
+            return;
+
+        var selectedInt = int.Parse(selected);
+
+        state = "Emulation";
+        productionFile = Production.ProductionFiles.First(p => p.ProductionFileId == selectedInt);
+        await StartEmulator(productionFile);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (state == "Emulation")
+            await StartEmulator(productionFile);
+    }
+
+    private async Task TakeScreenshot()
+    {
+        var base64Img = await jsRuntime.InvokeAsync<string>("grabEmuScreenshot");
+        screenshots.Add(base64Img);
+    }
+
+    private void RemoveScreenshot(string toDelete)
+    {
+        screenshots.Remove(toDelete);
+    }
+
+    private async Task StartEmulator(ProductionFile productionFile)
+    {
+        // Concurrent connections otherwise, I don't know why (yet)
+        byte[] fileData = null;
+        try
+        {
+            fileData = await fileStorageService.GetFileContents("productionfiles", productionFile.Filename);
+        }
+        catch
+        {
+            try
+            {
+                System.Threading.Thread.Sleep(50);
+                fileData = await fileStorageService.GetFileContents("productionfiles", productionFile.Filename);
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        var viceLoader = new DefaultViceLoader(archiveService);
+        var emuParmeters = viceLoader.ProcessFile(productionFile.ProductionFileId, fileData);
+        await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, "0", "0", 1000, "0", "1");
+        await jsRuntime.InvokeVoidAsync("startEmu");
+    }
+
+    public void Dispose()
+    {
+        jsRuntime.InvokeVoidAsync("exitEmu");
+    }
+
+    private async Task SaveScreenshots()
+    {
+
+        var newValues = new List<ProductionPicture>();
+
+        foreach (var src in Production.ProductionPictures)
+        {
+            newValues.Add(new ProductionPicture { Filename = src.Filename, ProductionId = src.ProductionId, ProductionPictureId = src.ProductionPictureId, Show = src.Show, Size = src.Size, Sort = src.Sort });
+        }
+
+        for (var i = 0; i < screenshots.Count; i++)
+        {
+            var bytes = Convert.FromBase64String(screenshots[i].Substring(screenshots[i].IndexOf(",") + 1));
+
+            var resizedImage = bytes.ResizeImage(0.5);
+
+            var fileName = await fileStorageService.SaveFile(resizedImage, "productionPictures", CreateFilename());
+            newValues.Add(new ProductionPicture { Filename = fileName, ProductionId = Production.ProductionId, Show = true, Size = bytes.Length, Sort = i + 999 });
+        }
+
+        newValues.UpdateSort();
+
+        var productionHistory = HistoryHandlerFactory.Get(HistoryEntity.Production, unitOfWork, Production, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.RemoteIp());
+        productionHistory.AddHistory(HistoryEditProperty.ProductionPictures, newValues);
+
+        productionHistory.Apply();
+
+        await unitOfWork.Commit();
+        await bootstrapModal.Close();
+    }
+
+    private string CreateFilename()
+    {
+        var sb = new StringBuilder();
+        var firstGroup = Production.ProductionsGroups?.FirstOrDefault();
+
+        if (firstGroup != null)
+        {
+            sb.Append(firstGroup.Group.Name);
+        }
+
+        sb.Append("-");
+        sb.Append(Production.Name);
+        sb.Append(".png");
+
+        return sb.ToString().Replace(" ", "_");
+
+    }
+
+}
