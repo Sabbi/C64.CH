@@ -268,6 +268,6 @@ function clearData() {
 };
 
 function grabEmuScreenshot() {
-    var dataUrl = canvas.toDataURL()
+    var dataUrl = canvas.toDataURL("image/png");
     return dataUrl;
 }
