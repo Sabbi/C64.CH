@@ -72,6 +72,8 @@
 
     private IEnumerable<string> pendingMigrations = new List<string>();
 
+    private List<Production> productions = new();
+
     protected override async Task OnInitializedAsync()
     {
         canConnect = await context.Database.CanConnectAsync();
@@ -122,13 +124,15 @@
             exception = "Ups, something went wrong: " + e.Message;
             if (e.InnerException != null)
             {
-                exception += " / Inner exception: " + e.InnerException.Message;
+                exception += " / Inner exception: " + e.InnerException.Message + "/ " + e.InnerException.StackTrace;
             }
+
+            exception += " / " + e.StackTrace;
 
         }
         catch (Exception e)
         {
-            exception = "Ups, something went wrong: " + e.Message;
+            exception = "Ups, something went wrong: " + e.Message + e.StackTrace;
 
         }
 
@@ -141,7 +145,7 @@
         foreach (var filename in files)
         {
             var bytes = File.ReadAllBytes(filename);
-            var folder = Path.GetExtension(filename).Equals(".zip", StringComparison.OrdinalIgnoreCase) ? "productionfiles" : "productionimages";
+            var folder = Path.GetExtension(filename).Equals(".zip", StringComparison.OrdinalIgnoreCase) ? "productionfiles" : "productionpictures";
             await fileStorageService.SaveFile(bytes, folder, Path.GetFileName(filename));
         }
     }
@@ -268,6 +272,7 @@
         var group7 = new Group { GroupId = 7, Name = "Taboo" };
         var group8 = new Group { GroupId = 8, Name = "Haujobb" };
         var group9 = new Group { GroupId = 9, Name = "Academy" };
+        var group10 = new Group { GroupId = 10, Name = "The Bit Mechanik", Aka = "TBM" };
 
         await dbContext.Groups.AddAsync(group1);
         await dbContext.Groups.AddAsync(group2);
@@ -278,6 +283,7 @@
         await dbContext.Groups.AddAsync(group7);
         await dbContext.Groups.AddAsync(group8);
         await dbContext.Groups.AddAsync(group9);
+        await dbContext.Groups.AddAsync(group10);
 
     }
 
@@ -430,6 +436,12 @@
         };
 
         // Visuality
+
+        var production5Pictures = new List<ProductionPicture>();
+        production5Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-Visuality.png", Sort = 0, Show = true });
+        production5Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-Visuality-de7.png", Sort = 1, Show = true });
+        production5Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-Visuality-eb2.png", Sort = 2, Show = true });
+
         var production5 = new Production
         {
             ProductionId = 5,
@@ -441,30 +453,219 @@
             SubCategory = SubCategory.Demo,
             SubmitterUserId = userIds[3],
             VideoType = VideoType.Pal,
-            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 5 } }
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 5 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 5, Filename = "92.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production5Pictures
         };
 
-        var productions = new List<Production>();
+        // Access Denied
+
+        var production6Pictures = new List<ProductionPicture>();
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied.png", Sort = 0, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-8fb.png", Sort = 1, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-75f.png", Sort = 2, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-b42.png", Sort = 3, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-f61.png", Sort = 4, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-202.png", Sort = 5, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-5b2.png", Sort = 6, Show = true });
+
+        var production6 = new Production
+        {
+            ProductionId = 6,
+            Name = "Access Denied",
+            Added = new DateTime(2004, 4, 4),
+            ReleaseDate = new DateTime(1994, 12, 30),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[4],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 6 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 6, Filename = "ad.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production6Pictures
+        };
+
+        // Altered States 50%
+
+        var production7Pictures = new List<ProductionPicture>();
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states001.jpg", Sort = 0, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50001.jpg", Sort = 1, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50002.jpg", Sort = 2, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50003.jpg", Sort = 3, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50004.jpg", Sort = 4, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50005.jpg", Sort = 5, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50006.jpg", Sort = 6, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50007.jpg", Sort = 7, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50008.jpg", Sort = 8, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50009.jpg", Sort = 9, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50010.jpg", Sort = 10, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50011.jpg", Sort = 11, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50012.jpg", Sort = 12, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50013.jpg", Sort = 13, Show = true });
+
+        var production7 = new Production
+        {
+            ProductionId = 7,
+            Name = "Altered States 50%",
+            Added = new DateTime(2004, 4, 4),
+            ReleaseDate = new DateTime(1994, 12, 1),
+            ReleaseDateType = DateType.YearMonth,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[4],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 7 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 7, Filename = "altstd.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production7Pictures
+        };
+
+        // Amiga Saga II
+
+        var production9Pictures = new List<ProductionPicture>();
+        production9Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-AmigaSaga_II.png", Sort = 0, Show = true });
+        production9Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-AmigaSaga_II-f42.png", Sort = 1, Show = true });
+        production9Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-AmigaSaga_II-617.png", Sort = 2, Show = true });
+
+        var production9 = new Production
+        {
+            ProductionId = 9,
+            Name = "Amiga Saga II",
+            Added = new DateTime(2004, 4, 5),
+            ReleaseDate = new DateTime(1992,10,27),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[5],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 5 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 9, Filename = "amiganot.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production9Pictures
+        };
+
+        // Art Bizarre
+
+        var production10Pictures = new List<ProductionPicture>();
+        production10Pictures.Add(new ProductionPicture { Filename = "Haujobb-Art_Bizzare.png", Sort = 0, Show = true });
+        production10Pictures.Add(new ProductionPicture { Filename = "Haujobb-Art_Bizzare-ff0.png", Sort = 1, Show = true });
+        production10Pictures.Add(new ProductionPicture { Filename = "Haujobb-Art_Bizzare-3bc.png", Sort = 2, Show = true });
+        production10Pictures.Add(new ProductionPicture { Filename = "Haujobb-Art_Bizzare-b56.png", Sort = 3, Show = true });
+
+        var production10 = new Production
+        {
+            ProductionId = 10,
+            Name = "Arz Bizarre",
+            Added = new DateTime(2004, 4, 5),
+            ReleaseDate = new DateTime(1997, 11, 27),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[5],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 8 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 10, Filename = "artbiz.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production10Pictures
+        };
+
+        // Cafe Odd
+
+        var production11Pictures = new List<ProductionPicture>();
+        production11Pictures.Add(new ProductionPicture { Filename = "Reflex-Cafe_Odd.png", Sort = 0, Show = true });
+        production11Pictures.Add(new ProductionPicture { Filename = "Reflex-Cafe_Odd-fa6.png", Sort = 1, Show = true });
+        production11Pictures.Add(new ProductionPicture { Filename = "Reflex-Cafe_Odd-2bf.png", Sort = 2, Show = true });
+        production11Pictures.Add(new ProductionPicture { Filename = "Reflex-Cafe_Odd-32b.png", Sort = 3, Show = true });
+
+        var production11 = new Production
+        {
+            ProductionId = 11,
+            Name = "Cafe Odd",
+            Added = new DateTime(2004, 4, 5),
+            ReleaseDate = new DateTime(1993, 12, 29),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[5],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 6 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 11, Filename = "cafe.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production11Pictures
+        };
+
+        // Citizen of Chernobyl
+
+        var production12Pictures = new List<ProductionPicture>();
+        production12Pictures.Add(new ProductionPicture { Filename = "Academy-Citizen_of_Chernobyl.png", Sort = 0, Show = true });
+        production12Pictures.Add(new ProductionPicture { Filename = "Academy-Citizen_of_Chernobyl-a12.png", Sort = 1, Show = true });
+
+        var production12 = new Production
+        {
+            ProductionId = 12,
+            Name = "Citizen of Chernobyl",
+            Added = new DateTime(2004, 4, 6),
+            ReleaseDate = new DateTime(1988,1,1),
+            ReleaseDateType = DateType.Year,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[6],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 9 }, new ProductionsGroups { GroupId = 10 }, new ProductionsGroups { GroupId = 4 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 12, Filename = "citizen.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production12Pictures
+        };
+
+        // Contraflow
+
+        var production14Pictures = new List<ProductionPicture>();
+        production14Pictures.Add(new ProductionPicture { Filename = "cosine-contra001.jpg", Sort = 0, Show = true });
+        production14Pictures.Add(new ProductionPicture { Filename = "cosine-contra002.jpg", Sort = 1, Show = true });
+
+        var production14 = new Production
+        {
+            ProductionId = 14,
+            Name = "Contraflow",
+            Added = new DateTime(2004, 4, 8),
+            ReleaseDate = new DateTime(1995, 4, 23),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[6],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 4 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 14, Filename = "contra.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production14Pictures
+        };
+
+        productions = new List<Production>();
         productions.Add(production1);
         productions.Add(production2);
         productions.Add(production3);
         productions.Add(production4);
-        //  productions.Add(production5);
+        productions.Add(production5);
+        productions.Add(production6);
+        productions.Add(production7);
+        productions.Add(production9);
+        productions.Add(production10);
+        productions.Add(production11);
+        productions.Add(production12);
+        productions.Add(production14);
 
         var rnd = new Random();
         for (var i = 0; i < productions.Count * 150; i++)
         {
-            var download = new Download
+            var production = productions[rnd.Next(0, productions.Count)];
+
+            if (production.ProductionFiles.Any())
             {
-                DownloadedOn = DateTime.Now.AddDays(rnd.Next(-365, 0)),
-                Ip = RandomIp(),
-                UserId = userIds.Skip(rnd.Next(userIds.Count)).FirstOrDefault(),
-                ProductionFileId = rnd.Next(1, productions.Count + 1),
-            };
+                var download = new Download
+                {
+                    DownloadedOn = DateTime.Now.AddDays(rnd.Next(-365, 0)),
+                    Ip = RandomIp(),
+                    UserId = userIds.Skip(rnd.Next(userIds.Count)).FirstOrDefault(),
+                    ProductionFileId = production.ProductionId,
+                };
 
-            productions[download.ProductionFileId - 1].Downloads++;
-
-            await dbContext.Downloads.AddAsync(download);
+                production.ProductionFiles.FirstOrDefault().Downloads++;
+                await dbContext.Downloads.AddAsync(download);
+            }
         }
 
         await dbContext.Productions.AddRangeAsync(productions);
@@ -487,14 +688,14 @@
 
     private async Task AddRatings()
     {
-        var productions = 4;
+        var numberOfProductions = productions.Count();
         var rnd = new Random();
-        for (var i = 0; i < productions * 6; i++)
+        for (var i = 0; i < numberOfProductions * 6; i++)
         {
             var rating = new Rating
             {
                 Ip = RandomIp(),
-                ProductionId = rnd.Next(1, productions + 1),
+                ProductionId = productions[rnd.Next(0, numberOfProductions)].ProductionId,
                 RatedAt = DateTime.Now.AddDays(rnd.Next(-365, 0)),
                 UserId = userIds.Skip(rnd.Next(userIds.Count)).FirstOrDefault(),
                 Value = rnd.Next(1, 11)
@@ -506,9 +707,9 @@
 
     private async Task AddComments()
     {
-        var productions = 4;
+        var numberOfProductions = productions.Count();
         var rnd = new Random();
-        for (var i = 0; i < productions * 5; i++)
+        for (var i = 0; i < numberOfProductions * 5; i++)
         {
 
             var randomStuff = GetRandomStuff();
@@ -517,7 +718,7 @@
             {
                 CommentedAt = DateTime.Now.AddDays(rnd.Next(-365, 0)),
                 Ip = RandomIp(),
-                ProductionId = rnd.Next(1, productions + 1),
+                ProductionId = productions[rnd.Next(0, numberOfProductions)].ProductionId,
                 UserId = userIds.Skip(rnd.Next(userIds.Count)).FirstOrDefault(),
                 Text = randomStuff.Text
             };
