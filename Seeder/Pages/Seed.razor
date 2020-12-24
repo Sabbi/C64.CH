@@ -1,0 +1,789 @@
+﻿@page "/seed"
+
+@using System.Net
+@using System.Text.Json
+@using System.IO
+
+@inject ApplicationDbContext context
+@inject NavigationManager navigationManager
+
+@inject UserManager<User> userManager
+@inject RoleManager<IdentityRole> roleManager
+
+@inject ApplicationDbContext dbContext
+
+@inject IFileStorageService fileStorageService
+
+<h1>Let's seed some data!</h1>
+<div class="row">
+    <div class="col-md-6">
+        @if (!isSeeding)
+        {
+            <EditForm Model="model" OnValidSubmit="SubmitForm">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <input class="form-control" placeholder="Administrator handle" @bind-value="@model.AdminHandle" />
+                    <ValidationMessage For="@(() => model.AdminHandle)" />
+                </div>
+                <div class="form-group">
+                    <input class="form-control" placeholder="Administrator EMail" @bind-value="@model.AdminEmail" />
+                    <ValidationMessage For="@(() => model.AdminEmail)" />
+                </div>
+                <div class="form-group">
+                    <input class="form-control" placeholder="Administrator Password" type="password" @bind-value="@model.AdminPassword" />
+                    <ValidationMessage For="@(() => model.AdminPassword)" />
+                </div>
+                <div class="form-group">
+                    <input class="form-control" placeholder="Administrator Password (Repeat)" type="password" @bind-value="@model.AdminPasswordRepeat" />
+                    <ValidationMessage For="@(() => model.AdminPasswordRepeat)" />
+                </div>
+                <button class="btn btn-primary" type="submit">Create Adminuser and seed data</button>
+            </EditForm>
+        }
+        else if (onNow == "Done")
+        {
+            <p>All Done! Please change your start project to C64.FrontEnd, update the appsettings.&lt;Development&gt;.json there, and you're ready to go!</p>
+        }
+        else
+        {
+            <p>Current Task: @onNow</p>
+            <p>@exception</p>
+        }
+    </div>
+</div>
+@code{
+
+    private string adminName;
+    private string adminEmail;
+    private string adminPassword;
+
+    private bool isSeeding;
+    private string onNow = "";
+    private string exception = "";
+
+    private bool canConnect;
+    private bool applyButtonDisabled = false;
+
+    private List<string> userIds = new List<string>();
+
+    private AdminModel model = new AdminModel();
+
+    private List<SeedTask> SeedTasks = new List<SeedTask>();
+
+    private IEnumerable<string> pendingMigrations = new List<string>();
+
+    private List<Production> productions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        canConnect = await context.Database.CanConnectAsync();
+
+        if (canConnect)
+            pendingMigrations = context.Database.GetPendingMigrations();
+
+        if (!canConnect || pendingMigrations.Any())
+            navigationManager.NavigateTo("/", true);
+
+        SeedTasks.Add(new SeedTask { Action = AddRoles, ActionName = "Add roles" });
+        SeedTasks.Add(new SeedTask { Action = AddAdminUser, ActionName = "Add admin user" });
+        SeedTasks.Add(new SeedTask { Action = AddUsers, ActionName = "Add some users" });
+        SeedTasks.Add(new SeedTask { Action = AddFiles, ActionName = "Add pictures and downloads" });
+        SeedTasks.Add(new SeedTask { Action = AddPartyCategories, ActionName = "Add party categories" });
+        SeedTasks.Add(new SeedTask { Action = AddSceners, ActionName = "Add sceners" });
+        SeedTasks.Add(new SeedTask { Action = AddGroups, ActionName = "Add groups" });
+        SeedTasks.Add(new SeedTask { Action = AddProductions, ActionName = "Add productions" });
+        SeedTasks.Add(new SeedTask { Action = AddParties, ActionName = "Add parties" });
+        SeedTasks.Add(new SeedTask { Action = AddPartiesToProductions, ActionName = "Add parties to productions" });
+        SeedTasks.Add(new SeedTask { Action = AddRatings, ActionName = "Add ratings" });
+        SeedTasks.Add(new SeedTask { Action = AddComments, ActionName = "Add some comments" });
+        SeedTasks.Add(new SeedTask { Action = AddGuestbook, ActionName = "Add some guestbook enteries" });
+        SeedTasks.Add(new SeedTask { Action = AddLinks, ActionName = "Add some links" });
+        SeedTasks.Add(new SeedTask { Action = AddSiteNews, ActionName = "Add some sitenews" });
+        SeedTasks.Add(new SeedTask { Action = AddTools, ActionName = "Add some tools" });
+        SeedTasks.Add(new SeedTask { Action = CommitAll, ActionName = "Saving changes" });
+    }
+
+    private async Task SubmitForm()
+    {
+        try
+        {
+            isSeeding = true;
+
+            foreach (var seedTask in SeedTasks)
+            {
+                onNow = seedTask.ActionName + "...";
+                StateHasChanged();
+                await seedTask.Action.Invoke();
+            }
+
+            onNow = "Done";
+            StateHasChanged();
+        }
+        catch (DbUpdateException e)
+        {
+            exception = "Ups, something went wrong: " + e.Message;
+            if (e.InnerException != null)
+            {
+                exception += " / Inner exception: " + e.InnerException.Message + "/ " + e.InnerException.StackTrace;
+            }
+
+            exception += " / " + e.StackTrace;
+
+        }
+        catch (Exception e)
+        {
+            exception = "Ups, something went wrong: " + e.Message + e.StackTrace;
+
+        }
+
+    }
+
+    private async Task AddFiles()
+    {
+        var files = Directory.GetFiles("Data/");
+
+        foreach (var filename in files)
+        {
+            var bytes = File.ReadAllBytes(filename);
+            var folder = Path.GetExtension(filename).Equals(".zip", StringComparison.OrdinalIgnoreCase) ? "productionfiles" : "productionpictures";
+            await fileStorageService.SaveFile(bytes, folder, Path.GetFileName(filename));
+        }
+    }
+
+    private async Task AddPartyCategories()
+    {
+        var categories = new List<PartyCategory>();
+
+        categories.Add(new PartyCategory { PartyCategoryId = 1, Name = "256b Intro", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 2, Name = "4kb Intro", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 3, Name = "Alternative Demo", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 4, Name = "Coop-demo", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 5, Name = "Demo", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 6, Name = "Fast Intro", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 7, Name = "Fastcompo", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 8, Name = "Game", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 9, Name = "Graphics", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 10, Name = "Intro", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 11, Name = "Logo", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 12, Name = "Mixed", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 13, Name = "Music", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 14, Name = "Oldschool Demo", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 15, Name = "PC", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 16, Name = "Realtime", Selectable = true });
+        categories.Add(new PartyCategory { PartyCategoryId = 17, Name = "Wild", Selectable = true });
+
+        await dbContext.PartyCategories.AddRangeAsync(categories);
+    }
+
+    private async Task AddSceners()
+    {
+        // Second Reality
+        var scener1 = new Scener { ScenerId = 1, Handle = "AEG", Aka = "Aus Erfahung Gut", CountryId = "DE", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Graphician }, new ScenersJobs { Job = Job.Musician }, new ScenersJobs { Job = Job.Organizer } } };
+        var scener2 = new Scener { ScenerId = 2, Handle = "Dcp", CountryId = "DE", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder } } };
+        var scener3 = new Scener { ScenerId = 3, Handle = "kb", Aka = "Kebby", CountryId = "DE", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Musician }, new ScenersJobs { Job = Job.Organizer } } };
+        var scener4 = new Scener { ScenerId = 4, Handle = "Idefix", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Graphician }, new ScenersJobs { Job = Job.Musician } } };
+        var scener5 = new Scener { ScenerId = 5, Handle = "Axis", CountryId = "DE", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.MoralSupport } } };
+
+        // 3D Highlight
+        var scener6 = new Scener { ScenerId = 6, Handle = "Madrom", CountryId = "DE", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder } } };
+        var scener7 = new Scener { ScenerId = 7, Handle = "Gregfeel", CountryId = "PL", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Musician } } };
+        var scener8 = new Scener { ScenerId = 8, Handle = "Wacek", CountryId = "PL", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Organizer }, new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Graphician }, new ScenersJobs { Job = Job.Musician }, new ScenersJobs { Job = Job.Organizer } } };
+        var scener9 = new Scener { ScenerId = 9, Handle = "ALG", CountryId = "PL", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Graphician } } };
+        var scener10 = new Scener { ScenerId = 10, Handle = "Katon", CountryId = "PL", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Graphician } } };
+        var scener11 = new Scener { ScenerId = 11, Handle = "Leo", CountryId = "PL", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Graphician } } };
+        var scener12 = new Scener { ScenerId = 12, Handle = "Nazgul", CountryId = "PL", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Graphician } } };
+        var scener13 = new Scener { ScenerId = 13, Handle = "Sebaloz", CountryId = "PL", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Graphician } } };
+
+        // 3rd Stone from the sun
+        var scener14 = new Scener { ScenerId = 14, Handle = "JFK", Aka = "JeiEffKei", CountryId = "NO", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Graphician } } };
+        var scener15 = new Scener { ScenerId = 15, Handle = "Killsquad", CountryId = "NO", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder } } };
+        var scener16 = new Scener { ScenerId = 16, Handle = "Groms", CountryId = "NO", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Musician } } };
+        var scener17 = new Scener { ScenerId = 17, Handle = "Kravin", CountryId = "SE", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Musician } } };
+        var scener18 = new Scener { ScenerId = 18, Handle = "Mixer", CountryId = "FI", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Musician } } };
+        var scener19 = new Scener { ScenerId = 19, Handle = "TDM", CountryId = "SE", Aka = "The Dungeon Master", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Musician } } };
+        var scener20 = new Scener { ScenerId = 20, Handle = "Coroner", CountryId = "NO", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Graphician } } };
+        var scener21 = new Scener { ScenerId = 21, Handle = "Marius Skogheim", RealName = "Marius Skogheim", CountryId = "NO", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Graphician }, new ScenersJobs { Job = Job.Musician } } };
+        var scener22 = new Scener { ScenerId = 22, Handle = "King Fisher", Aka = "King of Must", CountryId = "SE", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Webmaster } } };
+
+        // 4K Party Intro
+        var scener23 = new Scener { ScenerId = 23, Handle = "The Magic Roundabout", Aka = "TMR", CountryId = "GB", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Webmaster }, new ScenersJobs { Job = Job.Graphician }, new ScenersJobs { Job = Job.Musician }, new ScenersJobs { Job = Job.Organizer } } };
+        var scener24 = new Scener { ScenerId = 24, Handle = "Crack", CountryId = "GB", Jobs = new ScenersJobs[] { new ScenersJobs { Job = Job.Coder }, new ScenersJobs { Job = Job.Graphician }, new ScenersJobs { Job = Job.Musician } } };
+
+        await dbContext.Sceners.AddAsync(scener1);
+        await dbContext.Sceners.AddAsync(scener2);
+        await dbContext.Sceners.AddAsync(scener3);
+        await dbContext.Sceners.AddAsync(scener4);
+        await dbContext.Sceners.AddAsync(scener5);
+        await dbContext.Sceners.AddAsync(scener6);
+        await dbContext.Sceners.AddAsync(scener7);
+        await dbContext.Sceners.AddAsync(scener8);
+        await dbContext.Sceners.AddAsync(scener9);
+        await dbContext.Sceners.AddAsync(scener10);
+        await dbContext.Sceners.AddAsync(scener11);
+        await dbContext.Sceners.AddAsync(scener12);
+        await dbContext.Sceners.AddAsync(scener13);
+        await dbContext.Sceners.AddAsync(scener14);
+        await dbContext.Sceners.AddAsync(scener15);
+        await dbContext.Sceners.AddAsync(scener16);
+        await dbContext.Sceners.AddAsync(scener17);
+        await dbContext.Sceners.AddAsync(scener18);
+        await dbContext.Sceners.AddAsync(scener19);
+        await dbContext.Sceners.AddAsync(scener20);
+        await dbContext.Sceners.AddAsync(scener21);
+        await dbContext.Sceners.AddAsync(scener22);
+        await dbContext.Sceners.AddAsync(scener23);
+        await dbContext.Sceners.AddAsync(scener24);
+    }
+
+    private async Task AddGroups()
+    {
+        // Smash Designs
+        var scenersgroups11 = new ScenersGroups { ScenersGroupsId = 1, GroupId = 1, ScenerId = 1, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.Graphician }, new ScenerGroupJob { Job = Job.Musician }, new ScenerGroupJob { Job = Job.Organizer } } };
+        var scenersgroups12 = new ScenersGroups { ScenersGroupsId = 2, GroupId = 1, ScenerId = 2, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder } } };
+        var scenersgroups13 = new ScenersGroups { ScenersGroupsId = 3, GroupId = 1, ScenerId = 3, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.Musician }, new ScenerGroupJob { Job = Job.Organizer } } };
+        var scenersgroups14 = new ScenersGroups { ScenersGroupsId = 4, GroupId = 1, ScenerId = 4, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Graphician }, new ScenerGroupJob { Job = Job.Musician } } };
+        var scenersgroups15 = new ScenersGroups { ScenersGroupsId = 5, GroupId = 1, ScenerId = 5, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.MoralSupport } } };
+        var group1 = new Group { GroupId = 1, Name = "Smash Designs", CountryId = "DE", Added = DateTime.Now, AddedById = userIds[0], Url = "http://www.smash-designs.de", ScenersGroups = new[] { scenersgroups11, scenersgroups12, scenersgroups13, scenersgroups14, scenersgroups15 } };
+
+        // Lepsi
+        var scenersgroups21 = new ScenersGroups { ScenersGroupsId = 6, GroupId = 2, ScenerId = 6, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder } } };
+        var scenersgroups22 = new ScenersGroups { ScenersGroupsId = 7, GroupId = 2, ScenerId = 7, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Musician } } };
+        var scenersgroups23 = new ScenersGroups { ScenersGroupsId = 8, GroupId = 2, ScenerId = 8, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Musician } } };
+        var scenersgroups24 = new ScenersGroups { ScenersGroupsId = 9, GroupId = 2, ScenerId = 10, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Graphician } } };
+        var scenersgroups25 = new ScenersGroups { ScenersGroupsId = 10, GroupId = 2, ScenerId = 12, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Graphician } } };
+        var scenersgroups26 = new ScenersGroups { ScenersGroupsId = 11, GroupId = 2, ScenerId = 13, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.Graphician }, new ScenerGroupJob { Job = Job.Organizer } } };
+        var group2 = new Group { GroupId = 2, Name = "Lepsi Development", Aka = "LepsiDe", FoundedDate = new DateTime(1994, 7, 1), FoundedDateType = DateType.YearMonth, Added = DateTime.Now, AddedById = userIds[2], CountryId = "PL", ScenersGroups = new[] { scenersgroups21, scenersgroups22, scenersgroups23, scenersgroups24, scenersgroups25, scenersgroups26 } };
+
+        // Triad
+        var scenersgroups31 = new ScenersGroups { ScenersGroupsId = 12, GroupId = 3, ScenerId = 14, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.Graphician } } };
+        var scenersgroups32 = new ScenersGroups { ScenersGroupsId = 13, GroupId = 3, ScenerId = 15, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder } } };
+        var scenersgroups33 = new ScenersGroups { ScenersGroupsId = 14, GroupId = 3, ScenerId = 17, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.Musician } } };
+        var scenersgroups34 = new ScenersGroups { ScenersGroupsId = 15, GroupId = 3, ScenerId = 19, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Musician } } };
+        var scenersgroups35 = new ScenersGroups { ScenersGroupsId = 16, GroupId = 3, ScenerId = 20, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Graphician } } };
+        var scenersgroups36 = new ScenersGroups { ScenersGroupsId = 17, GroupId = 3, ScenerId = 22, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.Webmaster } } };
+        var group3 = new Group { GroupId = 3, Name = "Triad", FoundedDate = new DateTime(1986, 7, 28), FoundedDateType = DateType.YearMonthDay, Added = DateTime.Now, AddedById = userIds[3], CountryId = "SE", ScenersGroups = new[] { scenersgroups31, scenersgroups32, scenersgroups33, scenersgroups34, scenersgroups35, scenersgroups36 } };
+
+        // Cosine
+        var scenersgroups41 = new ScenersGroups { ScenersGroupsId = 18, GroupId = 4, ScenerId = 23, ScenerGroupJobs = new ScenerGroupJob[] { new ScenerGroupJob { Job = Job.Coder }, new ScenerGroupJob { Job = Job.Graphician }, new ScenerGroupJob { Job = Job.Musician }, new ScenerGroupJob { Job = Job.Organizer }, new ScenerGroupJob { Job = Job.Webmaster } } };
+        var group4 = new Group { GroupId = 4, Name = "Cosine", FoundedDate = new DateTime(1986), FoundedDateType = DateType.Year, Added = DateTime.Now, AddedById = userIds[0], CountryId = "GB", ScenersGroups = new[] { scenersgroups41 } };
+
+        var group5 = new Group { GroupId = 5, Name = "Visual Reality" };
+        var group6 = new Group { GroupId = 6, Name = "Reflex" };
+        var group7 = new Group { GroupId = 7, Name = "Taboo" };
+        var group8 = new Group { GroupId = 8, Name = "Haujobb" };
+        var group9 = new Group { GroupId = 9, Name = "Academy" };
+        var group10 = new Group { GroupId = 10, Name = "The Bit Mechanik", Aka = "TBM" };
+
+        await dbContext.Groups.AddAsync(group1);
+        await dbContext.Groups.AddAsync(group2);
+        await dbContext.Groups.AddAsync(group3);
+        await dbContext.Groups.AddAsync(group4);
+        await dbContext.Groups.AddAsync(group5);
+        await dbContext.Groups.AddAsync(group6);
+        await dbContext.Groups.AddAsync(group7);
+        await dbContext.Groups.AddAsync(group8);
+        await dbContext.Groups.AddAsync(group9);
+        await dbContext.Groups.AddAsync(group10);
+
+    }
+
+    private async Task AddProductions()
+    {
+        // Second Reality
+        var production1Credits = new List<ProductionCredit>();
+        production1Credits.Add(new ProductionCredit { Credit = Credit.Code, ScenerId = 1 });
+        production1Credits.Add(new ProductionCredit { Credit = Credit.Code, ScenerId = 2 });
+        production1Credits.Add(new ProductionCredit { Credit = Credit.Music, ScenerId = 3 });
+        production1Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 1 });
+        production1Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 4 });
+        production1Credits.Add(new ProductionCredit { Credit = Credit.Loader, ScenerId = 2 });
+        production1Credits.Add(new ProductionCredit { Credit = Credit.Unspecified, ScenerId = 5 });
+
+        var production1Pictures = new List<ProductionPicture>();
+        production1Pictures.Add(new ProductionPicture { Filename = "smash_designs-2nd_reality001.jpg", Sort = 0, Show = true });
+        production1Pictures.Add(new ProductionPicture { Filename = "smash_designs-2nd_reality002.jpg", Sort = 1, Show = true });
+        production1Pictures.Add(new ProductionPicture { Filename = "smash_designs-2nd_reality003.jpg", Sort = 2, Show = true });
+        production1Pictures.Add(new ProductionPicture { Filename = "smash_designs-2nd_reality004.jpg", Sort = 3, Show = true });
+        production1Pictures.Add(new ProductionPicture { Filename = "smash_designs-2nd_reality005.jpg", Sort = 4, Show = true });
+        production1Pictures.Add(new ProductionPicture { Filename = "smash_designs-2nd_reality006.jpg", Sort = 5, Show = true });
+        production1Pictures.Add(new ProductionPicture { Filename = "smash_designs-2nd_reality007.jpg", Sort = 6, Show = true });
+        production1Pictures.Add(new ProductionPicture { Filename = "smash_designs-2nd_reality008.jpg", Sort = 7, Show = true });
+
+        var production1 = new Production
+        {
+            ProductionId = 1,
+            Name = "Second Reality",
+            Added = new DateTime(1998, 1, 1),
+            ReleaseDate = new DateTime(1997, 12, 29),
+            ReleaseDateType = DateType.YearMonthDay,
+            Aka = "2nd Reality",
+            Platform = Platform.C64,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[2],
+            VideoType = VideoType.Pal,
+            UserId = userIds[2],
+            Remarks = "Sabbi's favorite ;)",
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 1 } },
+            ProductionCredits = production1Credits,
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 1, Filename = "2ndreality.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production1Pictures,
+            ProductionVideos = new List<ProductionVideo> { new ProductionVideo { Show = true, Sort = 0, VideoId = "W-Crwct7U0c", VideoProvider = VideoProvider.Youtube } }
+        };
+
+        // 3D Highlight
+        var production2Credits = new List<ProductionCredit>();
+        production2Credits.Add(new ProductionCredit { Credit = Credit.Code, ScenerId = 6 });
+        production2Credits.Add(new ProductionCredit { Credit = Credit.Music, ScenerId = 7 });
+        production2Credits.Add(new ProductionCredit { Credit = Credit.Music, ScenerId = 8 });
+        production2Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 9 });
+        production2Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 10 });
+        production2Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 11 });
+        production2Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 12 });
+        production2Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 13 });
+
+        var production2Pictures = new List<ProductionPicture>();
+        production2Pictures.Add(new ProductionPicture { Filename = "Lepsi_Development-3D_Highlight.png", Sort = 0, Show = true });
+
+        var production2 = new Production
+        {
+            ProductionId = 2,
+            Name = "3D Highlight",
+            Added = new DateTime(1998, 1, 2),
+            ReleaseDate = new DateTime(1997, 8, 1),
+            ReleaseDateType = DateType.YearMonth,
+            Platform = Platform.C64,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[2],
+            VideoType = VideoType.Pal,
+            UserId = userIds[2],
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 2 } },
+            ProductionCredits = production2Credits,
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 2, Filename = "3dhigh.zip", Size = 10000, Show = true, Sort = 0 } },
+            ProductionPictures = production2Pictures
+        };
+
+        // 3rd Stone From The Sun
+        var production3Credits = new List<ProductionCredit>();
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Code, ScenerId = 14 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Code, ScenerId = 15 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Music, ScenerId = 16 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Music, ScenerId = 17 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Music, ScenerId = 18 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Music, ScenerId = 19 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 20 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 14 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 21 });
+        production3Credits.Add(new ProductionCredit { Credit = Credit.Loader, ScenerId = 22 });
+
+        var production3Pictures = new List<ProductionPicture>();
+        production3Pictures.Add(new ProductionPicture { Filename = "triad-3rd_stone_from_the_sun001.jpg", Sort = 0, Show = true });
+        production3Pictures.Add(new ProductionPicture { Filename = "triad-3rd_stone_from_the_sun002.jpg", Sort = 1, Show = true });
+        production3Pictures.Add(new ProductionPicture { Filename = "triad-3rd_stone_from_the_sun003.jpg", Sort = 2, Show = true });
+        production3Pictures.Add(new ProductionPicture { Filename = "triad-3rd_stone_from_the_sun004.jpg", Sort = 3, Show = true });
+        production3Pictures.Add(new ProductionPicture { Filename = "triad-3rd_stone_from_the_sun005.jpg", Sort = 4, Show = true });
+        production3Pictures.Add(new ProductionPicture { Filename = "triad-3rd_stone_from_the_sun006.jpg", Sort = 5, Show = true });
+        production3Pictures.Add(new ProductionPicture { Filename = "triad-3rd_stone_from_the_sun007.jpg", Sort = 6, Show = true });
+        production3Pictures.Add(new ProductionPicture { Filename = "triad-3rd_stone_from_the_sun008.jpg", Sort = 7, Show = true });
+
+        var production3 = new Production
+        {
+            ProductionId = 3,
+            Name = "3rd Stone From The Sun",
+            Added = new DateTime(2001, 6, 2),
+            ReleaseDate = new DateTime(1992, 7, 2),
+            ReleaseDateType = DateType.YearMonthDay,
+            Platform = Platform.C64,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[0],
+            VideoType = VideoType.Pal,
+            UserId = userIds[2],
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 3 } },
+            ProductionCredits = production3Credits,
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 3, Filename = "3rdstone.zip", Size = 18000, Show = true, Sort = 0 } },
+            ProductionPictures = production3Pictures,
+            ProductionVideos = new List<ProductionVideo> { new ProductionVideo { Show = true, Sort = 0, VideoId = "XuABbBZQPpI", VideoProvider = VideoProvider.Youtube } }
+        };
+
+        // 4k Party Intro
+        var production4Credits = new List<ProductionCredit>();
+        production4Credits.Add(new ProductionCredit { Credit = Credit.Code, ScenerId = 23 });
+        production4Credits.Add(new ProductionCredit { Credit = Credit.Graphics, ScenerId = 23 });
+        production4Credits.Add(new ProductionCredit { Credit = Credit.Music, ScenerId = 24 });
+
+        var production4Pictures = new List<ProductionPicture>();
+        production4Pictures.Add(new ProductionPicture { Filename = "Cosine-4k_Party_Intro.png", Sort = 0, Show = true });
+
+        var production4 = new Production
+        {
+            ProductionId = 4,
+            Name = "4k Party Intro",
+            Added = new DateTime(2002, 6, 2),
+            ReleaseDate = new DateTime(1996),
+            ReleaseDateType = DateType.Year,
+            Platform = Platform.C64,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Intro4k,
+            SubmitterUserId = userIds[0],
+            VideoType = VideoType.Pal,
+            UserId = userIds[2],
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 4 } },
+            ProductionCredits = production4Credits,
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 4, Filename = "4kparty.zip", Size = 3000, Show = true, Sort = 0 } },
+            ProductionPictures = production4Pictures,
+        };
+
+        // Visuality
+
+        var production5Pictures = new List<ProductionPicture>();
+        production5Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-Visuality.png", Sort = 0, Show = true });
+        production5Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-Visuality-de7.png", Sort = 1, Show = true });
+        production5Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-Visuality-eb2.png", Sort = 2, Show = true });
+
+        var production5 = new Production
+        {
+            ProductionId = 5,
+            Name = "Visuality",
+            Added = new DateTime(2003, 12, 12),
+            ReleaseDate = new DateTime(1992),
+            ReleaseDateType = DateType.Year,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[3],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 5 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 5, Filename = "92.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production5Pictures
+        };
+
+        // Access Denied
+
+        var production6Pictures = new List<ProductionPicture>();
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied.png", Sort = 0, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-8fb.png", Sort = 1, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-75f.png", Sort = 2, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-b42.png", Sort = 3, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-f61.png", Sort = 4, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-202.png", Sort = 5, Show = true });
+        production6Pictures.Add(new ProductionPicture { Filename = "Reflex-Access_Denied-5b2.png", Sort = 6, Show = true });
+
+        var production6 = new Production
+        {
+            ProductionId = 6,
+            Name = "Access Denied",
+            Added = new DateTime(2004, 4, 4),
+            ReleaseDate = new DateTime(1994, 12, 30),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[4],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 6 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 6, Filename = "ad.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production6Pictures
+        };
+
+        // Altered States 50%
+
+        var production7Pictures = new List<ProductionPicture>();
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states001.jpg", Sort = 0, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50001.jpg", Sort = 1, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50002.jpg", Sort = 2, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50003.jpg", Sort = 3, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50004.jpg", Sort = 4, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50005.jpg", Sort = 5, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50006.jpg", Sort = 6, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50007.jpg", Sort = 7, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50008.jpg", Sort = 8, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50009.jpg", Sort = 9, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50010.jpg", Sort = 10, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50011.jpg", Sort = 11, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50012.jpg", Sort = 12, Show = true });
+        production7Pictures.Add(new ProductionPicture { Filename = "taboo-altered_states_50013.jpg", Sort = 13, Show = true });
+
+        var production7 = new Production
+        {
+            ProductionId = 7,
+            Name = "Altered States 50%",
+            Added = new DateTime(2004, 4, 4),
+            ReleaseDate = new DateTime(1994, 12, 1),
+            ReleaseDateType = DateType.YearMonth,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[4],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 7 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 7, Filename = "altstd.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production7Pictures
+        };
+
+        // Amiga Saga II
+
+        var production9Pictures = new List<ProductionPicture>();
+        production9Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-AmigaSaga_II.png", Sort = 0, Show = true });
+        production9Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-AmigaSaga_II-f42.png", Sort = 1, Show = true });
+        production9Pictures.Add(new ProductionPicture { Filename = "Visual_Reality-AmigaSaga_II-617.png", Sort = 2, Show = true });
+
+        var production9 = new Production
+        {
+            ProductionId = 9,
+            Name = "Amiga Saga II",
+            Added = new DateTime(2004, 4, 5),
+            ReleaseDate = new DateTime(1992,10,27),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[5],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 5 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 9, Filename = "amiganot.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production9Pictures
+        };
+
+        // Art Bizarre
+
+        var production10Pictures = new List<ProductionPicture>();
+        production10Pictures.Add(new ProductionPicture { Filename = "Haujobb-Art_Bizzare.png", Sort = 0, Show = true });
+        production10Pictures.Add(new ProductionPicture { Filename = "Haujobb-Art_Bizzare-ff0.png", Sort = 1, Show = true });
+        production10Pictures.Add(new ProductionPicture { Filename = "Haujobb-Art_Bizzare-3bc.png", Sort = 2, Show = true });
+        production10Pictures.Add(new ProductionPicture { Filename = "Haujobb-Art_Bizzare-b56.png", Sort = 3, Show = true });
+
+        var production10 = new Production
+        {
+            ProductionId = 10,
+            Name = "Arz Bizarre",
+            Added = new DateTime(2004, 4, 5),
+            ReleaseDate = new DateTime(1997, 11, 27),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[5],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 8 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 10, Filename = "artbiz.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production10Pictures
+        };
+
+        // Cafe Odd
+
+        var production11Pictures = new List<ProductionPicture>();
+        production11Pictures.Add(new ProductionPicture { Filename = "Reflex-Cafe_Odd.png", Sort = 0, Show = true });
+        production11Pictures.Add(new ProductionPicture { Filename = "Reflex-Cafe_Odd-fa6.png", Sort = 1, Show = true });
+        production11Pictures.Add(new ProductionPicture { Filename = "Reflex-Cafe_Odd-2bf.png", Sort = 2, Show = true });
+        production11Pictures.Add(new ProductionPicture { Filename = "Reflex-Cafe_Odd-32b.png", Sort = 3, Show = true });
+
+        var production11 = new Production
+        {
+            ProductionId = 11,
+            Name = "Cafe Odd",
+            Added = new DateTime(2004, 4, 5),
+            ReleaseDate = new DateTime(1993, 12, 29),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[5],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 6 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 11, Filename = "cafe.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production11Pictures
+        };
+
+        // Citizen of Chernobyl
+
+        var production12Pictures = new List<ProductionPicture>();
+        production12Pictures.Add(new ProductionPicture { Filename = "Academy-Citizen_of_Chernobyl.png", Sort = 0, Show = true });
+        production12Pictures.Add(new ProductionPicture { Filename = "Academy-Citizen_of_Chernobyl-a12.png", Sort = 1, Show = true });
+
+        var production12 = new Production
+        {
+            ProductionId = 12,
+            Name = "Citizen of Chernobyl",
+            Added = new DateTime(2004, 4, 6),
+            ReleaseDate = new DateTime(1988,1,1),
+            ReleaseDateType = DateType.Year,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[6],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 9 }, new ProductionsGroups { GroupId = 10 }, new ProductionsGroups { GroupId = 4 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 12, Filename = "citizen.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production12Pictures
+        };
+
+        // Contraflow
+
+        var production14Pictures = new List<ProductionPicture>();
+        production14Pictures.Add(new ProductionPicture { Filename = "cosine-contra001.jpg", Sort = 0, Show = true });
+        production14Pictures.Add(new ProductionPicture { Filename = "cosine-contra002.jpg", Sort = 1, Show = true });
+
+        var production14 = new Production
+        {
+            ProductionId = 14,
+            Name = "Contraflow",
+            Added = new DateTime(2004, 4, 8),
+            ReleaseDate = new DateTime(1995, 4, 23),
+            ReleaseDateType = DateType.YearMonthDay,
+            TopCategory = TopCategory.Demos,
+            SubCategory = SubCategory.Demo,
+            SubmitterUserId = userIds[6],
+            VideoType = VideoType.Pal,
+            ProductionsGroups = new ProductionsGroups[] { new ProductionsGroups { GroupId = 4 } },
+            ProductionFiles = new List<ProductionFile> { new ProductionFile { ProductionFileId = 14, Filename = "contra.zip", Size = 12000, Show = true, Sort = 0 } },
+            ProductionPictures = production14Pictures
+        };
+
+        productions = new List<Production>();
+        productions.Add(production1);
+        productions.Add(production2);
+        productions.Add(production3);
+        productions.Add(production4);
+        productions.Add(production5);
+        productions.Add(production6);
+        productions.Add(production7);
+        productions.Add(production9);
+        productions.Add(production10);
+        productions.Add(production11);
+        productions.Add(production12);
+        productions.Add(production14);
+
+        var rnd = new Random();
+        for (var i = 0; i < productions.Count * 150; i++)
+        {
+            var production = productions[rnd.Next(0, productions.Count)];
+
+            if (production.ProductionFiles.Any())
+            {
+                var download = new Download
+                {
+                    DownloadedOn = DateTime.Now.AddDays(rnd.Next(-365, 0)),
+                    Ip = RandomIp(),
+                    UserId = userIds.Skip(rnd.Next(userIds.Count)).FirstOrDefault(),
+                    ProductionFileId = production.ProductionId,
+                };
+
+                production.ProductionFiles.FirstOrDefault().Downloads++;
+                await dbContext.Downloads.AddAsync(download);
+            }
+        }
+
+        await dbContext.Productions.AddRangeAsync(productions);
+
+    }
+
+    private async Task AddParties()
+    {
+        var p1 = new Party { PartyId = 1, CountryId = "DK", Name = "The Party 1997", Description = "*THE* Party 1997", From = new DateTime(1997, 12, 27), To = new DateTime(1997, 12, 29), Location = "Aars", Organizers = "Heavy Head", Url = "http://www.theparty.dk" };
+
+        await dbContext.Parties.AddAsync(p1);
+    }
+
+    private async Task AddPartiesToProductions()
+    {
+        var productionParty = new ProductionsParties { PartyId = 1, ProductionId = 1, PartyCategoryId = 5, Rank = 1 };
+
+        await dbContext.ProductionsParties.AddAsync(productionParty);
+    }
+
+    private async Task AddRatings()
+    {
+        var numberOfProductions = productions.Count();
+        var rnd = new Random();
+        for (var i = 0; i < numberOfProductions * 6; i++)
+        {
+            var rating = new Rating
+            {
+                Ip = RandomIp(),
+                ProductionId = productions[rnd.Next(0, numberOfProductions)].ProductionId,
+                RatedAt = DateTime.Now.AddDays(rnd.Next(-365, 0)),
+                UserId = userIds.Skip(rnd.Next(userIds.Count)).FirstOrDefault(),
+                Value = rnd.Next(1, 11)
+            };
+
+            await dbContext.Ratings.AddAsync(rating);
+        }
+    }
+
+    private async Task AddComments()
+    {
+        var numberOfProductions = productions.Count();
+        var rnd = new Random();
+        for (var i = 0; i < numberOfProductions * 5; i++)
+        {
+
+            var randomStuff = GetRandomStuff();
+
+            var comment = new Comment
+            {
+                CommentedAt = DateTime.Now.AddDays(rnd.Next(-365, 0)),
+                Ip = RandomIp(),
+                ProductionId = productions[rnd.Next(0, numberOfProductions)].ProductionId,
+                UserId = userIds.Skip(rnd.Next(userIds.Count)).FirstOrDefault(),
+                Text = randomStuff.Text
+            };
+
+            await dbContext.Comments.AddAsync(comment);
+        }
+    }
+
+    private async Task CommitAll()
+    {
+        await dbContext.SaveChangesAsync();
+    }
+
+    private class SeedTask
+    {
+        public Func<Task> Action { get; set; }
+        public string ActionName { get; set; }
+    }
+
+    public static byte[] ImageToByte(Image img)
+    {
+        ImageConverter converter = new ImageConverter();
+        return (byte[])converter.ConvertTo(img, typeof(byte[]));
+    }
+
+    private class AdminModel
+    {
+        [MinLength(3)]
+        [Required]
+        public string AdminHandle { get; set; } = "asd";
+
+        [EmailAddress]
+        [Required]
+        public string AdminEmail { get; set; } = "asd@asd.ch";
+
+        [MinLength(3)]
+        [Required]
+        public string AdminPassword { get; set; } = "asd";
+
+        [Compare("AdminPassword")]
+        [Required]
+        public string AdminPasswordRepeat { get; set; } = "asd";
+    }
+
+    private string RandomIp()
+    {
+        var rnd = new Random();
+        var randIpData = new byte[4];
+        rnd.NextBytes(randIpData);
+        return new IPAddress(randIpData).ToString();
+    }
+
+    private MockData GetRandomStuff()
+    {
+        var json = System.IO.File.ReadAllText("Data/mock_data.json");
+        var parsed = JsonSerializer.Deserialize<List<MockData>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return parsed[new Random().Next(0, parsed.Count)];
+    }
+
+    private class MockData
+    {
+        public string Text { get; set; }
+        public string Url { get; set; }
+        public string Handle { get; set; }
+        public string Email { get; set; }
+    }
+
+}

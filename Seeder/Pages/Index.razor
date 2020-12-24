@@ -1,0 +1,64 @@
+﻿@page "/"
+
+@inject ApplicationDbContext context
+@inject NavigationManager navigationManager
+
+<h1>Hello and welcomer to Seeder</h1>
+<p>This seeds some data for a (new) c64.ch-project</p>
+
+@if (!canConnect)
+{
+    <p>Sorry, can't connect to the database <b>'@dbName'</b> @@ <b>@dbServer</b>. Please ensure the database is created and configured properly in appsettings.{Environment}.json</p>
+}
+else if (pendingMigrations.Any())
+{
+    <p>Good news, we can connect to the database! Please apply the missing migrations. This takes some seconds/minutes, depending on your MySql-connection.</p>
+    <button class="btn btn-primary" disabled="@applyButtonDisabled" @onclick="ApplyPendingMigrations">Apply them</button>
+    <p>
+        <hr />
+        <ul>
+            @foreach (var migration in pendingMigrations)
+            {
+                <li>@migration</li>
+            }
+        </ul>
+    </p>
+}
+
+@code{
+
+    private bool canConnect;
+
+    private string currentMigration;
+
+    private bool applyButtonDisabled = false;
+
+    private string dbName;
+    private string dbServer;
+
+    private IEnumerable<string> pendingMigrations = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        canConnect = await context.Database.CanConnectAsync();
+        dbName = context.Database.GetDbConnection().Database;
+        dbServer = context.Database.GetDbConnection().DataSource;
+
+        if (canConnect)
+        {
+            pendingMigrations = context.Database.GetPendingMigrations();
+        }
+
+        if (canConnect && !pendingMigrations.Any())
+            navigationManager.NavigateTo("/seed", true);
+    }
+
+    private async Task ApplyPendingMigrations()
+    {
+        applyButtonDisabled = true;
+        StateHasChanged();
+        await context.Database.MigrateAsync();
+        navigationManager.NavigateTo("/seed", true);
+    }
+
+}

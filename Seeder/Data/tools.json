@@ -1,0 +1,72 @@
+[
+  {
+    "ToolId": 1,
+    "ToolCategory": 0,
+    "Name": "Vice",
+    "Facebook": null,
+    "Homepage": "https://vice-emu.sourceforge.io/",
+    "Repository": null,
+    "Sort": 10,
+    "show": true
+  },
+  {
+    "ToolId": 2,
+    "ToolCategory": 0,
+    "Name": "Hoxs64",
+    "Facebook": null,
+    "Homepage": "https://www.hoxs64.net/",
+    "Repository": null,
+    "Sort": 20,
+    "show": true
+  },
+  {
+    "ToolId": 3,
+    "ToolCategory": 0,
+    "Name": "Frodo",
+    "Facebook": null,
+    "Homepage": "https://frodo.cebix.net/",
+    "Repository": null,
+    "Sort": 30,
+    "show": true
+  },
+  {
+    "ToolId": 4,
+    "ToolCategory": 0,
+    "Name": "Micro64",
+    "Facebook": null,
+    "Homepage": "https://blog.rosseaux.net/page/986c1ab5667d2dfa6ef552e6dd42fe27/micro64",
+    "Repository": null,
+    "Sort": 40,
+    "show": true
+  },
+  {
+    "ToolId": 5,
+    "ToolCategory": 1,
+    "Name": "Relaunch64",
+    "Facebook": null,
+    "Homepage": "http://www.popelganda.de/?relaunch64",
+    "Repository": null,
+    "Sort": 10,
+    "show": true
+  },
+  {
+    "ToolId": 6,
+    "ToolCategory": 1,
+    "Name": "World of Bacchus",
+    "Facebook": null,
+    "Homepage": "http://www.fairlight.to/",
+    "Repository": null,
+    "Sort": 20,
+    "show": true
+  },
+  {
+    "ToolId": 7,
+    "ToolCategory": 1,
+    "Name": "C64 Studio",
+    "Facebook": "",
+    "Homepage": "https://www.georg-rottensteiner.de/de/index.html",
+    "Repository": null,
+    "Sort": 30,
+    "show": true
+  }
+]
