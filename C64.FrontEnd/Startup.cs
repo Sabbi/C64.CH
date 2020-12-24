@@ -75,11 +75,17 @@ namespace C64.FrontEnd
             // -------------------------------------------------------------------------------------------------------------
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 
+            var enableEmail = Configuration.GetValue<bool>("EmailSettings:EmailEnabled");
+
+            if (enableEmail)
+                services.AddTransient<IEmailSender, MailKitSender>();
+            else
+                services.AddTransient<IEmailSender, ToLogEmailSender>();
+
             services.AddTransient<IFileStorageService, DbFileStorageService>();
             services.AddTransient<IArchiveService, SharpZipArchiveService>();
             services.AddTransient<IFallbackArchiveService, FallbackArchiveService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddTransient<IEmailSender, MailKitSender>();
 
             services.AddSingleton<IPasswordHasher, Sha256PasswordHasher>();
             services.AddSingleton<NotifierService>();

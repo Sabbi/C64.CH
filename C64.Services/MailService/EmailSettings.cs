@@ -4,6 +4,7 @@ namespace C64.Services
 {
     public class EmailSettings
     {
+        public bool EmailEnabled { get; set; }
         public string MailServer { get; set; }
         public int MailPort { get; set; }
         public string SenderName { get; set; }
