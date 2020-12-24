@@ -43,8 +43,9 @@ namespace C64.FrontEnd
                   .CreateLogger();
             }
 
-            // Uncomment to see Serilogs' own log in the console (f.ex. to debug emails)
-            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+            // Enable to see Serilogs' own log in the console (f.ex. to debug emails)
+            if (loggerConfig.GetValue<bool>("Serilog:SelfLogging"))
+                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
             var builder = CreateHostBuilder(args);
             builder.Build().Run();
