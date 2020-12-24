@@ -342,8 +342,5 @@ healthchecksdb
 !/Dependencies/*
 
 C64.FrontEnd/appsettings.*.json
-/OldDataImporter/appsettings.*.json
-C64.FrontEnd/wwwroot/css/site.css
-C64.FrontEnd/wwwroot/css/site.min.css
-
-Seeder/appsettings.Development.json
+OldDataImporter/appsettings.*.json
+Seeder/appsettings.*.json
