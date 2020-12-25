@@ -203,7 +203,7 @@
         sb.Append(Production.Name);
         sb.Append(".png");
 
-        return sb.ToString().Replace(" ", "_");
+        return sb.ToString().ToLower().Replace(" ", "_");
 
     }
 
