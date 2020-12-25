@@ -1,8 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Deterministic>False</Deterministic>
+    <Copyright>Damian Puppetti / c64.ch</Copyright>
+    <PackageLicenseFile></PackageLicenseFile>
+    <PackageProjectUrl>https://c64.ch</PackageProjectUrl>
+    <RepositoryType>Git</RepositoryType>
+    <RepositoryUrl>https://github.com/Sabbi/C64/</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

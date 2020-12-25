@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Copyright>Damian Puppetti / c64.ch</Copyright>
+    <PackageProjectUrl>https://c64.ch</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Sabbi/C64/</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,5 +16,4 @@
     <ProjectReference Include="..\C64.Data\C64.Data.csproj" />
     <ProjectReference Include="..\C64.Services\C64.Services.csproj" />
   </ItemGroup>
-
 </Project>

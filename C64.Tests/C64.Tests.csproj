@@ -4,6 +4,10 @@
     <TargetFramework>net5.0</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
     <IsPackable>false</IsPackable>
+    <Copyright>Damian Puppetti / c64.ch</Copyright>
+    <PackageProjectUrl>https://c64.ch</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Sabbi/C64/</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
