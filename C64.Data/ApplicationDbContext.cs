@@ -48,6 +48,7 @@ namespace C64.Data
         public virtual DbSet<ProductionVideo> ProductionVideos { get; set; }
         public virtual DbSet<Download> Downloads { get; set; }
         public virtual DbSet<ProductionsGroups> ProductionsGroups { get; set; }
+        public virtual DbSet<ProductionsSceners> ProductionsSceners { get; set; }
         public virtual DbSet<Party> Parties { get; set; }
         public virtual DbSet<PartiesGroups> PartiesGroups { get; set; }
         public virtual DbSet<PartiesSceners> PartiesSceners { get; set; }
@@ -94,6 +95,19 @@ namespace C64.Data
             modelBuilder.Entity<ProductionsGroups>()
                 .HasOne(p => p.Group)
                 .WithMany(p => p.ProductionsGroups);
+
+            // Many-To-Many-Relation: Production <-> Scener
+
+            modelBuilder.Entity<ProductionsSceners>()
+             .HasKey(p => new { p.ProductionId, p.ScenerId });
+
+            modelBuilder.Entity<ProductionsSceners>()
+              .HasOne(p => p.Production)
+              .WithMany(p => p.ProductionsSceners);
+
+            modelBuilder.Entity<ProductionsSceners>()
+                .HasOne(p => p.Scener)
+                .WithMany(p => p.ProductionsSceners);
 
             // Many-To-Many-Relation: Production <-> ProductionParty
             modelBuilder.Entity<ProductionsParties>()

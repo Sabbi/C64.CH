@@ -38,6 +38,9 @@ namespace C64.Data.Entities
         public virtual Country Country { get; set; }
 
         public bool ShowRealName { get; set; } = true;
+
+        public ICollection<ProductionsSceners> ProductionsSceners { get; set; } = new HashSet<ProductionsSceners>();
+
         public virtual ICollection<ScenersGroups> ScenersGroups { get; set; } = new HashSet<ScenersGroups>();
         public virtual ICollection<ScenersJobs> Jobs { get; set; } = new HashSet<ScenersJobs>();
 
