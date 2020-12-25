@@ -195,7 +195,7 @@ function exitEmu() {
     try {
         Module.exit(1);
     }
-    catch {
+    catch (e) {
     }
     isStarted = false;
 
@@ -221,7 +221,7 @@ function goFullScreen() {
         if (isStarted)
             emulator.requestFullScreen();
     }
-    catch { }
+    catch (e) { }
 }
 
 cleanDb();
