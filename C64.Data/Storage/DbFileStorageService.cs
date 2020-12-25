@@ -75,16 +75,19 @@ namespace C64.Data.Storage
 
             var newFileName = fileName;
 
+            var nextFileNumberCounter = 0;
+
             while (!freeFileFound)
             {
                 if (!FileExists(container, newFileName))
                     freeFileFound = true;
                 else
                 {
-                    // Add a random char between filename and extension...
-                    var rnd = Guid.NewGuid().ToString().Substring(0, 3);
+                    // Add a counter if file is already taken.
+                    nextFileNumberCounter++;
+                    var rnd = nextFileNumberCounter.ToString("D3");
 
-                    newFileName = Path.GetFileNameWithoutExtension(newFileName) + "-" + rnd + Path.GetExtension(newFileName);
+                    newFileName = Path.GetFileNameWithoutExtension(fileName) + "-" + rnd + Path.GetExtension(fileName);
                 }
             }
 
