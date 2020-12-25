@@ -20,21 +20,30 @@
         <div class="form-group row">
             <label for="search" class="col-sm-3 col-form-label">Show demos from:</label>
             <div class="col-sm-9">
-                <SelectPicker KeyValuePairs="groupData" LiveSearch="true" OnSelect="GroupSelect" />&nbsp;<button class="btn btn-primary" @onclick="ShowByGroup">Go</button>
+                @if (groupData.Any())
+                {
+                    <SelectPicker KeyValuePairs="groupData" LiveSearch="true" OnSelect="GroupSelect" /><text>&nbsp;</text><button class="btn btn-primary" @onclick="ShowByGroup">Go</button>
+                }
             </div>
             <hr />
         </div>
         <div class="form-group row">
             <label for="search" class="col-sm-3 col-form-label">Show demos from:</label>
             <div class="col-sm-9">
-                <SelectPicker KeyValuePairs="yearData" LiveSearch="false" OnSelect="YearSelect" />&nbsp;<button class="btn btn-primary" @onclick="ShowByYear">Go</button>
+                @if (yearData.Any())
+                {
+                    <SelectPicker KeyValuePairs="yearData" LiveSearch="false" OnSelect="YearSelect" /><text>&nbsp;</text><button class="btn btn-primary" @onclick="ShowByYear">Go</button>
+                }
             </div>
             <hr />
         </div>
         <div class="form-group row">
             <label for="search" class="col-sm-3 col-form-label">Show demos by*:</label>
             <div class="col-sm-9">
-                <SelectPicker KeyValuePairs="scenerData" LiveSearch="true" OnSelect="ScenerSelect" />&nbsp;<button class="btn btn-primary" @onclick="ShowByScener">Go</button>
+                @if (scenerData.Any())
+                {
+                    <SelectPicker KeyValuePairs="scenerData" LiveSearch="true" OnSelect="ScenerSelect" /><text>&nbsp;</text><button class="btn btn-primary" @onclick="ShowByScener">Go</button>
+                }
             </div>
             <hr />
         </div>
@@ -215,6 +224,15 @@
     protected override async Task OnInitializedAsync()
     {
 
+        sceners = (await unitOfWork.Sceners.FindWithGroups(p => true)).OrderBy(p => p.Handle).ToList();
+
+        scenerData.Add("0", "Choose scener:");
+
+        foreach (var scener in sceners)
+        {
+            scenerData.Add(scener.ScenerId.ToString(), scener.HandleWithGroups());
+        }
+
         groups = unitOfWork.Groups.GetAll().OrderBy(p => p.Name).ToList();
 
         foreach (var group in groups)
@@ -227,15 +245,6 @@
         for (var i = 1982; i <= DateTime.Now.Year; i++)
         {
             yearData.Add(i.ToString(), i.ToString());
-        }
-
-        sceners = (await unitOfWork.Sceners.FindWithGroups(p => true)).OrderBy(p => p.Handle).ToList();
-
-        scenerData.Add("0", "Choose scener:");
-
-        foreach (var scener in sceners)
-        {
-            scenerData.Add(scener.ScenerId.ToString(), scener.HandleWithGroups());
         }
 
         YearSelect("1982");
