@@ -531,7 +531,7 @@
             ProductionId = 9,
             Name = "Amiga Saga II",
             Added = new DateTime(2004, 4, 5),
-            ReleaseDate = new DateTime(1992,10,27),
+            ReleaseDate = new DateTime(1992, 10, 27),
             ReleaseDateType = DateType.YearMonthDay,
             TopCategory = TopCategory.Demos,
             SubCategory = SubCategory.Demo,
@@ -601,7 +601,7 @@
             ProductionId = 12,
             Name = "Citizen of Chernobyl",
             Added = new DateTime(2004, 4, 6),
-            ReleaseDate = new DateTime(1988,1,1),
+            ReleaseDate = new DateTime(1988, 1, 1),
             ReleaseDateType = DateType.Year,
             TopCategory = TopCategory.Demos,
             SubCategory = SubCategory.Demo,
@@ -748,19 +748,19 @@
     {
         [MinLength(3)]
         [Required]
-        public string AdminHandle { get; set; } = "asd";
+        public string AdminHandle { get; set; }
 
         [EmailAddress]
         [Required]
-        public string AdminEmail { get; set; } = "asd@asd.ch";
+        public string AdminEmail { get; set; }
 
         [MinLength(3)]
         [Required]
-        public string AdminPassword { get; set; } = "asd";
+        public string AdminPassword { get; set; }
 
         [Compare("AdminPassword")]
         [Required]
-        public string AdminPasswordRepeat { get; set; } = "asd";
+        public string AdminPasswordRepeat { get; set; }
     }
 
     private string RandomIp()
