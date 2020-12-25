@@ -70,6 +70,7 @@ namespace C64.Data.Entities
         // Statistics End
 
         public virtual ICollection<ProductionsGroups> ProductionsGroups { get; set; } = new HashSet<ProductionsGroups>();
+        public virtual ICollection<ProductionsSceners> ProductionsSceners { get; set; } = new HashSet<ProductionsSceners>();
 
         public virtual ICollection<ProductionPicture> ProductionPictures { get; set; } = new HashSet<ProductionPicture>();
         public virtual ICollection<ProductionVideo> ProductionVideos { get; set; } = new HashSet<ProductionVideo>();
