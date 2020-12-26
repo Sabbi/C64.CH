@@ -80,9 +80,12 @@ namespace C64.Data.History
 
             // Sort changed?
             var changedSort = false;
-            for (var i = 0; i < oldValues.Count(); ++i)
-                if (newValues[i].Sort != oldValues[i].Sort)
+            for (var i = 0; i < oldValues.Count(); i++)
+            {
+                var correspondingNew = newValues.FirstOrDefault(p => p.Filename == oldValues[i].Filename);
+                if (correspondingNew.Sort != oldValues[i].Sort)
                     changedSort = true;
+            }
 
             if (changedSort)
                 sbSortChanged.Append("Changed order of pictures");
