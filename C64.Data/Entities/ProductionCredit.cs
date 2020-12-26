@@ -36,27 +36,5 @@ namespace C64.Data.Entities
 
             return (retValAdded, retValRemoved);
         }
-
-        //public override bool Equals(object obj)
-        //{
-        //    if ((obj == null) || !GetType().Equals(obj.GetType()))
-        //        return false;
-
-        //    var compare = (ProductionCredit)obj;
-
-        //    // Hack: Do not compare ProductionId if it's one in either object
-        //    if (compare.ProductionId == 0 || ProductionId == 0)
-        //    {
-        //        if (compare.Credit != Credit || compare.ScenerId != ScenerId)
-        //            return false;
-        //    }
-        //    else
-        //    {
-        //        if (compare.Credit != Credit || compare.ScenerId != ScenerId || compare.ProductionId != ProductionId)
-        //            return false;
-        //    }
-
-        //    return true;
-        //}
     }
 }

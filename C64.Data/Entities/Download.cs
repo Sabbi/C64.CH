@@ -25,11 +25,12 @@ namespace C64.Data.Entities
         [MaxLength(40)] // 39 characters is appropriate to store IPv6 addresses (Stack Overflow)
         public string Ip { get; set; }
 
-        [MaxLength(36)]
-        public string UserId { get; set; }
-
         [MaxLength(2047)]
         public string Referer { get; set; }
+
+        [MinLength(36)]
+        [MaxLength(36)]
+        public string UserId { get; set; }
 
         public virtual User User { get; set; }
     }

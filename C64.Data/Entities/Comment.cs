@@ -9,6 +9,7 @@ namespace C64.Data.Entities
         public int ProductionId { get; set; }
         public virtual Production Production { get; set; }
 
+        [MinLength(36)]
         [MaxLength(36)]
         public string UserId { get; set; }
 

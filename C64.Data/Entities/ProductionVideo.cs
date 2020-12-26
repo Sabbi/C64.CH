@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Web;
 
 namespace C64.Data.Entities
@@ -7,6 +8,8 @@ namespace C64.Data.Entities
     {
         public int ProductionVideoId { get; set; }
         public VideoProvider VideoProvider { get; set; }
+
+        [MaxLength(127)]
         public string VideoId { get; set; }
 
         public int ProductionId { get; set; }

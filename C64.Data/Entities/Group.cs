@@ -27,6 +27,7 @@ namespace C64.Data.Entities
         [MaxLength(255)]
         public string Aka { get; set; }
 
+        [MaxLength(511)]
         public string LogoFile { get; set; }
 
         [MaxLength(65535)]
@@ -49,6 +50,7 @@ namespace C64.Data.Entities
 
         public string AddedById { get; set; }
         public virtual User AddedBy { get; set; }
+
         public DateTime Modified { get; set; }
 
         // GroupStats
@@ -63,9 +65,7 @@ namespace C64.Data.Entities
 
         public int NumberOfReleases { get; set; }
 
-        [MinLength(2), MaxLength(2)]
         public string CountryId { get; set; }
-
         public virtual Country Country { get; set; }
 
         public ICollection<ProductionsGroups> ProductionsGroups { get; set; } = new HashSet<ProductionsGroups>();

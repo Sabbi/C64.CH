@@ -26,12 +26,19 @@ namespace C64.Data.Entities
         public int? AffectedPartyId { get; set; } = null;
         public virtual Party AffectedParty { get; set; }
 
+        [MaxLength(65535)]
         public string OldValue { get; set; }
+
+        [MaxLength(65535)]
         public string NewValue { get; set; }
+
+        [MaxLength(255)]
         public string Property { get; set; }
 
+        [MaxLength(255)]
         public string Type { get; set; }
 
+        [MinLength(36)]
         [MaxLength(36)]
         public string UserId { get; set; }
 

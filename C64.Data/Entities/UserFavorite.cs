@@ -5,6 +5,7 @@ namespace C64.Data.Entities
     public class UserFavorite
     {
         public string UserId { get; set; }
+
         public virtual User User { get; set; }
 
         public int ProductionId { get; set; }

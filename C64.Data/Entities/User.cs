@@ -19,6 +19,7 @@ namespace C64.Data.Entities
         public string Realname { get; set; }
 
         [EmailAddress]
+        [MaxLength(255)]
         public string PublicEmail { get; set; }
 
         [MaxLength(1023)]
@@ -33,9 +34,7 @@ namespace C64.Data.Entities
         [MaxLength(255)]
         public string Location { get; set; }
 
-        [MinLength(2), MaxLength(2)]
         public string CountryId { get; set; }
-
         public virtual Country Country { get; set; }
 
         [MaxLength(255)]

@@ -31,6 +31,7 @@ namespace C64.Data.Entities
 
         public DateTime Added { get; set; }
 
+        [MinLength(36)]
         [MaxLength(36)]
         public string UserId { get; set; }
 

@@ -21,6 +21,7 @@ namespace C64.Data.Entities
 
         public DateTime WrittenAt { get; set; }
 
+        [MinLength(36)]
         [MaxLength(36)]
         public string UserId { get; set; }
 

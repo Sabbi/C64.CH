@@ -14,7 +14,7 @@ namespace C64.Data.Entities
         [Required]
         public string Container { get; set; }
 
-        [MaxLength(254)]
+        [MaxLength(255)]
         [Required]
         public string FileName { get; set; }
 

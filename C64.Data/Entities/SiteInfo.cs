@@ -21,6 +21,7 @@ namespace C64.Data.Entities
 
         public bool Show { get; set; } = true;
 
+        [MinLength(36)]
         [MaxLength(36)]
         public string UserId { get; set; }
 
