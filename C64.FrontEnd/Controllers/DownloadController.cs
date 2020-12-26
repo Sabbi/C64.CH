@@ -153,7 +153,7 @@ namespace C64.FrontEnd.Controllers
                         var offsetY = (int)((image.Height - (source.Height * ratio)) / 2);
 
                         var srcRectangle = new Rectangle(0, 0, source.Width, source.Height);
-                        var dstRectangle = new Rectangle(offsetX, offsetY, (int)(source.Width * ratio), (int)(source.Height * ratio));
+                        var dstRectangle = new Rectangle(offsetX, offsetY, (int)(1 + (source.Width * ratio)), (int)(1 + (source.Height * ratio)));
 
                         graphics.DrawImage(source, dstRectangle, srcRectangle, GraphicsUnit.Pixel);
                     }
