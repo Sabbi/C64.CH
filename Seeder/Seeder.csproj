@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <Copyright>Damian Puppetti / c64.ch</Copyright>
     <PackageProjectUrl>https://c64.ch</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Sabbi/C64/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Sabbi/C64.CH/</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 

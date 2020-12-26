@@ -208,7 +208,7 @@ function exitEmu() {
     document.removeEventListener("visibilitychange", SDL.receiveEvent);
     window.removeEventListener("unload", SDL.receiveEvent);
 
-    // Start fix https://github.com/Sabbi/C64/issues/119
+    // Start fix https://github.com/Sabbi/C64.CH/issues/119
     function keypress(e) {
         return true;
     }

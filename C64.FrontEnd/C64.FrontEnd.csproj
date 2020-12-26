@@ -7,7 +7,7 @@
     <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://c64.ch</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
-    <RepositoryUrl>https://github.com/Sabbi/C64/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Sabbi/C64.CH/</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
