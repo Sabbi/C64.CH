@@ -83,8 +83,10 @@ namespace C64.Data.History
             for (var i = 0; i < oldValues.Count(); i++)
             {
                 var correspondingNew = newValues.FirstOrDefault(p => p.Filename == oldValues[i].Filename);
-                if (correspondingNew.Sort != oldValues[i].Sort)
-                    changedSort = true;
+
+                if (correspondingNew != null)
+                    if (correspondingNew.Sort != oldValues[i].Sort)
+                        changedSort = true;
             }
 
             if (changedSort)
