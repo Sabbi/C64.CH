@@ -8,7 +8,7 @@
 
 <BootstrapModal @ref="bootstrapModal" Title="Add new party" Size="BootstrapModal.ModalSize.Large">
     <Content>
-        <PartyForm OnValidSubmit="OnValidSubmit" Countries="@countries" EditParty="@editParty" />
+        <PartyForm OnValidSubmit="OnValidSubmit" Countries="@countries" EditParty="@editParty" ShowExistsWarning="@showExistsWarning" OnHandleChanged="@OnBlur" />
     </Content>
 </BootstrapModal>
 
@@ -20,11 +20,19 @@
     [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
+    private bool showExistsWarning { get; set; }
+
     private BootstrapModal bootstrapModal;
 
     private EditParty editParty = new EditParty();
 
     private IEnumerable<Country> countries = new List<Country>();
+
+    private async Task OnBlur()
+    {
+        var existingParty = await unitOfWork.Parties.Find(p => p.Name.Equals(editParty.Name));
+        showExistsWarning = existingParty.Any();
+    }
 
     private async Task OnValidSubmit()
     {

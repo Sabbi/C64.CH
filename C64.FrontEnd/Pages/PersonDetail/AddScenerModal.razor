@@ -7,7 +7,7 @@
 
 <BootstrapModal @ref="bootstrapModal" Title="Add new scener" Size="BootstrapModal.ModalSize.Large">
     <Content>
-        <ScenerForm OnValidSubmit="OnValidSubmit" Countries="@countries" EditScener="@editScener" />
+        <ScenerForm OnValidSubmit="OnValidSubmit" Countries="@countries" EditScener="@editScener" ShowExistsWarning="@showExistsWarning" OnHandleChanged="@OnBlur" />
     </Content>
 </BootstrapModal>
 
@@ -19,6 +19,8 @@
     [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
+    private bool showExistsWarning { get; set; }
+
     private BootstrapModal bootstrapModal;
 
     private EditScener editScener = new EditScener();
@@ -26,6 +28,12 @@
     private Scener scener = new Scener();
 
     private IEnumerable<Country> countries = new List<Country>();
+
+    private async Task OnBlur()
+    {
+        var existingScener = await unitOfWork.Sceners.Find(p => p.Handle.Equals(editScener.Handle));
+        showExistsWarning = existingScener.Any();
+    }
 
     private async Task OnValidSubmit()
     {
