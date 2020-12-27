@@ -11,11 +11,16 @@
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group">
+                @if (showExistsWarning)
+                {
+                    <div class="float-right red"><b>Warning: a Group with the same name already exists!</b></div>
+                }
                 <label>
                     Group name:
                 </label>
                 <div>
-                    <InputText class="form-control" @bind-Value="@editGroup.Name" />
+
+                    <InputText class="form-control" @bind-Value="@editGroup.Name" @onblur="OnBlur" />
                     <ValidationMessage For="@(() => editGroup.Name)" />
                 </div>
             </div>
@@ -54,9 +59,17 @@
     [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
+    private bool showExistsWarning;
+
     private BootstrapModal bootstrapModal;
 
     private EditGroup editGroup = new EditGroup();
+
+    private async Task OnBlur()
+    {
+        var existingGroup = await unitOfWork.Groups.Find(p => p.Name.Equals(editGroup.Name));
+        showExistsWarning = existingGroup.Any();
+    }
 
     private async Task OnValidSubmit()
     {

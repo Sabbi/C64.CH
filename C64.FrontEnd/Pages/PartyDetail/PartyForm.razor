@@ -3,11 +3,15 @@
 <EditForm Model="EditParty" OnValidSubmit="OnDataAnnotationsValidated">
     <DataAnnotationsValidator />
     <div class="form-group">
+        @if (ShowExistsWarning)
+        {
+            <div class="float-right red"><b>Warning: a Party with the same name already exists!</b></div>
+        }
         <label>
             Name
         </label>
         <div>
-            <InputText class="form-control" @bind-Value="@EditParty.Name" />
+            <InputText class="form-control" @bind-Value="@EditParty.Name" @onblur="OnBlur" />
             <ValidationMessage For="@(() => EditParty.Name)" />
         </div>
     </div>
@@ -104,7 +108,16 @@
     [Parameter]
     public IEnumerable<Country> Countries { get; set; } = new List<Country>();
 
-    // private EditParty EditParty = new EditParty();
+    [Parameter]
+    public bool ShowExistsWarning { get; set; }
+
+    [Parameter]
+    public EventCallback OnHandleChanged { get; set; }
+
+    private async Task OnBlur()
+    {
+        await OnHandleChanged.InvokeAsync();
+    }
 
     private bool showMarkDown = false;
 

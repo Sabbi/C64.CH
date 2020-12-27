@@ -11,9 +11,13 @@
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group">
-                <label>Productionname:</label>
+                @if (showExistsWarning)
+                {
+                    <div class="float-right red"><b>Warning: a Production with the same name already exists!</b></div>
+                }
+                <label>Production name:</label>
                 <div>
-                    <InputText class="form-control" @bind-Value="@editProductionGeneral.Name" />
+                    <InputText class="form-control" @bind-Value="@editProductionGeneral.Name" @onblur="OnBlur" />
                     <ValidationMessage For="@(() => editProductionGeneral.Name)" />
                 </div>
             </div>
@@ -110,6 +114,8 @@
     [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
+    private bool showExistsWarning { get; set; }
+
     private BootstrapModal bootstrapModal;
 
     private EditProductionGeneral editProductionGeneral = new EditProductionGeneral();
@@ -117,6 +123,12 @@
     private string searchText = string.Empty;
 
     private IEnumerable<PartyCategory> partyCategories { get; set; } = new List<PartyCategory>();
+
+    private async Task OnBlur()
+    {
+        var existingProduction = await unitOfWork.Productions.Find(p => p.Name.Equals(editProductionGeneral.Name));
+        showExistsWarning = existingProduction.Any();
+    }
 
     private async Task<IEnumerable<Party>> SearchParty(string searchPartyText)
     {

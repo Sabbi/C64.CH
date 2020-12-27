@@ -3,11 +3,15 @@
 <EditForm Model="EditScener" OnValidSubmit="OnDataAnnotationsValidated">
     <DataAnnotationsValidator />
     <div class="form-group">
+        @if (ShowExistsWarning)
+        {
+            <div class="float-right red"><b>Warning: a Scener with the same handle already exists!</b></div>
+        }
         <label>
             Handle
         </label>
         <div>
-            <InputText class="form-control" @bind-Value="@EditScener.Handle" />
+            <InputText class="form-control" @bind-Value="@EditScener.Handle" @onblur="@OnBlur" />
             <ValidationMessage For="@(() => EditScener.Handle)" />
         </div>
     </div>
@@ -96,6 +100,17 @@
 
     [Parameter]
     public string SubmitButtonCaption { get; set; } = "Add scener";
+
+    [Parameter]
+    public bool ShowExistsWarning { get; set; }
+
+    [Parameter]
+    public EventCallback OnHandleChanged { get; set; }
+
+    private async Task OnBlur()
+    {
+        await OnHandleChanged.InvokeAsync();
+    }
 
     private async Task OnDataAnnotationsValidated()
     {
