@@ -136,6 +136,17 @@ namespace C64.Data
             modelBuilder.Entity<ScenersSceners>()
                 .HasKey(p => new { p.ScenerId, p.ScenerToId });
 
+            modelBuilder.Entity<ScenersSceners>()
+                .HasOne(p => p.Scener)
+                .WithMany()
+                .HasForeignKey(p => p.ScenerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ScenersSceners>()
+                .HasOne(p => p.ScenerTo)
+                .WithMany(p => p.AlterEgos)
+                .HasForeignKey(p => p.ScenerToId);
+
             // Many-To-Many Party <-> Groups
             modelBuilder.Entity<PartiesGroups>()
                 .HasKey(p => new { p.PartyId, p.GroupId });
