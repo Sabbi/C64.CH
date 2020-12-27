@@ -1,5 +1,36 @@
 ﻿@page "/help/changelog"
-    <Box>
-        <Title>Changelog</Title>
-        <Content>ToDo</Content>
-    </Box>
+<Box>
+    <Title>Changelog</Title>
+    <Content>
+        <table class="table">
+            <tr>
+                <th>Date</th>
+                <th>Version</th>
+                <th>Changes</th>
+            </tr>
+            @foreach (var change in model)
+            {
+                <tr>
+                    <td>@change.Date.ToShortDateString()</td>
+                    <td>@change.Version</td>
+                    <td>
+                        <ul>
+                            @foreach (var entry in change.Changes)
+                            {
+                                <li>@entry</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </table>
+    </Content>
+</Box>
+@code{
+    private List<ChangeLogModel> model = new List<ChangeLogModel>();
+
+    protected override void OnInitialized()
+    {
+        model.Add(new ChangeLogModel(DateTime.Now, "v1.0.0", "Initial Version"));
+    }
+}
