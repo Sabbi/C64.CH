@@ -59,6 +59,8 @@ namespace C64.Data.Entities
 
         public bool PublicFavorites { get; set; } = true;
 
+        public bool Blocked { get; set; } = false;
+
         public int? ScenerId { get; set; }
         public virtual Scener Scener { get; set; }
 

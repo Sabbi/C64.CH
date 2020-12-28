@@ -98,7 +98,11 @@
 
                 var checkpw = await signInManager.CheckPasswordSignInAsync(user, userInfo.Password, true);
 
-                if (checkpw.Succeeded)
+                if (checkpw.Succeeded && user.Blocked)
+                {
+                    messageStore.Add(editContext.Field("Email"), "Blocked account, contact us");
+                }
+                else if (checkpw.Succeeded)
                 {
                     await jsRuntime.InvokeVoidAsync("submitLogin");
                     return;

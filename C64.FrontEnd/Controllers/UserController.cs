@@ -50,6 +50,9 @@ namespace C64.FrontEnd.Controllers
             var passwordIsCorrect = await userManager.CheckPasswordAsync(user, password);
             var canSignIn = await signInManager.CanSignInAsync(user);
 
+            if (user.Blocked)
+                canSignIn = false;
+
             if (passwordIsCorrect && canSignIn)
             {
                 var authProperties = new AuthenticationProperties
