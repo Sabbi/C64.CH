@@ -61,3 +61,16 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+
+## do not count these files against the language statistics
+C64.FrontEnd/wwwroot/js/x64-2.js
+C64.FrontEnd/wwwroot/js/x64-2.min.js
+C64.FrontEnd/wwwroot/js/loader.js
+C64.FrontEnd/wwwroot/js/loader.min.js
+C64.FrontEnd/wwwroot/js/inputfile.js
+C64.FrontEnd/wwwroot/js/inputfile.es5.js
+C64.FrontEnd/wwwroot/js/inputfile.es5.min.js
+C64.FrontEnd/wwwroot/js/browserfs.min.js
+
+
