@@ -72,5 +72,6 @@ C64.FrontEnd/wwwroot/js/inputfile.js linguist-vendored
 C64.FrontEnd/wwwroot/js/inputfile.es5.js linguist-vendored
 C64.FrontEnd/wwwroot/js/inputfile.es5.min.js linguist-vendored
 C64.FrontEnd/wwwroot/js/browserfs.min.js linguist-vendored
+C64.FrontEnd/wwwroot/lib/* linguist-vendored
 
 
