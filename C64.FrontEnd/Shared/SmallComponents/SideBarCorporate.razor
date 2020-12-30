@@ -1,0 +1,61 @@
+﻿@namespace C64.FrontEnd.Shared
+
+@using System.Timers
+
+@implements IDisposable
+
+@inject IUnitOfWork unitOfWork
+@inject IJSRuntime jsRuntime
+
+<Box ContentClasses="text-left p-1 overflow-hidden">
+    <Title>Corporate</Title>
+    <Content>
+        &copy; 1998-@DateTime.Now.Year
+        <a href="https://c64.ch">C64.CH</a>
+        <br />
+        <a href="https://github.com/Sabbi/C64.CH" target="_blank" rel="noopener">GitHub</a> -
+        <a href="https://twitter.com/c64ch" target="_blank" rel="noopener">Twitter</a>
+        <hr />
+        @if (latency is null)
+        {
+            <span>LOAD"*",8,1</span>
+        }
+        else
+        {
+            <span data-placement="top" title="Should be 250ms or less for reasonable experience (according to MS)">Network latency: @(latency.Value.TotalMilliseconds)ms</span>
+        }
+    </Content>
+</Box>
+@code{
+
+    private DateTime startTime;
+    private TimeSpan? latency;
+
+    private Timer timeTimer = new Timer();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            timeTimer.Interval = 500;
+            timeTimer.Elapsed += OnTimerElapsed;
+            timeTimer.Start();
+        }
+    }
+
+    private async void OnTimerElapsed(object sender, ElapsedEventArgs e)
+    {
+        timeTimer.Interval = 4000;
+
+        startTime = DateTime.UtcNow;
+        var _ = await jsRuntime.InvokeAsync<string>("toString");
+        latency = DateTime.UtcNow - startTime;
+        await base.InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        timeTimer.Dispose();
+    }
+
+}
