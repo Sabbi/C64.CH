@@ -1,0 +1,51 @@
+﻿@namespace C64.FrontEnd.Shared
+@inject IUnitOfWork unitOfWork
+@if (statistic != null)
+{
+    <Box ContentClasses="text-left p-1 overflow-hidden">
+        <Title>Statistics</Title>
+        <Content>
+            <div class="row mb-0 pb-0">
+                <div class="col-6">Users</div>
+                <div class="col-6 text-right">@statistic.NumberOfUsers.ToString("N0")</div>
+
+                <div class="col-6">Demos</div>
+                <div class="col-6 text-right">@statistic.NumberOfProductions.ToString("N0")</div>
+
+                <div class="col-6">Groups</div>
+                <div class="col-6 text-right">@statistic.NumberOfGroups.ToString("N0")</div>
+
+                <div class="col-6">Sceners</div>
+                <div class="col-6 text-right">@statistic.NumberOfSceners.ToString("N0")</div>
+
+                <div class="col-6">Parties</div>
+                <div class="col-6 text-right">@statistic.NumberOfParties.ToString("N0")</div>
+
+                <div class="col-6">Downloads</div>
+                <div class="col-6 text-right">@statistic.NumberOfDownloads.ToString("N0")</div>
+                <div class="col-6">Votes</div>
+                <div class="col-6 text-right">@statistic.NumberOfRatings.ToString("N0")</div>
+
+                <div class="col-6">Comments</div>
+                <div class="col-6 text-right">@statistic.NumberOfComments.ToString("N0")</div>
+
+                <div class="col-6">Guestbook</div>
+                <div class="col-6 text-right">@statistic.NumberOfGuestbookEntries.ToString("N0")</div>
+                <div class="col-6">Links</div>
+                <div class="col-6 text-right">@statistic.NumberOfLinks.ToString("N0")</div>
+
+                <div class="col-12 text-right">Updated @statistic.LastUpdate.ToShortDateString() / @statistic.LastUpdate.ToString("HH:mm:ss")</div>
+            </div>
+        </Content>
+    </Box>
+}
+@code{
+
+    private Statistic statistic = new Statistic();
+
+    protected override async Task OnInitializedAsync()
+    {
+        statistic = await unitOfWork.Statistics.Get();
+    }
+
+}

@@ -55,6 +55,8 @@ namespace C64.FrontEnd
             unitOfWork.Productions.UpdateProductionStats();
             unitOfWork.Groups.UpdateGroupStats();
 
+            unitOfWork.Statistics.UpdateStats().Wait();
+
             unitOfWork.Commit().Wait();
 
             sw.Stop();

@@ -23,6 +23,8 @@ namespace C64.Data
 
         IToolRepository Tools { get; }
 
+        IStatisticRepository Statistics { get; }
+
         Task<int> Commit();
     }
 }
