@@ -6,20 +6,28 @@
 
 <BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
     <Content>
-        <p>@title</p>
         <ul class="list-unstyled">
-            @foreach (var history in histories)
+            @if (!histories.Any())
             {
                 <li>
-                    <div class="row">
-                        <div class="col-6">@history.User.UserName</div>
-                        <div class="col-6">@history.Applied</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">@Parsed(history)</div>
-                    </div>
-                    <hr />
+                    Sorry, no history found
                 </li>
+            }
+            else
+            {
+                @foreach (var history in histories)
+                {
+                    <li>
+                        <div class="row">
+                            <div class="col-6">@history.User.UserName</div>
+                            <div class="col-6">@history.Applied</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">@Parsed(history)</div>
+                        </div>
+                        <hr />
+                    </li>
+                }
             }
         </ul>
     </Content>
