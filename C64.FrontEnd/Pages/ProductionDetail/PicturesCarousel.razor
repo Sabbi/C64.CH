@@ -16,13 +16,13 @@ else
             {
                 if (picture == ProductionPicturesSorted.FirstOrDefault(p => p.Show))
                 {
-                    <div class="carousel-item active">
+                    <div class="carousel-item active" @key="picture.Filename">
                         <a data-fslightbox href="/data/productionpictures/@picture.Filename"><img class="d-block w-100" src="/data/productionpictures/@picture.Filename" alt="@picture.Filename"></a>
                     </div>
                 }
                 else
                 {
-                    <div class="carousel-item @(picture == ProductionPicturesSorted.FirstOrDefault(p => p.Show) ? " active" : string.Empty)">
+                    <div class="carousel-item @(picture == ProductionPicturesSorted.FirstOrDefault(p => p.Show) ? " active" : string.Empty)" @key="picture.Filename">
                         <a data-fslightbox href="/data/productionpictures/@picture.Filename"><img class="d-block w-100 h-100" img="505050505.jpg" data-lazy-load-src="/data/productionpictures/@picture.Filename" alt="@picture.Filename"></a>
                     </div>
                 }
