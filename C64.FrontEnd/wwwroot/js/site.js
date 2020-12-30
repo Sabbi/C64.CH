@@ -227,44 +227,51 @@ function goFullScreen() {
 cleanDb();
 
 function cleanDb() {
-    console.log("CleanDB");
-    var DBOpenRequest = window.indexedDB.open("emularity", 4);
+    try {
+        console.log("CleanDB");
+        var DBOpenRequest = window.indexedDB.open("emularity", 4);
 
-    DBOpenRequest.onsuccess = function (event) {
-        console.log('<li>Database initialised.</li>');
+        DBOpenRequest.onsuccess = function (event) {
+            console.log('<li>Database initialised.</li>');
 
-        // store the result of opening the database in the db variable.
-        // This is used a lot below
-        db = DBOpenRequest.result;
+            // store the result of opening the database in the db variable.
+            // This is used a lot below
+            var db = DBOpenRequest.result;
 
-        // Clear all the data form the object store
-        clearData();
-    };
+            // Clear all the data form the object store
+            clearData(db);
+        };
+    }
+    catch (e) {
+    }
 }
 
-function clearData() {
-    // open a read/write db transaction, ready for clearing the data
-    var transaction = db.transaction(["emularity"], "readwrite");
+function clearData(db) {
+    try {
+        // open a read/write db transaction, ready for clearing the data
+        var transaction = db.transaction(["emularity"], "readwrite");
 
-    // report on the success of the transaction completing, when everything is done
-    transaction.oncomplete = function (event) {
-        console.log('<li>Transaction completed.</li>');
-    };
+        // report on the success of the transaction completing, when everything is done
+        transaction.oncomplete = function (event) {
+            console.log('<li>Transaction completed.</li>');
+        };
 
-    transaction.onerror = function (event) {
-        console.log('<li>Transaction not opened due to error: ' + transaction.error + '</li>');
-    };
+        transaction.onerror = function (event) {
+            console.log('<li>Transaction not opened due to error: ' + transaction.error + '</li>');
+        };
 
-    // create an object store on the transaction
-    var objectStore = transaction.objectStore("emularity");
+        // create an object store on the transaction
+        var objectStore = transaction.objectStore("emularity");
 
-    // Make a request to clear all the data out of the object store
-    var objectStoreRequest = objectStore.clear();
+        // Make a request to clear all the data out of the object store
+        var objectStoreRequest = objectStore.clear();
 
-    objectStoreRequest.onsuccess = function (event) {
-        // report the success of our request
-        console.log('<li>Request successful.</li>');
-    };
+        objectStoreRequest.onsuccess = function (event) {
+            // report the success of our request
+            console.log('<li>Request successful.</li>');
+        };
+    }
+    catch (e) { }
 };
 
 function grabEmuScreenshot() {
