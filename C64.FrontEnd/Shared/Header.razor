@@ -110,9 +110,7 @@
                             </li>
                             <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/guestbook"))"><i class="fas fa-atlas w-25px" title="Guestbook"></i> Guestbook</a></li>
                             <li>
-                                <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-microchip w-25px" title="Add"></i> Add</a>
-                                @*<AuthorizeView>
-                                    <Authorized>*@
+                                <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-folder-plus w-25px" title="Add"></i> Add</a>
                                 <nav class="nav-items" style="display:none">
                                     <ul>
                                         <li><AddProductionLink ExecuteBefore="CloseMenu"><Content>Add Production</Content></AddProductionLink></li>
@@ -126,23 +124,16 @@
                                         </AuthorizeView>
                                     </ul>
                                 </nav>
-                                @*</Authorized>
-                                        <NotAuthorized>
-                                            <nav class="nav-items" style="display:none">
-                                                <ul>
-                                                    <li><LoginLink ExecuteBefore="CloseMenu"><Content>Login</Content></LoginLink></li>
-                                                </ul>
-                                            </nav>
-                                        </NotAuthorized>
-                                    </AuthorizeView>*@
+                            </li>
+                            <li>
+                                <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-user-astronaut w-25px" title="User"></i> User</a>
                                 <nav class="nav-items" style="display:none">
                                     <ul>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming"))">Tutorial</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming/sourcecodes"))">Sourcecodes</a></li>
+                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/account/register"))">Register</a></li>
+                                        <li><LoginLink ExecuteBefore="CloseMenu"><Content>Login</Content></LoginLink></li>
                                     </ul>
                                 </nav>
                             </li>
-
                             <li class="mb-4">
                                 <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-question w-25px" title="Help"></i> Help</a>
                                 <nav class="nav-items" style="display:none">

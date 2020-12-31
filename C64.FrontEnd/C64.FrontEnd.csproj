@@ -8,6 +8,7 @@
     <PackageProjectUrl>https://c64.ch</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/Sabbi/C64.CH/</RepositoryUrl>
+    <UserSecretsId>bd34a04b-024b-4ff7-ab29-5c18ffc0e5a3</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
