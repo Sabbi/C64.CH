@@ -2,12 +2,13 @@
 @implements IDisposable
 
 @inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
 @inject IUnitOfWork unitOfWork
 @inject ILogger<ProductionList> logger
 
 @if (productions != null)
 {
-    <div class="text-right"><Sorter Sorted="OnSorted" SorterData="@sorterData" /></div>
+    <div id="@Identifier" class="text-right"><Sorter Sorted="OnSorted" SorterData="@sorterData" /></div>
     <PaginatorRecordInfo CurrentPage="currentPage" PageSize="pageSize" TotalNumberOfRecords="totalNumberOfRecords" />
     <Paginator CurrentPage="currentPage" TotalAmountPages="totalNumberOfPages" SelectedPage="OnSelectPage"></Paginator>
     <div class="row">
@@ -36,10 +37,16 @@
     [Parameter]
     public bool DefaultIsSortedAscending { get; set; } = true;
 
+    [Parameter]
+    public string Identifier { get; set; } = "pl-default";
+
+    [Parameter]
+    public bool ScrollIntoView { get; set; } = false;
+
     private IEnumerable<Production> productions;
 
     // Pagination
-    private int pageSize = 12;
+    private int pageSize = 24;
     private int currentPage = 1;
     private int totalNumberOfPages = 0;
     private int totalNumberOfRecords = 0;
@@ -85,7 +92,30 @@
         LoadQueryParamters();
         await LoadProductions();
         StateHasChanged();
+        await ScrollToFragment();
 
+    }
+
+    private async Task ScrollToFragment()
+    {
+        var uri = new Uri(navigationManager.Uri, UriKind.Absolute);
+        var fragment = uri.Fragment;
+        if (fragment.StartsWith('#'))
+        {
+            // Handle text fragment (https://example.org/#test:~:text=foo)
+            // https://github.com/WICG/scroll-to-text-fragment/
+            var elementId = fragment.Substring(1);
+            var index = elementId.IndexOf(":~:", StringComparison.Ordinal);
+            if (index > 0)
+            {
+                elementId = elementId.Substring(0, index);
+            }
+
+            if (!string.IsNullOrEmpty(elementId))
+            {
+                await jsRuntime.InvokeVoidAsync("BlazorScrollToId", elementId);
+            }
+        }
     }
 
     private void LoadQueryParamters()
@@ -112,7 +142,10 @@
 
         logger.LogInformation("NavigateTo Fired, we're going to {url}", navigateToUrl);
 
-        navigationManager.NavigateTo(navigateToUrl);
+        if (ScrollIntoView)
+            navigationManager.NavigateTo(navigateToUrl + "&i=i#" + Identifier);
+        else
+            navigationManager.NavigateTo(navigateToUrl);
     }
 
     private async Task LoadProductions()

@@ -278,3 +278,14 @@ function grabEmuScreenshot() {
     var dataUrl = canvas.toDataURL("image/png");
     return dataUrl;
 }
+
+function BlazorScrollToId(id) {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLElement) {
+        element.scrollIntoView({
+            behavior: "auto",
+            block: "start",
+            inline: "nearest"
+        });
+    }
+}
