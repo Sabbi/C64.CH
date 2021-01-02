@@ -1,15 +1,8 @@
 ﻿using C64.Services.Archive;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 
 namespace C64.Services.ViceLoader
 {
-    public interface IViceLoader
-    {
-        (string SetupEmu, object SetupEmuParameters) ProcessFile(int productionFileId, byte[] fileData);
-    }
-
     public class DefaultViceLoader : IViceLoader
     {
         private readonly IArchiveService archiveService;
@@ -21,60 +14,51 @@ namespace C64.Services.ViceLoader
 
         public (string SetupEmu, object SetupEmuParameters) ProcessFile(int productionFileId, byte[] fileData)
         {
+            IViceDepacker viceDepacker;
+
             archiveService.Load(fileData);
 
-            var fileIndexesToLoad = new List<int>();
+            switch (Md5Hash(fileData))
+            {
+                // productions/1466/Biba_2_-_Dream_Injection
+                case "37d16933646118bc3da83bdbec6e1c40":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "?demo*");
+                    break;
 
-            var archiveInfo = archiveService.ArchiveInfo;
-            var arcl = archiveInfo.CompressedFileInfos.ToList();
-            if (archiveInfo.NumberOfD64Files == 1)
-            {
-                var fileInfo = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.IsD64);
-                fileIndexesToLoad.Add(arcl.IndexOf(fileInfo));
-            }
-            else if (archiveInfo.NumberOfD64Files > 1)
-            {
-                foreach (var fileInfo in archiveInfo.CompressedFileInfos.Where(p => p.IsD64).OrderBy(p => p.FileName))
-                {
-                    fileIndexesToLoad.Add(arcl.IndexOf(fileInfo));
-                }
-            }
-            else
-            {
-                // if no d64-Files, load first prg, t64, p00 or t00-file
-                var prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".prg", StringComparison.OrdinalIgnoreCase));
-                if (prg == null)
-                    prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".t64", StringComparison.OrdinalIgnoreCase));
-                if (prg == null)
-                    prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".p00", StringComparison.OrdinalIgnoreCase));
-                if (prg == null)
-                    prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".t00", StringComparison.OrdinalIgnoreCase));
+                // productions/241/Airdance_4
+                case "b4a1b36b4dbe8d9fadd5792959fb0d6d":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "air*");
+                    break;
 
-                fileIndexesToLoad.Add(arcl.IndexOf(prg));
+                // productions/89/Dawnfall
+                case "6ff1aa9c0ba15f2bd8ade9019f8ab1c2":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "dawnfall");
+                    break;
+
+                // productions/3623/Blaze_Of_Glory
+                case "0e9531d4fc6299839783dafc9a8eb13b":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, " blaze*");
+                    break;
+
+                default:
+                    viceDepacker = new ViceDepacker(productionFileId, archiveService.ArchiveInfo);
+                    break;
             }
 
-            var list = new List<string>();
-            var flipList = new List<int>();
+            var result = viceDepacker.ProcessFile();
+            return (result.SetupEmu, result.SetupEmuParameters);
+        }
 
-            if (fileIndexesToLoad.Any())
-            {
-                foreach (var indexToLoad in fileIndexesToLoad)
-                {
-                    list.Add($"{productionFileId}-{indexToLoad}.bin");
-                }
+        private string Md5Hash(byte[] fileData)
+        {
+            var md5 = System.Security.Cryptography.MD5.Create();
+            var hash = md5.ComputeHash(fileData);
 
-                if (fileIndexesToLoad.Count > 1)
-                {
-                    for (var i = 1; i < fileIndexesToLoad.Count + 1; i++)
-                    {
-                        flipList.Insert(0, i);
-                    }
-                }
+            var result = new StringBuilder(hash.Length * 2);
 
-                flipList.Reverse();
-            }
-
-            return ("setupEmu", new object[] { list, flipList });
+            for (int i = 0; i < hash.Length; i++)
+                result.Append(hash[i].ToString("x2"));
+            return result.ToString();
         }
     }
 }
