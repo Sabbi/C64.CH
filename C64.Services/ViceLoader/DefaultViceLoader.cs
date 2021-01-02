@@ -40,6 +40,11 @@ namespace C64.Services.ViceLoader
                     viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, " blaze*");
                     break;
 
+                // productions/4880/Beavis_Butthead_-_The_Dentro
+                case "60bad79b15e3771e826e444e208e4fc2":
+                    viceDepacker = new ViceDepackerCustomPrgFileName(productionFileId, archiveService.ArchiveInfo, "bbdentro.prg");
+                    break;
+
                 default:
                     viceDepacker = new ViceDepacker(productionFileId, archiveService.ArchiveInfo);
                     break;
