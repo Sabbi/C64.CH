@@ -141,17 +141,13 @@ function setupEmu(params, sidModel = 0, driveSoundEmulation = 0, driveSoundEmula
     var fliplist = params[1];
     var overrideStar = params[2];
 
-    console.log("DISKIMAGES");
-    console.log(diskimages);
-
-    console.log("FLIPLIST");
-    console.log(fliplist);
+    //console.log(diskimages);
+    //console.log(fliplist);
 
     var mountFiles = new Array();
 
     for (var i = 0; i < diskimages.length; i++) {
-        console.log(i + " - Diskimage: " + diskimages[i]);
-
+        //      console.log(i + " - Diskimage: " + diskimages[i]);
         mountFiles[i] = VICELoader.mountFile("disk" + (i + 1) + ".d64", VICELoader.fetchFile("disk" + (i + 1) + ".d64", "/data/productions/archive/" + diskimages[i]));
     }
 
