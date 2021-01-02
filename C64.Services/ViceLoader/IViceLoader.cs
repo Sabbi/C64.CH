@@ -2,6 +2,6 @@
 {
     public interface IViceLoader
     {
-        (string SetupEmu, object SetupEmuParameters) ProcessFile(int productionFileId, byte[] fileData);
+        (string SetupEmu, object SetupEmuParameters) ProcessFile(int productionFileId, string filename, byte[] fileData);
     }
 }
