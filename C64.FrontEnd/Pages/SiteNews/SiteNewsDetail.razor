@@ -22,8 +22,8 @@
                     </AuthorizeView>
                 </div>
                 <div class="col-12">
-                    <RenderMarkdown MarkdownContent="@SiteInfo.Text.Replace("<br>", "\n")" />
                     <div class="small float-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
+                    <RenderMarkdown MarkdownContent="@SiteInfo.Text.Replace("<br>", "\n")" />
                     <hr>
                 </div>
             }
