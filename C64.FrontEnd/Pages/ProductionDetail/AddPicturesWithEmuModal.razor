@@ -148,7 +148,7 @@
         }
 
         var viceLoader = new DefaultViceLoader(archiveService);
-        var emuParmeters = viceLoader.ProcessFile(productionFile.ProductionFileId, fileData);
+        var emuParmeters = viceLoader.ProcessFile(productionFile.ProductionFileId, productionFile.Filename, fileData);
         await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, "0", "0", 1000, "0", "1");
         await jsRuntime.InvokeVoidAsync("startEmu");
     }

@@ -78,7 +78,7 @@
         }
 
         var viceLoader = new DefaultViceLoader(archiveService);
-        var emuParmeters = viceLoader.ProcessFile(ProductionFile.ProductionFileId, fileData);
+        var emuParmeters = viceLoader.ProcessFile(ProductionFile.ProductionFileId, ProductionFile.Filename, fileData);
         await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, SidModel, DriveSounds ? "1" : "0", 1000, CrtEmulation ? "1" : "0");
         await jsRuntime.InvokeVoidAsync("startEmu");
         started = true;

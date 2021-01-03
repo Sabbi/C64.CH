@@ -139,6 +139,7 @@ var isStarted = false;
 function setupEmu(params, sidModel = 0, driveSoundEmulation = 0, driveSoundEmulationVolume = 0, crtEmulation = 0) {
     var diskimages = params[0];
     var fliplist = params[1];
+    var overrideStar = params[2];
 
     //console.log(diskimages);
     //console.log(fliplist);
@@ -146,11 +147,16 @@ function setupEmu(params, sidModel = 0, driveSoundEmulation = 0, driveSoundEmula
     var mountFiles = new Array();
 
     for (var i = 0; i < diskimages.length; i++) {
-        console.log(i + " - Diskimage: " + diskimages[i]);
-
+        //      console.log(i + " - Diskimage: " + diskimages[i]);
         mountFiles[i] = VICELoader.mountFile("disk" + (i + 1) + ".d64", VICELoader.fetchFile("disk" + (i + 1) + ".d64", "/data/productions/archive/" + diskimages[i]));
     }
-    var autoLoad = VICELoader.autoLoad("disk1.d64");
+
+    var autoLoad;
+
+    if (overrideStar)
+        autoLoad = VICELoader.autoLoad("disk1.d64:" + overrideStar);
+    else
+        autoLoad = VICELoader.autoLoad("disk1.d64");
 
     var finalFlipList = new Array();
     for (var i = 0; i < fliplist.length; i++) {

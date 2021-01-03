@@ -1,15 +1,7 @@
 ﻿using C64.Services.Archive;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace C64.Services.ViceLoader
 {
-    public interface IViceLoader
-    {
-        (string SetupEmu, object SetupEmuParameters) ProcessFile(int productionFileId, byte[] fileData);
-    }
-
     public class DefaultViceLoader : IViceLoader
     {
         private readonly IArchiveService archiveService;
@@ -19,62 +11,53 @@ namespace C64.Services.ViceLoader
             this.archiveService = archiveService;
         }
 
-        public (string SetupEmu, object SetupEmuParameters) ProcessFile(int productionFileId, byte[] fileData)
+        public (string SetupEmu, object SetupEmuParameters) ProcessFile(int productionFileId, string filename, byte[] fileData)
         {
+            IViceDepacker viceDepacker;
+
             archiveService.Load(fileData);
 
-            var fileIndexesToLoad = new List<int>();
-
-            var archiveInfo = archiveService.ArchiveInfo;
-            var arcl = archiveInfo.CompressedFileInfos.ToList();
-            if (archiveInfo.NumberOfD64Files == 1)
+            switch (filename)
             {
-                var fileInfo = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.IsD64);
-                fileIndexesToLoad.Add(arcl.IndexOf(fileInfo));
-            }
-            else if (archiveInfo.NumberOfD64Files > 1)
-            {
-                foreach (var fileInfo in archiveInfo.CompressedFileInfos.Where(p => p.IsD64).OrderBy(p => p.FileName))
-                {
-                    fileIndexesToLoad.Add(arcl.IndexOf(fileInfo));
-                }
-            }
-            else
-            {
-                // if no d64-Files, load first prg, t64, p00 or t00-file
-                var prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".prg", StringComparison.OrdinalIgnoreCase));
-                if (prg == null)
-                    prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".t64", StringComparison.OrdinalIgnoreCase));
-                if (prg == null)
-                    prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".p00", StringComparison.OrdinalIgnoreCase));
-                if (prg == null)
-                    prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.EndsWith(".t00", StringComparison.OrdinalIgnoreCase));
+                // productions/1466/Biba_2_-_Dream_Injection
+                case "arise-biba_2.zip":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "?demo*");
+                    break;
 
-                fileIndexesToLoad.Add(arcl.IndexOf(prg));
-            }
+                // productions/241/Airdance_4
+                case "tat-airdance4.zip":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "air*");
+                    break;
 
-            var list = new List<string>();
-            var flipList = new List<int>();
+                // productions/89/Dawnfall
+                case "oxyron_cml-downfall.zip":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "dawnfall");
+                    break;
 
-            if (fileIndexesToLoad.Any())
-            {
-                foreach (var indexToLoad in fileIndexesToLoad)
-                {
-                    list.Add($"{productionFileId}-{indexToLoad}.bin");
-                }
+                // productions/3623/Blaze_Of_Glory
+                case "house_designs-blaze_of_glory.zip":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, " blaze*");
+                    break;
 
-                if (fileIndexesToLoad.Count > 1)
-                {
-                    for (var i = 1; i < fileIndexesToLoad.Count + 1; i++)
-                    {
-                        flipList.Insert(0, i);
-                    }
-                }
+                // productions/4880/Beavis_Butthead_-_The_Dentro
+                case "agnusdei-beavis___butthead_-_the_dentro.zip":
+                    viceDepacker = new ViceDepackerCustomPrgFileName(productionFileId, archiveService.ArchiveInfo, "bbdentro.prg");
+                    break;
 
-                flipList.Reverse();
+                // productions/7543/Artillery_100_percent
+                // productions/7346/Artillery_85_percent
+                case "shape-artillery_100_percent.zip":
+                case "shape-artillery_85_percent.zip":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "artillery*");
+                    break;
+
+                default:
+                    viceDepacker = new ViceDepacker(productionFileId, archiveService.ArchiveInfo);
+                    break;
             }
 
-            return ("setupEmu", new object[] { list, flipList });
+            var result = viceDepacker.ProcessFile();
+            return (result.SetupEmu, result.SetupEmuParameters);
         }
     }
 }
