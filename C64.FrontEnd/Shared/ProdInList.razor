@@ -14,26 +14,26 @@
                 <div class="icons">
                     @if (Production.NumberOfVideos > 0)
                     {
-                        <i class="fas fa-film m-1" title="has video"></i>
+                    <i class="fas fa-film m-1" title="has video"></i>
                     }
                     @if (Production.IsPartyRelease)
                     {
-                        <i class="fas fa-beer m-1" title="party release"></i>
+                    <i class="fas fa-beer m-1" title="party release"></i>
                     }
 
                     @if (Production.NumberOfComments > 0)
                     {
-                        <i class="fas fa-comment-dots m-1" title="has comments"></i>
+                    <i class="fas fa-comment-dots m-1" title="has comments"></i>
                     }
 
                     @if (Production.NumberOfHiddenParts > 0)
                     {
-                        <i class="fas fa-user-secret m-1" title="has hidden parts"></i>
+                    <i class="fas fa-user-secret m-1" title="has hidden parts"></i>
                     }
                 </div>
             </a>
         </div>
-        <div class="prodlistitem-content">
+        <div class="prodlistitem-content overflow-hidden">
             <table>
                 <tbody>
                     <tr class="align-top">
@@ -44,19 +44,19 @@
                     </tr>
                     @if (ShowReleased)
                     {
-                        <tr><th>Released:</th><td>@Production.ReleaseDate.ParseDate(Production.ReleaseDateType)</td></tr>
+                    <tr><th>Released:</th><td>@Production.ReleaseDate.ParseDate(Production.ReleaseDateType)</td></tr>
                     }
                     @if (ShowAdded)
                     {
-                        <tr><th>Added:</th><td>@Production.Added.ParseDate(DateType.YearMonthDay)</td></tr>
+                    <tr><th>Added:</th><td>@Production.Added.ParseDate(DateType.YearMonthDay)</td></tr>
                     }
                     @if (ShowDownloads)
                     {
-                        <tr><th>Downloads:</th><td>@Production.Downloads</td></tr>
+                    <tr><th>Downloads:</th><td>@Production.Downloads</td></tr>
                     }
                     @if (ShowRating)
                     {
-                        <tr><th>Rating:</th><td>@Production.GetRatingText()</td></tr>
+                    <tr><th>Rating:</th><td>@Production.GetRatingText()</td></tr>
                     }
                 </tbody>
             </table>
