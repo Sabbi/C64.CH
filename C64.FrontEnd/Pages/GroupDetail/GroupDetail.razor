@@ -42,7 +42,10 @@
                 {
                     <tr><th>Base country</th><td>@group.Country.Name</td></tr>
                 }
-                <tr><th>Closed</th><td><PartialDateDisplay DateType="@group.ClosedDateType" DateValue="@group.ClosedDate" /></td></tr>
+                @if (group.ClosedDateType != DateType.None)
+                {
+                    <tr><th>Terminated</th><td><PartialDateDisplay DateType="@group.ClosedDateType" DateValue="@group.ClosedDate" /></td></tr>
+                }
                 <tr><th>Homepage</th><td>@group.Url.ValueOrNa()</td></tr>
                 <tr><th>Email</th><td>@group.Email.ValueOrNa()</td></tr>
                 <tr><th>Releases</th><td>@group.NumberOfReleases</td></tr>
