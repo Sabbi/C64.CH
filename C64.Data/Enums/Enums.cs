@@ -29,8 +29,15 @@ namespace C64.Data
     public enum VideoType
     {
         Unknown = 0,
+
+        [Display(Name = "PAL")]
         Pal = 1,
-        Ntsc = 2
+
+        [Display(Name = "NTSC")]
+        Ntsc = 2,
+
+        [Display(Name = "PAL & NTSC")]
+        PalNtsc = 12
     }
 
     public enum DateType
