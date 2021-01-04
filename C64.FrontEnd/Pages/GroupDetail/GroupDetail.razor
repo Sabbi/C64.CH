@@ -108,7 +108,7 @@
     private string baseUrl => $"groups/{GroupId}/{GroupName}";
     private IEnumerable<int> productionIds;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         await LoadGroup(GroupId);
     }
