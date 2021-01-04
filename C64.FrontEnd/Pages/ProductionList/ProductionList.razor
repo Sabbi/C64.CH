@@ -8,7 +8,10 @@
 
 @if (productions != null)
 {
-    <div id="@Identifier" class="text-right"><Sorter Sorted="OnSorted" SorterData="@sorterData" /></div>
+    @if (!HideSorter)
+    {
+        <div id="@Identifier" class="text-right"><Sorter Sorted="OnSorted" SorterData="@sorterData" /></div>
+    }
     <PaginatorRecordInfo CurrentPage="currentPage" PageSize="pageSize" TotalNumberOfRecords="totalNumberOfRecords" />
     <Paginator CurrentPage="currentPage" TotalAmountPages="totalNumberOfPages" SelectedPage="OnSelectPage"></Paginator>
     <div class="row">
@@ -43,6 +46,9 @@
     [Parameter]
     public bool ScrollIntoView { get; set; } = false;
 
+    [Parameter]
+    public bool HideSorter { get; set; } = false;
+
     private IEnumerable<Production> productions;
 
     // Pagination
@@ -69,6 +75,15 @@
         sorterData.SorterItems.Add(new SorterItem("ReleaseDate", "Sort By Released", false));
 
         LoadQueryParamters();
+    }
+
+    public void Update()
+    {
+        sorterData.CurrentSortColumn = DefaultSortColumn;
+        sorterData.IsSortedAscending = DefaultIsSortedAscending;
+
+        Task.Run(async () => await LoadProductions()).Wait();
+        StateHasChanged();
     }
 
     protected override async Task OnParametersSetAsync()

@@ -4,12 +4,16 @@
 @inject NavigationManager navigationManager
 
 @inject IUnitOfWork unitOfWork
+
+@inject IJSRuntime jsRuntime
+
+@implements IDisposable
 <Box>
     <Title>@title</Title>
     <Content>
         @if (productionIds != null)
         {
-            <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" DefaultSortColumn="@defaultSortColumn" DefaultIsSortedAscending="@defaultSortedAscending" />
+            <ProductionList @ref="productionList" ProductionIds="@productionIds" BaseUrl="@baseUrl" DefaultSortColumn="@defaultSortColumn" DefaultIsSortedAscending="@defaultSortedAscending" HideSorter="true" />
         }
     </Content>
 </Box>
@@ -27,6 +31,8 @@
 
     private ICollection<int> productionIds;
 
+    private ProductionList productionList;
+
     private string baseUrl
     {
         get
@@ -40,21 +46,34 @@
     private string defaultSortColumn = "Name";
     private bool defaultSortedAscending = true;
 
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        await LoadContent();
+        productionList.Update();
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        navigationManager.LocationChanged += OnLocationChanged;
+        await LoadContent();
+    }
+
+    private async Task LoadContent()
+    {
+        await jsRuntime.InvokeVoidAsync("console.log", "Load Content for " + ListBy);
         switch (ListBy)
         {
             case "latestadded":
-                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
                 defaultSortColumn = "Added";
                 defaultSortedAscending = false;
                 title = "Latest added demos";
+                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
                 break;
             case "latestreleased":
-                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
                 defaultSortColumn = "ReleaseDate";
                 defaultSortedAscending = false;
                 title = "Latest released demo";
+                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
                 break;
             case "toprated":
                 productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
@@ -118,6 +137,15 @@
                 throw new Exception("Invalid ListBy-Parameter");
         }
 
+        await jsRuntime.InvokeVoidAsync("console.log", defaultSortColumn);
+
+        StateHasChanged();
+
+    }
+
+    public void Dispose()
+    {
+        navigationManager.LocationChanged -= OnLocationChanged;
     }
 
 }

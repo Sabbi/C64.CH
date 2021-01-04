@@ -12107,3 +12107,10 @@ img.active {
 
 .validation-message {
   color: #ca6759; }
+
+.card-header a, .card-header a:visited {
+  color: #212529;
+  text-decoration: none; }
+
+.card-header a:hover {
+  color: #555; }

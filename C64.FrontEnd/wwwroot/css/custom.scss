@@ -532,3 +532,12 @@ img.active {
 .validation-message {
     color: $red;
 }
+
+.card-header a, .card-header a:visited {
+    color: $myblack;
+    text-decoration: none
+}
+
+.card-header a:hover {
+    color: $dark;
+}
