@@ -51,6 +51,18 @@ namespace C64.Services.ViceLoader
                     viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "artillery*");
                     break;
 
+                // productions/207/Trip_to_Nepal_25
+                case "cascade-trip_to_nepal_2.5.zip":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "t.t.*");
+                    break;
+
+                // productions/205/Trip_to_Nepal
+                // productions/206/Trip_to_Nepal_2
+                case "cascade-trip_to_nepal_1.zip":
+                case "cascade-trip_to_nepal_2.zip":
+                    viceDepacker = new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "trip*");
+                    break;
+
                 default:
                     viceDepacker = new ViceDepacker(productionFileId, archiveService.ArchiveInfo);
                     break;
