@@ -2,10 +2,7 @@
 @page "/productions/{ProdType}/{ListBy}"
 
 @inject NavigationManager navigationManager
-
 @inject IUnitOfWork unitOfWork
-
-@inject IJSRuntime jsRuntime
 
 @implements IDisposable
 <Box>
@@ -60,7 +57,6 @@
 
     private async Task LoadContent()
     {
-        await jsRuntime.InvokeVoidAsync("console.log", "Load Content for " + ListBy);
         switch (ListBy)
         {
             case "latestadded":
@@ -136,8 +132,6 @@
             default:
                 throw new Exception("Invalid ListBy-Parameter");
         }
-
-        await jsRuntime.InvokeVoidAsync("console.log", defaultSortColumn);
 
         StateHasChanged();
 
