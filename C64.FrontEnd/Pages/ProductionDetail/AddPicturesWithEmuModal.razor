@@ -10,6 +10,7 @@
 @inject IFallbackArchiveService archiveService
 
 @implements IDisposable
+@using System.Timers;
 
 <BootstrapModal @ref="bootstrapModal" Title="@($"Add pictures for {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
     <Content>
@@ -21,10 +22,16 @@
         @if (state == "Emulation")
         {
             <div class="row mb-1">
-                <div class="col-6">
+                <div class="col-4">
                     <button class="btn btn-primary" @onclick="TakeScreenshot">Take Screenshot</button>
                 </div>
-                <div class="col-6 text-right">
+                <div class="col-4 text-center">
+                    @if (showDiskChange)
+                    {
+                        <button class="btn btn-primary" type="button" disabled="@nextDiskDisabled" @onclick="NextDisk">Insert Next Disk</button>
+                    }
+                </div>
+                <div class="col-4 text-right">
                     <button class="btn btn-primary" @onclick="SaveScreenshots">Save and add</button>
                 </div>
             </div>
@@ -73,6 +80,11 @@
     private BootstrapModal bootstrapModal;
 
     private List<string> screenshots = new List<string>();
+
+    private bool nextDiskDisabled = false;
+    private bool showDiskChange = false;
+
+    private Timer timer = new Timer();
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,11 +163,30 @@
         var emuParmeters = viceLoader.ProcessFile(productionFile.ProductionFileId, productionFile.Filename, fileData);
         await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, "0", "0", 1000, "0", "1");
         await jsRuntime.InvokeVoidAsync("startEmu");
+
+        showDiskChange = emuParmeters.enableDiskChange;
+
+        StateHasChanged();
+
     }
 
     public void Dispose()
     {
+        timer.Dispose();
         jsRuntime.InvokeVoidAsync("exitEmu");
+    }
+
+    public async Task NextDisk()
+    {
+        nextDiskDisabled = true;
+        StateHasChanged();
+
+        await jsRuntime.InvokeVoidAsync("insertNextDisk");
+
+        System.Threading.Thread.Sleep(1000);
+
+        nextDiskDisabled = false;
+        StateHasChanged();
     }
 
     private async Task SaveScreenshots()

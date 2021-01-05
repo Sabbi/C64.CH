@@ -814,7 +814,16 @@ var Module = null;
         Module = {
             arguments: game_data.emulator_arguments,
             screenIsReadOnly: true,
-            print: function (text) { console.log(text); },
+            print: function (text) {
+                console.log(text);
+                if (text == "Exiting...") {
+                    stateToFalse();
+                }
+
+                if (text == "Main CPU: starting at ($FFFC).") {
+                    stateToTrue();
+                }
+            },
             printErr: function (text) { console.log(text); },
             canvas: canvas,
             noInitialRun: false,

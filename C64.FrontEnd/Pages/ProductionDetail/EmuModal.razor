@@ -7,6 +7,7 @@
 @inject IFileStorageService fileStorageService
 
 @using C64.Services.ViceLoader
+@using System.Timers;
 
 @implements IDisposable
 
@@ -15,16 +16,20 @@
         <p class="float-right">
             @if (started)
             {
-                <button class="btn btn-primary" type="button" @onclick="FullScreen">Go fullscreen</button>
+                if (showDiskChange)
+                {
+                    <button class="btn btn-primary" type="button" disabled="@nextDiskDisabled" @onclick="NextDisk">Insert Next Disk</button>
+                }
+
+                <text>&nbsp;</text><button class="btn btn-primary" type="button" @onclick="FullScreen">Go fullscreen</button>
             }
         </p>
         <div id="emularity-splash-screen"></div>
         <canvas id="canvas" style="display: none; margin: 0 auto; background-color:#eeeeee" />
         <ul>
             <li>Demos should autostart, fullscreen only available after emulator has started</li>
-            <li>To insert next disk, click inside the emu, press Alt-N OR use F12 to enter Vice-Menu and choose a disk yourself (in emulator-folder)</li>
+            <li>To insert next disk, click button OR press Alt-N OR use F12 to enter Vice-Menu and choose a disk yourself (in emulator-folder)</li>
             <li>Alt-W to speed up, Joystick = Keypad+0, press ALT-J to switch ports, ESC or Alt-Tab to get back your mouse cursor</li>
-            <li>Sorry, no mute button</li>
         </ul>
     </Content>
 </BootstrapModal>
@@ -42,6 +47,11 @@
 
     [Parameter]
     public bool CrtEmulation { get; set; } = false;
+
+    private bool nextDiskDisabled = false;
+    private bool showDiskChange = false;
+
+    private Timer timer = new Timer();
 
     private BootstrapModal bootstrapModal;
     private string title = "";
@@ -81,6 +91,9 @@
         var emuParmeters = viceLoader.ProcessFile(ProductionFile.ProductionFileId, ProductionFile.Filename, fileData);
         await jsRuntime.InvokeVoidAsync(emuParmeters.SetupEmu, emuParmeters.SetupEmuParameters, SidModel, DriveSounds ? "1" : "0", 1000, CrtEmulation ? "1" : "0");
         await jsRuntime.InvokeVoidAsync("startEmu");
+
+        showDiskChange = emuParmeters.enableDiskChange;
+
         started = true;
         StateHasChanged();
     }
@@ -93,6 +106,7 @@
 
     public void Dispose()
     {
+        timer.Dispose();
         jsRuntime.InvokeVoidAsync("exitEmu");
     }
 
@@ -101,4 +115,16 @@
         await jsRuntime.InvokeVoidAsync("goFullScreen");
     }
 
+    public async Task NextDisk()
+    {
+        nextDiskDisabled = true;
+        StateHasChanged();
+
+        await jsRuntime.InvokeVoidAsync("insertNextDisk");
+
+        System.Threading.Thread.Sleep(1000);
+
+        nextDiskDisabled = false;
+        StateHasChanged();
+    }
 }

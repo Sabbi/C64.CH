@@ -41,8 +41,6 @@ toastr.options = {
 }
 
 window.initializeCarousel = () => {
-    console.log("Initialize carousel");
-
     $('#carousel1').carousel({ interval: 20000 });
     $('#carousel1').carousel(0);
     $('#carousel1-prev').click(
@@ -74,7 +72,6 @@ function submitLogin() {
     document.getElementById('headerLoginForm').submit();
 }
 function submitForm(id) {
-    console.log("Subtmit " + id);
     document.getElementById(id).submit();
 }
 
@@ -222,12 +219,45 @@ function exitEmu() {
     // End fix
 }
 
+var wasFullscreen = false;
+
+window.onload = window.onresize = function () {
+    if (typeof canvas !== 'undefined')
+        if (wasFullscreen) {
+            wasFullscreen = false;
+            resize(768, 544);
+        }
+    setTimeout(() => {
+        if (window.innerHeight == 1080 || window.innerHeight == 1440 || window.innerHeight == 1050 || window.innerHeight == 2160) {
+            wasFullscreen = true;
+            resize(768, window.innerHeight == 1050 ? 525 : 540);
+        }
+    }, 25);
+}
+
 function goFullScreen() {
     try {
-        if (isStarted)
+        if (isStarted) {
             emulator.requestFullScreen();
+        }
     }
     catch (e) { }
+}
+
+function resize(w, h) {
+    // create a temporary canvas obj to cache the pixel data //
+    var temp_cnvs = document.createElement('canvas');
+    var temp_cntx = temp_cnvs.getContext('2d');
+    // set it to the new width & height and draw the current canvas data into it //
+    temp_cnvs.width = w;
+    temp_cnvs.height = h;
+    temp_cntx.drawImage(canvas, 0, 0);
+    // resize & clear the original canvas and copy back in the cached pixel data //
+    canvas.width = w;
+    canvas.height = h;
+
+    var _context = canvas.getContext("2d");
+    _context.drawImage(temp_cnvs, 0, 0);
 }
 
 cleanDb();
@@ -283,6 +313,27 @@ function clearData(db) {
 function grabEmuScreenshot() {
     var dataUrl = canvas.toDataURL("image/png");
     return dataUrl;
+}
+
+function insertNextDisk() {
+    document.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            key: "n",
+            altKey: true
+        })
+    );
+    document.dispatchEvent(
+        new KeyboardEvent("keyup", {
+            key: "n",
+            altKey: true
+        })
+    );
+}
+
+function stateToTrue() {
+}
+
+function stateToFalse() {  
 }
 
 function BlazorScrollToId(id) {

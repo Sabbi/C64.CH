@@ -2,6 +2,6 @@
 {
     public interface IViceDepacker
     {
-        (string SetupEmu, object SetupEmuParameters) ProcessFile();
+        (string SetupEmu, object SetupEmuParameters, bool enableDiskChange) ProcessFile();
     }
 }

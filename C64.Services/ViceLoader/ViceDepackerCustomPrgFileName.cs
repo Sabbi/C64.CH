@@ -12,12 +12,12 @@ namespace C64.Services.ViceLoader
             this.startFile = startFile;
         }
 
-        public override (string SetupEmu, object SetupEmuParameters) ProcessFile()
+        public override (string SetupEmu, object SetupEmuParameters, bool enableDiskChange) ProcessFile()
         {
             var lists = GenerateLists(productionFileId, archiveInfo);
             var prg = archiveInfo.CompressedFileInfos.FirstOrDefault(p => p.FileName.Equals(startFile));
             var indexToLoad = archiveInfo.CompressedFileInfos.ToList().IndexOf(prg);
-            return ("setupEmu", new object[] { new[] { $"{productionFileId}-{indexToLoad}.bin" }, new[] { 0 } });
+            return ("setupEmu", new object[] { new[] { $"{productionFileId}-{indexToLoad}.bin" }, new[] { 0 } }, false);
         }
     }
 }

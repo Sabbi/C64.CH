@@ -16,10 +16,10 @@ namespace C64.Services.ViceLoader
             this.archiveInfo = archiveInfo;
         }
 
-        public virtual (string SetupEmu, object SetupEmuParameters) ProcessFile()
+        public virtual (string SetupEmu, object SetupEmuParameters, bool enableDiskChange) ProcessFile()
         {
             var lists = GenerateLists(productionFileId, archiveInfo);
-            return ("setupEmu", new object[] { lists.list, lists.flipList });
+            return ("setupEmu", new object[] { lists.list, lists.flipList }, lists.list.Count() > 1);
         }
 
         protected (IEnumerable<string> list, IEnumerable<int> flipList) GenerateLists(int productionFileId, ArchiveInfo archiveInfo)

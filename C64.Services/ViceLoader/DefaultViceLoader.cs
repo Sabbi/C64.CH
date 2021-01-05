@@ -11,7 +11,7 @@ namespace C64.Services.ViceLoader
             this.archiveService = archiveService;
         }
 
-        public (string SetupEmu, object SetupEmuParameters) ProcessFile(int productionFileId, string filename, byte[] fileData)
+        public (string SetupEmu, object SetupEmuParameters, bool enableDiskChange) ProcessFile(int productionFileId, string filename, byte[] fileData)
         {
             IViceDepacker viceDepacker;
 
@@ -57,7 +57,7 @@ namespace C64.Services.ViceLoader
             }
 
             var result = viceDepacker.ProcessFile();
-            return (result.SetupEmu, result.SetupEmuParameters);
+            return (result.SetupEmu, result.SetupEmuParameters, result.enableDiskChange);
         }
     }
 }
