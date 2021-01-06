@@ -331,9 +331,11 @@ function insertNextDisk() {
 }
 
 function stateToTrue() {
+    $(".emulator-control").removeClass("invisible");
 }
 
-function stateToFalse() {  
+function stateToFalse() {
+    $(".emulator-control").addClass("invisible");
 }
 
 function BlazorScrollToId(id) {

@@ -18,17 +18,16 @@
             {
                 if (showDiskChange)
                 {
-                    <button class="btn btn-primary" type="button" disabled="@nextDiskDisabled" @onclick="NextDisk">Insert Next Disk</button>
+            <button class="btn btn-primary invisible emulator-control" type="button" disabled="@nextDiskDisabled" @onclick="NextDisk">Insert Next Disk</button>
                 }
 
-                <text>&nbsp;</text><button class="btn btn-primary" type="button" @onclick="FullScreen">Go fullscreen</button>
+            <text>&nbsp;</text><button class="btn btn-primary invisible emulator-control" type="button" @onclick="FullScreen">Go fullscreen</button>
             }
         </p>
         <div id="emularity-splash-screen"></div>
         <canvas id="canvas" style="display: none; margin: 0 auto; background-color:#eeeeee" />
         <ul>
-            <li>Demos should autostart, fullscreen only available after emulator has started</li>
-            <li>To insert next disk, click button OR press Alt-N OR use F12 to enter Vice-Menu and choose a disk yourself (in emulator-folder)</li>
+            <li>To insert next disk, click button OR press Alt-N. F12 to enter Vice-Menu (data in emulator-folder)</li>
             <li>Alt-W to speed up, Joystick = Keypad+0, press ALT-J to switch ports, ESC or Alt-Tab to get back your mouse cursor</li>
         </ul>
     </Content>

@@ -12114,3 +12114,9 @@ img.active {
 
 .card-header a:hover {
   color: #555; }
+
+.visible {
+  visibility: visible; }
+
+.invisible {
+  visibility: hidden; }
