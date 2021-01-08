@@ -71,10 +71,11 @@ namespace C64.Data.Storage
                 content = archiveService.AddFileId();
             }
 
-            var freeFileFound = false;
+            fileName = SanitizeFilename(fileName);
 
             var newFileName = fileName;
 
+            var freeFileFound = false;
             var nextFileNumberCounter = 0;
 
             while (!freeFileFound)
@@ -108,6 +109,19 @@ namespace C64.Data.Storage
         private bool FileExists(string container, string fileName)
         {
             return context.DbFiles.Any(p => p.Container == container && p.FileName == fileName);
+        }
+
+        private string SanitizeFilename(string fileName)
+        {
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(c, '_');
+            }
+
+            fileName = fileName.Replace('%', '_');
+            fileName = fileName.Replace('@', '_');
+
+            return fileName;
         }
     }
 }
