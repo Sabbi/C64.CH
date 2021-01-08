@@ -1689,7 +1689,7 @@ var Module = null;
 
         this.requestFullScreen = function () {
             if (typeof Module == "object" && "requestFullScreen" in Module) {
-                Module.requestFullScreen(1, 0);
+                Module.requestFullScreen(0, 0);
             } else if (runner) {
                 runner.requestFullScreen();
             }
