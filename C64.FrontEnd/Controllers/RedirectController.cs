@@ -42,11 +42,25 @@ namespace C64.FrontEnd.Controllers
             return DoRedirect("/programming");
         }
 
+        // /sources
+        [Route("/sources")]
+        public IActionResult Sources()
+        {
+            return DoRedirect("/programming/sourcecodes");
+        }
+
         // /contact -> /help/contact
         [Route("/contact")]
         public IActionResult Contact()
         {
             return DoRedirect("/help/contact");
+        }
+
+        // /submit -> /help/contribute
+        [Route("/submit")]
+        public IActionResult Contribute()
+        {
+            return DoRedirect("/help/contribute");
         }
 
         // /demos/parties.php -> /parties
