@@ -33,11 +33,13 @@
 
     private Timer timeTimer = new Timer();
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            timeTimer.Interval = 500;
+            await UpdateLatency();
+
+            timeTimer.Interval = 4000;
             timeTimer.Elapsed += OnTimerElapsed;
             timeTimer.Start();
         }
@@ -45,8 +47,11 @@
 
     private async void OnTimerElapsed(object sender, ElapsedEventArgs e)
     {
-        timeTimer.Interval = 4000;
+        await UpdateLatency();
+    }
 
+    private async Task UpdateLatency()
+    {
         startTime = DateTime.UtcNow;
         var _ = await jsRuntime.InvokeAsync<string>("toString");
         latency = DateTime.UtcNow - startTime;
@@ -55,7 +60,11 @@
 
     public void Dispose()
     {
-        timeTimer.Dispose();
+        if (timeTimer != null)
+        {
+            timeTimer.Elapsed -= OnTimerElapsed;
+            timeTimer.Dispose();
+        }
     }
 
 }
