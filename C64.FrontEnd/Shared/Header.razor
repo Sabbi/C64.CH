@@ -128,12 +128,23 @@
                             <li>
                                 <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-user-astronaut w-25px" title="User"></i> User</a>
                                 <nav class="nav-items" style="display:none">
-                                    <ul>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/account/register"))">Register</a></li>
-                                        <li><LoginLink ExecuteBefore="CloseMenu"><Content>Login</Content></LoginLink></li>
-                                    </ul>
+                                    <AuthorizeView>
+                                        <Authorized>
+                                            <ul>
+                                                <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/account"))">Manage your account</a></li>
+                                                <li><a href="" @onclick:preventDefault @onclick="@(() => navigationManager.NavigateTo("/user/logout",true))">Logout</a></li>
+                                            </ul>
+                                        </Authorized>
+                                        <NotAuthorized>
+                                            <ul>
+                                                <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/account/register"))">Register</a></li>
+                                                <li><LoginLink ExecuteBefore="CloseMenu"><Content>Login</Content></LoginLink></li>
+                                            </ul>
+                                        </NotAuthorized>
+                                    </AuthorizeView>
                                 </nav>
                             </li>
+
                             <li class="mb-4">
                                 <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-question w-25px" title="Help"></i> Help</a>
                                 <nav class="nav-items" style="display:none">
