@@ -1,6 +1,7 @@
 ﻿using C64.Data.Entities;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace C64.Data.History
@@ -35,7 +36,17 @@ namespace C64.Data.History
             if (newMemberData.LeftDateType == DateType.None)
                 newMemberData.LeftDate = DateTime.MaxValue;
 
+            newMemberData.Scener.ProductionsSceners = new HashSet<ProductionsSceners>();
+            newMemberData.Scener.ScenersGroups = new HashSet<ScenersGroups>();
+            newMemberData.Scener.PartiesSceners = new HashSet<PartiesSceners>();
+            newMemberData.Scener.AlterEgos = new HashSet<ScenersSceners>();
+
             var oldMemberData = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == newMemberData.Scener.ScenerId);
+
+            oldMemberData.Scener.ProductionsSceners = new HashSet<ProductionsSceners>();
+            oldMemberData.Scener.ScenersGroups = new HashSet<ScenersGroups>();
+            oldMemberData.Scener.PartiesSceners = new HashSet<PartiesSceners>();
+            oldMemberData.Scener.AlterEgos = new HashSet<ScenersSceners>();
 
             var dbhistory = new HistoryRecord
             {
