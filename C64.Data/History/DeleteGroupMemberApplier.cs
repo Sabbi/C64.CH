@@ -1,5 +1,6 @@
 ﻿using C64.Data.Entities;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace C64.Data.History
@@ -23,6 +24,11 @@ namespace C64.Data.History
             var toDelete = (int)newValue;
 
             var oldMemberData = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == toDelete);
+
+            oldMemberData.Scener.ProductionsSceners = new HashSet<ProductionsSceners>();
+            oldMemberData.Scener.ScenersGroups = new HashSet<ScenersGroups>();
+            oldMemberData.Scener.PartiesSceners = new HashSet<PartiesSceners>();
+            oldMemberData.Scener.AlterEgos = new HashSet<ScenersSceners>();
 
             var dbhistory = new HistoryRecord
             {
