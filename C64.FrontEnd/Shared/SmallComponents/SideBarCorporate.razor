@@ -52,10 +52,17 @@
 
     private async Task UpdateLatency()
     {
-        startTime = DateTime.UtcNow;
-        var _ = await jsRuntime.InvokeAsync<string>("toString");
-        latency = DateTime.UtcNow - startTime;
-        await base.InvokeAsync(StateHasChanged);
+        try
+        {
+            startTime = DateTime.UtcNow;
+            var _ = await jsRuntime.InvokeAsync<string>("toString");
+            latency = DateTime.UtcNow - startTime;
+            await base.InvokeAsync(StateHasChanged);
+        }
+        catch
+        {
+            latency = TimeSpan.FromMilliseconds(0);
+        }
     }
 
     public void Dispose()
