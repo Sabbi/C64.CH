@@ -15,189 +15,189 @@
 
 @if (production != null)
 {
-<Box>
-    <Title>
-        @production.Name<br />
-        by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
-        <div class="float-right pr-3 position-absolute fav-heart">
-            @if (isFavorite)
+    <Box>
+        <Title>
+            @production.Name<br />
+            by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
+            <div class="float-right pr-3 position-absolute fav-heart">
+                @if (isFavorite)
                 {
-            <a title="Remove from favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(false))"><i class="fas fa-heart red" title="Remove from favorites"></i></a>
+                    <a title="Remove from favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(false))"><i class="fas fa-heart red" title="Remove from favorites"></i></a>
                 }
                 else
                 {
-            <a title="Add to favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(true))"><i class="far fa-heart red"></i></a>
+                    <a title="Add to favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(true))"><i class="far fa-heart red"></i></a>
                 }
-        </div>
-        <div class="d-none d-sm-block float-right pr-3 position-absolute" style="right:0; top:5px">
-            <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
-                <option value="0">Edit Production</option>
-                <option value="general">- General</option>
-                <option value="downloads">- Downloads</option>
-                <option value="pictures">- Add/Edit Screenshots</option>
-                <option value="emupictures">- Add Screenshots (Emu)</option>
-                <option value="videos">- Videos</option>
-                <option value="credits">- Credits</option>
-                <option value="additional">- Additional info</option>
-                <optgroup label="---------------------------"></optgroup>
-                <option value="viewHistory">View history</option>
-            </select>
-        </div>
-    </Title>
-    <Content>
-        <div class="row">
-            <div class="col-sm-5">
-                <PicturesCarousel ProductionName="@production.Name" ProductionPictures="@production.ProductionPictures" ProductionVideos="@production.ProductionVideos" />
             </div>
-            <div class="col-sm-7">
-                <table class="table table-prod-list">
-                    @if (!string.IsNullOrEmpty(production.Aka))
+            <div class="d-none d-sm-block float-right pr-3 position-absolute" style="right:0; top:5px">
+                <select class="form-control d-inline" id="prodEditSelect" @onchange="OnSelectEdit">
+                    <option value="0">Edit Production</option>
+                    <option value="general">- General</option>
+                    <option value="downloads">- Downloads</option>
+                    <option value="pictures">- Add/Edit Screenshots</option>
+                    <option value="emupictures">- Add Screenshots (Emu)</option>
+                    <option value="videos">- Videos</option>
+                    <option value="credits">- Credits</option>
+                    <option value="additional">- Additional info</option>
+                    <optgroup label="---------------------------"></optgroup>
+                    <option value="viewHistory">View history</option>
+                </select>
+            </div>
+        </Title>
+        <Content>
+            <div class="row">
+                <div class="col-sm-5">
+                    <PicturesCarousel ProductionName="@production.Name" ProductionPictures="@production.ProductionPictures" ProductionVideos="@production.ProductionVideos" />
+                </div>
+                <div class="col-sm-7">
+                    <table class="table table-prod-list">
+                        @if (!string.IsNullOrEmpty(production.Aka))
                         {
-                    <tr>
-                        <th>Aka:</th>
-                        <td>
-                            @production.Aka
-                        </td>
-                    </tr>
+                            <tr>
+                                <th>Aka:</th>
+                                <td>
+                                    @production.Aka
+                                </td>
+                            </tr>
                         }
-                    <tr>
-                        <th>By:</th>
-                        <td>
-                            <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Category:</th>
-                        <td>
-                            <EnumDisplayNameAttribute DisplayNameFor="@production.Platform" /> - <EnumDisplayNameAttribute DisplayNameFor="@production.TopCategory" /> -  <EnumDisplayNameAttribute DisplayNameFor="@production.SubCategory" />
-                        </td>
-                    </tr>
-                    @if (production.VideoType != VideoType.Unknown)
+                        <tr>
+                            <th>By:</th>
+                            <td>
+                                <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Category:</th>
+                            <td>
+                                <EnumDisplayNameAttribute DisplayNameFor="@production.Platform" /> - <EnumDisplayNameAttribute DisplayNameFor="@production.TopCategory" /> -  <EnumDisplayNameAttribute DisplayNameFor="@production.SubCategory" />
+                            </td>
+                        </tr>
+                        @if (production.VideoType != VideoType.Unknown)
                         {
-                    <tr>
-                        <th>Video-Standard:</th>
-                        <td>
-                            <EnumDisplayNameAttribute DisplayNameFor="@production.VideoType" />
-                        </td>
-                    </tr>
+                            <tr>
+                                <th>Video-Standard:</th>
+                                <td>
+                                    <EnumDisplayNameAttribute DisplayNameFor="@production.VideoType" />
+                                </td>
+                            </tr>
                         }
-                    <tr><th><span class="text-nowrap">Released on:</span></th><td><PartialDateDisplay DateType="@production.ReleaseDateType" DateValue="@production.ReleaseDate" /></td></tr>
-                    @if (production.ProductionsParties.Any())
+                        <tr><th><span class="text-nowrap">Released on:</span></th><td><PartialDateDisplay DateType="@production.ReleaseDateType" DateValue="@production.ReleaseDate" /></td></tr>
+                        @if (production.ProductionsParties.Any())
                         {
-                    <tr>
-                        <th>Released at:</th>
-                        <td>
-                            <DetailParties ProductionsParties="@production.ProductionsParties" />
-                        </td>
-                    </tr>
+                            <tr>
+                                <th>Released at:</th>
+                                <td>
+                                    <DetailParties ProductionsParties="@production.ProductionsParties" />
+                                </td>
+                            </tr>
                         }
-                    @if (!string.IsNullOrEmpty(production.Remarks))
+                        @if (!string.IsNullOrEmpty(production.Remarks))
                         {
-                    <tr><th>Remarks:</th><td>@production.Remarks</td></tr>
+                            <tr><th>Remarks:</th><td>@production.Remarks</td></tr>
                         }
-                    @if (production.HiddenParts.Any())
+                        @if (production.HiddenParts.Any())
                         {
-                    <tr class="align-top">
-                        <th><span class="nowrap">Hidden Parts:</span></th>
-                        <td>
-                            <DetailHiddenParts HiddenParts="@production.HiddenParts" />
-                        </td>
-                    </tr>
+                            <tr class="align-top">
+                                <th><span class="nowrap">Hidden Parts:</span></th>
+                                <td>
+                                    <DetailHiddenParts HiddenParts="@production.HiddenParts" />
+                                </td>
+                            </tr>
                         }
 
-                    <tr>
-                        <th>Rating:</th>
-                        <td>
-                            <RatingDetail Production="production" OnVote="OnVote" />
-                        </td>
-                    </tr>
-                    @if (production.ProductionCredits.Any())
+                        <tr>
+                            <th>Rating:</th>
+                            <td>
+                                <RatingDetail Production="production" OnVote="OnVote" />
+                            </td>
+                        </tr>
+                        @if (production.ProductionCredits.Any())
                         {
-                    <tr>
-                        <th>Credits:</th>
-                        <td>
-                            @{
+                            <tr>
+                                <th>Credits:</th>
+                                <td>
+                                    @{
                                         var currentCredit = "";
-                            }
-                            @foreach (var credit in production.ProductionCredits.OrderBy(p => p.Credit))
+                                    }
+                                    @foreach (var credit in production.ProductionCredits.OrderBy(p => p.Credit))
                                     {
                                         if (currentCredit != credit.Credit.ToString())
                                         {
-                            <b>@credit.Credit</b><br />
+                                            <b>@credit.Credit</b><br />
                                             currentCredit = credit.Credit.ToString();
                                         }
 
-                            @if (credit.Scener.ScenersGroups.Any(p => p.Currently))
+                                        @if (credit.Scener.ScenersGroups.Any(p => p.Currently))
                                         {
-                            <span class="pl-4"><a href="/sceners/@credit.Scener.ScenerId/@credit.Scener.Handle.UrlEncode()">@credit.Scener.Handle</a> of <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="credit.Scener.ScenersGroups.Where(p => p.Currently).Select(p => p.Group)" /></span><br />
+                                            <span class="pl-4"><a href="/sceners/@credit.Scener.ScenerId/@credit.Scener.Handle.UrlEncode()">@credit.Scener.Handle</a> of <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="credit.Scener.ScenersGroups.Where(p => p.Currently).Select(p => p.Group)" /></span><br />
                                         }
                                         else
                                         {
-                            <span class="pl-4"><a href="/sceners/@credit.Scener.ScenerId/@credit.Scener.Handle.UrlEncode()">@credit.Scener.Handle</a></span><br />
+                                            <span class="pl-4"><a href="/sceners/@credit.Scener.ScenerId/@credit.Scener.Handle.UrlEncode()">@credit.Scener.Handle</a></span><br />
                                         }
 
                                     }
-                        </td>
-                    </tr>
+                                </td>
+                            </tr>
                         }
 
-                    <tr><th>Added:</th><td>@production.Added.ParseDate()</td></tr>
-                    @if (!string.IsNullOrEmpty(production.UploaderFixed()) && production.UploaderFixed() != production.SubmitterFixed())
+                        <tr><th>Added:</th><td>@production.Added.ParseDate()</td></tr>
+                        @if (!string.IsNullOrEmpty(production.UploaderFixed()) && production.UploaderFixed() != production.SubmitterFixed())
                         {
-                    <tr><th>Added by:</th><td>@production.UploaderFixed()</td></tr>
+                            <tr><th>Added by:</th><td>@production.UploaderFixed()</td></tr>
                         }
-                    @if (!string.IsNullOrEmpty(production.SubmitterFixed()))
+                        @if (!string.IsNullOrEmpty(production.SubmitterFixed()))
                         {
-                    <tr><th><span class="text-nowrap">Submitted by:</span></th><td>@production.SubmitterFixed()</td></tr>
+                            <tr><th><span class="text-nowrap">Submitted by:</span></th><td>@production.SubmitterFixed()</td></tr>
                         }
 
-                    <tr>
-                        <th>Downloads:</th>
-                        <td>
-                            <AllDownloads ProductionFiles="@production.ProductionFiles" OnDownload="DownloadFile" />
-                        </td>
-                    </tr>
-                    <tr><th><span class="text-nowrap">Total Downloads:</span></th><td>@production.Downloads</td></tr>
-                </table>
+                        <tr>
+                            <th>Downloads:</th>
+                            <td>
+                                <AllDownloads ProductionFiles="@production.ProductionFiles" OnDownload="DownloadFile" />
+                            </td>
+                        </tr>
+                        <tr><th><span class="text-nowrap">Total Downloads:</span></th><td>@production.Downloads</td></tr>
+                    </table>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <DownloadChart @ref="downloadChart" ProductionId="@production.ProductionId" />
+            <div class="row">
+                <div class="col-sm-6">
+                    <DownloadChart @ref="downloadChart" ProductionId="@production.ProductionId" />
+                </div>
+                <div class="col-sm-6">
+                    <RatingChart @ref="ratingChart" ProductionId="@production.ProductionId" />
+                </div>
             </div>
-            <div class="col-sm-6">
-                <RatingChart @ref="ratingChart" ProductionId="@production.ProductionId" />
-            </div>
-        </div>
-    </Content>
-</Box>
-<Box>
-    <Title>
-        Comment Section
-        <div class="float-right pr-3">
-            <h5 class="d-inline">
-                <AuthorizeView>
-                    <NotAuthorized>
-                        <LoginLink class="badge badge-warning"><Content>Please login to write a comment</Content></LoginLink>
-                    </NotAuthorized>
-                    <Authorized>
-                        @if (!CommentsBlocked)
+        </Content>
+    </Box>
+    <Box>
+        <Title>
+            Comment Section
+            <div class="float-right pr-3">
+                <h5 class="d-inline">
+                    <AuthorizeView>
+                        <NotAuthorized>
+                            <LoginLink class="badge badge-warning"><Content>Please login to write a comment</Content></LoginLink>
+                        </NotAuthorized>
+                        <Authorized>
+                            @if (!CommentsBlocked)
                             {
-                        <a href="" @onclick:preventDefault @onclick="OpenWriteCommentModal" class="badge badge-success">Write your comment</a>
+                                <a href="" @onclick:preventDefault @onclick="OpenWriteCommentModal" class="badge badge-success">Write your comment</a>
                             }
                             else
                             {
-                        <p class="badge badge-success">Thank you for your comment!</p>
+                                <p class="badge badge-success">Thank you for your comment!</p>
                             }
-                    </Authorized>
-                </AuthorizeView>
-            </h5>
-        </div>
-    </Title>
-    <Content>
-        <DetailComments Comments="@production.Comments" />
-    </Content>
-</Box>
+                        </Authorized>
+                    </AuthorizeView>
+                </h5>
+            </div>
+        </Title>
+        <Content>
+            <DetailComments Comments="@production.Comments" />
+        </Content>
+    </Box>
 }
 
 @code{
@@ -255,7 +255,7 @@
         }
         else if (!httpContext.HttpContext.CanEdit() && args.Value.ToString() != "viewHistory")
         {
-            navigationManager.NavigateTo("/help/contribute");
+            navigationManager.NavigateTo("/help/upgradeaccount");
             toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
             return;
         }

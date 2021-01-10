@@ -132,7 +132,7 @@
         }
         else if (!httpContext.HttpContext.CanEdit() && args.Value.ToString() != "viewHistory")
         {
-            navigationManager.NavigateTo("/help/contribute");
+            navigationManager.NavigateTo("/help/upgradeaccount");
             toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
             return;
         }

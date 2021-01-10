@@ -14,7 +14,7 @@
 
         if (!httpContextAccessor.HttpContext.CanEdit())
         {
-            navigationManager.NavigateTo("/help/contribute");
+            navigationManager.NavigateTo("/help/upgradeaccount");
             toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
             return false;
         }
@@ -22,4 +22,4 @@
         return true;
     }
 
-}
+}chc

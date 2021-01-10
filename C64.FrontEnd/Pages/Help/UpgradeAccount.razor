@@ -1,0 +1,113 @@
+﻿@page "/help/upgradeaccount"
+@inject IJSRuntime jsRuntime
+@inject IEmailSender mailSender
+
+    @inject HttpContextAccessor httpContextAccessor
+    @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+
+    <Box>
+        <Title>Upgrade your account</Title>
+        <Content>
+            @if (showForm)
+            {
+                <p>
+                    An upgraded account is required to add and edit data on C64.CH. Please complete the form below with maybe a litte info about , and we will upgrade your account.
+                </p>
+
+                <EditForm Model="feedbackModel" OnValidSubmit="OnValidSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <InputText class="form-control" @bind-Value="@feedbackModel.Name" placeholder="Name" />
+                        <ValidationMessage For="@(() => feedbackModel.Name)" />
+                    </div>
+                    <div class="form-group">
+                        <InputText class="form-control" @bind-Value="@feedbackModel.Email" placeholder="Email-Adress" />
+                        <ValidationMessage For="@(() => feedbackModel.Email)" />
+                    </div>
+                    <div class="form-group">
+                        <InputTextArea rows="5" class="form-control" @bind-Value="@feedbackModel.Message" placeholder="Your message" />
+                        <ValidationMessage For="@(() => feedbackModel.Message)" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" disabled="@buttonDisabled" class="btn btn-success">Send Form</button>
+                    </div>
+                </EditForm>
+            }
+            else
+            {
+                <p>@message</p>
+            }
+        </Content>
+    </Box>
+
+    @code{
+        private bool buttonDisabled = false;
+
+        private FeedbackModel feedbackModel = new FeedbackModel();
+
+        private bool showForm = true;
+
+        private List<IFileListEntry> uploadedFiles = new List<IFileListEntry>();
+
+        private string message = "Your request to upgrade your account has been received, thank you!";
+
+        protected override async Task OnInitializedAsync()
+        {
+            showForm = await jsRuntime.CanRedoAction("UpgradeAccount", TimeSpan.FromMinutes(10));
+
+            if (!showForm)
+                message = "We've already received your request some minutes ago, Thank you!";
+
+            feedbackModel.Name = httpContextAccessor.HttpContext.GetUserName();
+
+            if (!string.IsNullOrEmpty(feedbackModel.Name))
+            {
+                var user = await userManager.FindByIdAsync(httpContextAccessor.HttpContext.GetUserId());
+                feedbackModel.Email = user.Email;
+            }
+
+        }
+
+        private void RemoveUploadedFile(IFileListEntry file)
+        {
+            uploadedFiles.Remove(file);
+        }
+
+        void HandleSelection(IFileListEntry[] files)
+        {
+            uploadedFiles.AddRange(files);
+        }
+
+        private async Task OnValidSubmit()
+        {
+            await jsRuntime.SetRedoTrigger("UpgradeAccount");
+
+            var mailAttachments = new List<MailAttachment>();
+
+            foreach (var uploadedFile in uploadedFiles)
+            {
+
+                var ms = new System.IO.MemoryStream();
+                await uploadedFile.Data.CopyToAsync(ms);
+
+                var bytearray = ms.ToArray();
+
+                var attachment = new MailAttachment();
+                attachment.Content = bytearray;
+                attachment.Filename = uploadedFile.Name;
+
+                mailAttachments.Add(attachment);
+
+            }
+
+            var mailText = $"We're received the following request to upgrade the account from {feedbackModel.Name} ({feedbackModel.Email}) on {DateTime.Now}:<br>{feedbackModel.Message}";
+
+            buttonDisabled = true;
+            await InvokeAsync(StateHasChanged);
+            await mailSender.SendAdminEmailAsync(new MailAddress(feedbackModel.Email, feedbackModel.Name), "Upgrade account", mailText, mailAttachments);
+            showForm = false;
+            buttonDisabled = false;
+            await InvokeAsync(StateHasChanged);
+
+        }
+    }
