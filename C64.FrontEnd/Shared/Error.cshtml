@@ -1,0 +1,50 @@
+﻿@model C64.FrontEnd.Controllers.ErrorControllerViewModel
+@{
+    ViewData["Title"] = $"Error {Model.Path} - {Model.Text}";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="~/" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index,follow">
+    <meta name="generator" CONTENT="C64.CH">
+    <meta name="author" content="Damian Puppetti" />
+    <meta name="description" CONTENT="C64.CH - Download over 7000 C64-Productions. Emulators, News and much more.">
+    <meta name="keywords" CONTENT="C64, commodore, 64, demos, demo, scene, news, sid, hardware, emulator, party, parties, competition, compo, asm, assembler, assembly, supercpu, scpu, gallery">
+    <link rel="author" href="humans.txt" />
+    <title>C64.CH - The C64 Demo Portal - @ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="_content/ChartJs.Blazor/ChartJSBlazor.css" />
+    <environment include="Development">
+        <!-- DEVELOPMENT -->
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    </environment>
+    <environment exclude="Development">
+        <!-- RELEASE -->
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    <div class="row">
+        <div class="text-center mx-auto">
+            <h3>@Model.Path - @Model.Text</h3>
+            <p>Sorry, we cannot handle your request :(</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="offset-lg-2 col-lg-8 text-center">
+            <img class="img-fluid" src="~/images/@Model.Image" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="text-center mx-auto">
+            <p>We've been informed of the problem and will fix it asap! If the problem persists, please contact us at <a href="mailto:webmaster@c64.ch">webmaster@c64.ch</a></p>
+            <h3><a href="/">--&gt; Back to home &lt;--</a></h3>
+        </div>
+    </div>
+</body>
+</html>
