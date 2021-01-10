@@ -91,6 +91,14 @@ header {
     cursor: pointer;
 }
 
+.header-logo {
+    width: 250px;
+
+    @include media-breakpoint-up(sm) {
+        width: 300px;
+    }
+}
+
 .nav-item:hover > a {
     background-color: $blue;
     color: white;
@@ -175,9 +183,7 @@ header {
     right: 20px;
     font-size: 36px;
 }
-
 // End Everything Header
-
 // Footer
 .footer {
     background: white;
@@ -265,7 +271,6 @@ header {
 .card-side {
     margin-bottom: 10px;
 }
-
 // additional styles
 #video-overlay {
     position: fixed;
@@ -548,4 +553,13 @@ img.active {
 
 .invisible {
     visibility: hidden;
+}
+
+.fav-heart {
+    top: 5px;
+    right: 15px;
+
+    @include media-breakpoint-up(sm) {
+        right: 220px;
+    }
 }

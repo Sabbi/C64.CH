@@ -11765,6 +11765,12 @@ header {
   font-size: 24px;
   cursor: pointer; }
 
+.header-logo {
+  width: 250px; }
+  @media (min-width: 576px) {
+    .header-logo {
+      width: 300px; } }
+
 .nav-item:hover > a {
   background-color: #3598DA;
   color: white; }
@@ -12120,3 +12126,10 @@ img.active {
 
 .invisible {
   visibility: hidden; }
+
+.fav-heart {
+  top: 5px;
+  right: 15px; }
+  @media (min-width: 576px) {
+    .fav-heart {
+      right: 220px; } }
