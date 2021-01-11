@@ -11,7 +11,14 @@ namespace C64.FrontEnd.Extensions
     {
         public static string GetUserId(this HttpContext httpContext)
         {
-            return httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                return httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static bool IsLoggedIn(this HttpContext httpContext)

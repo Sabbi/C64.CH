@@ -10,7 +10,14 @@
 @if (ProductionFile != null)
 {
     <p>
-        <a href="" @onclick="DownloadFile" @onclick:preventDefault><i class="far fa-save"></i> @ProductionFile.Filename</a>
+        @if (isFirefox)
+        {
+            <a href="" @onclick="DownloadFirefox" @onclick:preventDefault><i class="far fa-save"></i> @ProductionFile.Filename</a>
+        }
+        else
+        {
+            <a href="/data/productionfiles/@ProductionFile.Filename" target="_top" @onclick="DownloadFile"><i class="far fa-save"></i> @ProductionFile.Filename</a>
+        }
         <br />
         Downloads: @ProductionFile.Downloads
         <br />
@@ -25,7 +32,14 @@
     [Parameter]
     public EventCallback<int> OnDownload { get; set; }
 
-    private async Task DownloadFile()
+    private bool isFirefox = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        isFirefox = await jsRuntime.InvokeAsync<bool>("isFirefox");
+    }
+
+    private async Task DownloadFirefox()
     {
         await unitOfWork.Productions.AddDownload(ProductionFile.Filename, null, null, httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         await unitOfWork.Commit();
@@ -33,5 +47,12 @@
         var file = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
         await FileUtil.SaveAs(jsRuntime, ProductionFile.Filename, file);
         await OnDownload.InvokeAsync(ProductionFile.ProductionFileId);
+    }
+
+    private async Task DownloadFile()
+    {
+        ProductionFile.Downloads++;
+        await OnDownload.InvokeAsync(ProductionFile.ProductionFileId);
+
     }
 }
