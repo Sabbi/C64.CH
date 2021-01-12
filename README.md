@@ -13,3 +13,5 @@ For more information please check out the [Wiki](https://github.com/Sabbi/C64.CH
 **Please note**:
 This is a one person hobbyist project, created in spare time. While hopefully doing its job, the published code does - in most parts - not follow best practices or common conventions. Use at your own responsibility.
 
+For any questions contact me @ webmaster@c64.ch
+
