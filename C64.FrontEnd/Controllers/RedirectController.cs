@@ -22,6 +22,13 @@ namespace C64.FrontEnd.Controllers
             this.httpContextAccessor = httpContextAccessor;
         }
 
+        // /index.php -> /
+        [Route("/index.php")]
+        public IActionResult ToIndex()
+        {
+            return DoRedirect("/");
+        }
+
         [Route("/demos")]
         public IActionResult Demos()
         {
@@ -81,6 +88,20 @@ namespace C64.FrontEnd.Controllers
             return DoRedirect($"/productions/{id}");
         }
 
+        // /demos/feedback.php?id=x -> /productions/{id}/{name}
+        [Route("/demos/feedback.php")]
+        public async Task<IActionResult> Feedback(int id)
+        {
+            return await DemoDetail(id);
+        }
+
+        // /demos/showzip.php?id=x -> /productions/{id}/{name}
+        [Route("/demos/showzip.php")]
+        public async Task<IActionResult> ShowZip(int id)
+        {
+            return await DemoDetail(id);
+        }
+
         // /user/personal.php	/favorites/{userId}
         [Route("/user/personal.php")]
         public IActionResult Personal()
@@ -101,7 +122,7 @@ namespace C64.FrontEnd.Controllers
         // /demos/list.php?demoname=x&source=demoname -> /productions/demos/namestart/{letter}
         // /demos/list.php?search=search&source=search -> /search/?search={search}
         [Route("/demos/list.php")]
-        public async Task<IActionResult> List(string source, int group = 0, string demoname = null, string groupname = null, int year = 0, string search = null)
+        public async Task<IActionResult> List(string source, int group = 0, string demoname = null, string groupname = null, int year = 0, int partyid = 0, string search = null)
         {
             source = source?.ToLower();
 
@@ -134,6 +155,9 @@ namespace C64.FrontEnd.Controllers
 
                 case "search":
                     return DoRedirect($"/productions/demos/search/?search={search}");
+
+                case "party":
+                    return DoRedirect($"/parties/{partyid}");
 
                 default:
                     throw new ArgumentException($"Source {source} invalid");
