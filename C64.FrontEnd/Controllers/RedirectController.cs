@@ -160,6 +160,8 @@ namespace C64.FrontEnd.Controllers
                     return DoRedirect($"/parties/{partyid}");
 
                 default:
+                    if (partyid > 0)
+                        return DoRedirect($"/parties/{partyid}");
                     throw new ArgumentException($"Source {source} invalid");
             }
         }

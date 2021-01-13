@@ -18,6 +18,9 @@
         {
             <a href="/data/productionfiles/@ProductionFile.Filename" target="_top" @onclick="DownloadFile"><i class="far fa-save"></i> @ProductionFile.Filename</a>
         }
+        <span class="d-none">
+            <a href="/demos/download.php?id=@ProductionFile.ProductionId" @onclick="DownloadFile">Legacy Download</a>
+        </span>
         <br />
         Downloads: @ProductionFile.Downloads
         <br />

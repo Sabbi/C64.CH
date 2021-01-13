@@ -46,8 +46,23 @@ namespace C64.FrontEnd.Controllers
             var prodFile = await unitOfWork.Productions.GetProductionFileByProductionId(id);
             if (prodFile == null)
                 return NotFound();
+            try
+            {
+                var container = productionContainer;
+                var fileName = prodFile.Filename;
+                var file = await fileStorageService.GetFileContents(container, fileName);
+                if (container == productionContainer)
+                {
+                    await unitOfWork.Productions.AddDownload(fileName, httpContextAccessor.HttpContext.RemoteIp(), httpContextAccessor.HttpContext.Referer(), httpContextAccessor.HttpContext.GetUserId());
+                    await unitOfWork.Commit();
+                }
 
-            return await Download(productionContainer, prodFile.Filename);
+                return File(file, GetContentType(fileName), fileName);
+            }
+            catch (FileNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [Route("/data/{container}/{fileName}")]
