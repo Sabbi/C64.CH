@@ -54,7 +54,13 @@ namespace C64.Services.ViceLoader
             new ViceLoaderSpecialCase("cascade-trip_to_nepal_2.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "trip*")),
 
             // productions/4880/Beavis_Butthead_-_The_Dentro
-            new ViceLoaderSpecialCase("agnusdei-beavis___butthead_-_the_dentro.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerCustomPrgFileName(productionFileId, archiveService.ArchiveInfo, "bbdentro.prg"))
+            new ViceLoaderSpecialCase("agnusdei-beavis___butthead_-_the_dentro.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerCustomPrgFileName(productionFileId, archiveService.ArchiveInfo, "bbdentro.prg")),
+
+            // productions/717/Lazer_Link (Issue #192)
+            new ViceLoaderSpecialCase("tat-lazerlink.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "?tat*")),
+
+             // productions/24/Fierce_Creations (Issue #180)
+            new ViceLoaderSpecialCase("fierce.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "fierce*")),
         };
     }
 
