@@ -1,32 +1,35 @@
 ﻿<div class="pb-4">
     <div class="mb-4">
-        @foreach (var prod in Productions)
+        @if (Productions != null)
         {
-            <div class="row p-3" style="background-color:@(counter % 2 == 0 ? BackgroundColor : BackgroundColorAlt)">
-                <div class="flex-column pl-1 pr-3">
-                    <a href="/productions/@prod.ProductionId/@prod.Name.UrlEncode()">
-                        <FirstProductionThumbnail Production="@prod" Size="ThumbnailSize.Thumbanil80x56" />
-                    </a>
-                </div>
-                <div class="flex-column">
-                    <p>
+            @foreach (var prod in Productions)
+            {
+                <div class="row p-3" style="background-color:@(counter % 2 == 0 ? BackgroundColor : BackgroundColorAlt)">
+                    <div class="flex-column pl-1 pr-3">
                         <a href="/productions/@prod.ProductionId/@prod.Name.UrlEncode()">
-                            @prod.Name
+                            <FirstProductionThumbnail Production="@prod" Size="ThumbnailSize.Thumbanil80x56" />
                         </a>
-                        by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="prod.ProductionsGroups.Select(p => p.Group)" />
-                    </p>
-                    <p>
-                        Credited for:<br />
-                        @foreach (var scener in prod.ProductionCredits.Where(p => p.ScenerId == ScenerId))
-                        {
-                            <span>- @scener.Credit</span><br />
-                        }
-                    </p>
-                </div>
+                    </div>
+                    <div class="flex-column">
+                        <p>
+                            <a href="/productions/@prod.ProductionId/@prod.Name.UrlEncode()">
+                                @prod.Name
+                            </a>
+                            by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="prod.ProductionsGroups.Select(p => p.Group)" />
+                        </p>
+                        <p>
+                            Credited for:<br />
+                            @foreach (var scener in prod.ProductionCredits.Where(p => p.ScenerId == ScenerId))
+                            {
+                                <span>- @scener.Credit</span><br />
+                            }
+                        </p>
+                    </div>
 
-                <hr />
-            </div>
-            counter++;
+                    <hr />
+                </div>
+                counter++;
+            }
         }
     </div>
 </div>
