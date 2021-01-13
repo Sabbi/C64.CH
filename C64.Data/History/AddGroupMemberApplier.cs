@@ -38,7 +38,7 @@ namespace C64.Data.History
                 newMember.LeftDate = DateTime.MaxValue;
 
             newMember.Scener.ProductionsSceners = new HashSet<ProductionsSceners>();
-            newMember.Scener.ScenersGroups = new HashSet<ScenersGroups>();
+            // newMember.Scener.ScenersGroups = new HashSet<ScenersGroups>();
             newMember.Scener.PartiesSceners = new HashSet<PartiesSceners>();
             newMember.Scener.AlterEgos = new HashSet<ScenersSceners>();
 
