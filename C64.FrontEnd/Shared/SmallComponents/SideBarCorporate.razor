@@ -69,8 +69,15 @@
     {
         if (timeTimer != null)
         {
-            timeTimer.Elapsed -= OnTimerElapsed;
-            timeTimer.Dispose();
+            try
+            {
+                timeTimer.Elapsed -= OnTimerElapsed;
+                timeTimer.Dispose();
+            }
+            catch
+            {
+
+            }
         }
     }
 

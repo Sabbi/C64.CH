@@ -19,14 +19,13 @@
 
 @code {
     private int page = 1;
-    private int pageSize = 5;
+    private int pageSize = 3;
 
     private PaginatedResult<SiteInfo> paginatedResult;
 
     protected override async Task OnInitializedAsync()
     {
         await Load(1);
-
     }
 
     private async Task OnSelectPage(int selectedPage)

@@ -182,7 +182,7 @@
     <PackageReference Include="Blazor.Extensions.Logging" Version="1.1.1" />
     <PackageReference Include="Blazored.Modal" Version="5.1.0" />
     <PackageReference Include="Blazored.Toast" Version="3.1.2" />
-    <PackageReference Include="Blazored.Typeahead" Version="4.5.1" />
+    <PackageReference Include="Blazored.Typeahead" Version="4.5.0" />
     <PackageReference Include="BlazorInputFile" Version="0.2.0" />
     <PackageReference Include="ChartJs.Blazor" Version="1.1.0" />
     <PackageReference Include="D64ReaderCore" Version="1.0.6" />
