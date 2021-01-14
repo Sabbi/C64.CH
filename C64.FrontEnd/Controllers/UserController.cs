@@ -86,7 +86,7 @@ namespace C64.FrontEnd.Controllers
             }
             catch { }
 
-            var user = new User() { UserName = username, Email = email };
+            var user = new User() { UserName = username, Email = email, Registered = DateTime.Now };
 
             var result = await userManager.CreateAsync(user, password);
 
