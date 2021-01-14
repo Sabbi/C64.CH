@@ -114,12 +114,12 @@ namespace C64.Data.Storage
         private string SanitizeFilename(string fileName)
         {
             foreach (char c in Path.GetInvalidFileNameChars())
-            {
                 fileName = fileName.Replace(c, '_');
-            }
 
-            fileName = fileName.Replace('%', '_');
-            fileName = fileName.Replace('@', '_');
+            var moreInvalidFileNameChars = "<>%!*'();:@&=+$,/?#[]";
+
+            foreach (var c in moreInvalidFileNameChars)
+                fileName = fileName.Replace(c, '_');
 
             return fileName;
         }
