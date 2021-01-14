@@ -50,10 +50,10 @@
                 <li class="media my-2">
                     <div class="media-body">
                         <p class="mt-0 mb-1">
-                            <a target="_blank" @onclick="@(() => Follow(link.LinkId))" @onclick:preventDefault href="" class="normal">@link.Name</a>
+                            <a target="_blank" href="/links/follow/@link.LinkId" class="normal">@link.Name</a>
                         </p>
                         <div class="float-left">
-                            <a target="_blank" @onclick="@(() => Follow(link.LinkId))" @onclick:preventDefault href="">@link.Url</a>
+                            <a target="_blank" href="/links/follow/@link.LinkId">@link.Url</a>
                         </div>
                         <div class="float-right small">@link.Added.ToLongDateString()</div>
                         <div class="clearfix"></div>
@@ -119,15 +119,4 @@
         }
     }
 
-    private async Task Follow(int linkId)
-    {
-        var link = await unitOfWork.Links.Get(linkId);
-        link.Hits++;
-        await unitOfWork.Commit();
-
-        if (!link.Url.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-            link.Url = "http://" + link.Url;
-
-        await jsRuntime.InvokeAsync<object>("open", link.Url, "_blank");
-    }
 }

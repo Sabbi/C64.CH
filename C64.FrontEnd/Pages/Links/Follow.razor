@@ -1,0 +1,26 @@
+﻿@page "/links/follow/{LinkId:int}"
+
+@inject IUnitOfWork unitOfWork
+@inject NavigationManager navigationManager
+
+@code {
+    [Parameter]
+    public int LinkId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await FollowLink(LinkId);
+    }
+
+    private async Task FollowLink(int linkId)
+    {
+        var link = await unitOfWork.Links.Get(linkId);
+        link.Hits++;
+        await unitOfWork.Commit();
+
+        if (!link.Url.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            link.Url = "http://" + link.Url;
+
+        navigationManager.NavigateTo(link.Url, true);
+    }
+}
