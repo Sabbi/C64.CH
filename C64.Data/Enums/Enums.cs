@@ -18,8 +18,8 @@ namespace C64.Data
     {
         Demo = 0,
 
-        [Display(Name = "4k Intro")]
-        Intro4k = 10,
+        [Display(Name = "One File Demo")]
+        OneFileDemo = 2,
 
         Intro = 20,
         Magazine = 30,
@@ -54,7 +54,14 @@ namespace C64.Data
         Code = 10,
         Music = 20,
         Graphics = 30,
+        Charset = 32,
+
+        [Display(Name = "Directory Art")]
+        DirectoryArt = 34,
+
         Loader = 40,
+        Linking = 42,
+        Help = 80,
     }
 
     public enum Job
