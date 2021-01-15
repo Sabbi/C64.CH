@@ -1,55 +1,38 @@
 ﻿@inherits InputBase<PartialDate>
 @inject ILogger<InputPartialDate> logger
-<select @onchange="YearChange" class="form-control d-inline-block" style="width:25%">
+<select @bind="@year" class="form-control d-inline-block" style="width:25%">
     <option value="0">- Year -</option>
     @for (var i = StartingYear; i <= DateTime.Now.Year; i++)
     {
+        <option>@i.ToString()</option>
 
-        if (year == i.ToString())
-        {
-            <option selected>@i.ToString()</option>
-        }
-        else
-        {
-            <option>@i.ToString()</option>
-        }
     }
 </select>
     &nbsp;
-<select @onchange="MonthChange" class="form-control d-inline-block" style="width:25%">
+<select @bind="@month" class="form-control d-inline-block" style="width:25%">
     <option value="0">- Month -</option>
-    @for (var i = 1; i <= 12; i++)
+    @for (var i = 1; i <= 12 && _yearInt > 0; i++)
     {
-        if (month == i.ToString())
-        {
-            <option selected>@i.ToString()</option>
-        }
-        else
-        {
-            <option>@i.ToString()</option>
-        }
+
+        <option>@i.ToString()</option>
+
     }
 </select>
-    &nbsp;
-<select @onchange="DayChange" class="form-control d-inline-block" style="width:25%">
+   &nbsp;
+<select @bind="@day" class="form-control d-inline-block" style="width:25%">
     <option value="0">- Day -</option>
-    @for (var i = 1; i <= 31; i++)
+    @for (var i = 1; i <= 31 && _yearInt > 0 && _monthInt > 0; i++)
     {
-        if (day == i.ToString())
-        {
-            <option selected>@i.ToString()</option>
-        }
-        else
-        {
-            <option>@i.ToString()</option>
-        }
+
+        <option>@i.ToString()</option>
+
     }
 </select>
 
-@*<b>@Value?.IsValidDate (@Value?.Date / @Value?.Type)</b>*@
 @code {
     /// <summary>
     /// TODO: Chnorz - A lot of clearup 2 do!
+    /// Update 15.01.2021: Still Chnorz
     /// </summary>
 
     [Parameter]
@@ -58,71 +41,92 @@
     [Parameter]
     public int EndingYear { get; set; } = DateTime.Now.Year;
 
-    private string day = "0";
-    private string month = "0";
-    private string year = "0";
+    private string _day = "0";
+    private string _month = "0";
+    private string _year = "0";
 
-    private int dayInt = 0;
-    private int monthInt = 0;
-    private int yearInt = 0;
+    private int _dayInt = 0;
+    private int _monthInt = 0;
+    private int _yearInt = 0;
 
-    private void MonthChange(ChangeEventArgs eventArgs)
+    private string year
     {
-        month = eventArgs.Value.ToString();
-
-        if (month == "0")
-            day = "0";
-
-        logger.LogInformation("MonthChange called");
-        Updater();
-    }
-
-    private void DayChange(ChangeEventArgs eventArgs)
-    {
-        day = eventArgs.Value.ToString();
-
-        if (day != "0" && month == "0")
-            month = "1";
-
-        logger.LogInformation("DayChange called");
-        Updater();
-    }
-
-    private void YearChange(ChangeEventArgs eventArgs)
-    {
-        year = eventArgs.Value.ToString();
-
-        if (year == "0")
+        get
         {
-            month = "0";
-            day = "0";
+            return _year;
         }
+        set
+        {
+            _year = value;
+            _yearInt = int.Parse(_year);
 
-        logger.LogInformation("YearChange called");
-        Updater();
+            if (_yearInt == 0)
+            {
+                _month = "0";
+                _monthInt = 0;
+                _day = "0";
+                _dayInt = 0;
+            }
+
+            Updater();
+        }
+    }
+
+    private string month
+    {
+        get
+        {
+            return _month;
+        }
+        set
+        {
+            _month = value;
+            _monthInt = int.Parse(_month);
+
+            if (_monthInt == 0)
+            {
+                _day = "0";
+                _dayInt = 0;
+            }
+            Updater();
+        }
+    }
+
+    private string day
+    {
+        get
+        {
+            return _day;
+        }
+        set
+        {
+            _day = value;
+            _dayInt = int.Parse(_day);
+            Updater();
+        }
     }
 
     private void Updater()
     {
-        dayInt = int.Parse(day);
-        monthInt = int.Parse(month);
-        yearInt = int.Parse(year);
+        _dayInt = int.Parse(day);
+        _monthInt = int.Parse(month);
+        _yearInt = int.Parse(year);
 
-        if (yearInt == 0)
+        if (_yearInt == 0)
         {
             Value.Date = DateTime.MinValue;
             Value.IsValidDate = true;
             Value.Type = DateType.None;
         }
 
-        if (monthInt > 0 && yearInt > 0)
+        if (_monthInt > 0 && _yearInt > 0)
         {
-            var daysInMonth = DateTime.DaysInMonth(yearInt, monthInt);
+            var daysInMonth = DateTime.DaysInMonth(_yearInt, _monthInt);
 
-            if (dayInt > daysInMonth)
+            if (_dayInt > daysInMonth)
             {
-                dayInt = daysInMonth;
-                day = daysInMonth.ToString();
+                _dayInt = daysInMonth;
+                _day = daysInMonth.ToString();
             }
         }
 
@@ -150,21 +154,25 @@
 
     protected override string FormatValueAsString(PartialDate value)
     {
-        throw new Exception("FormatValueasStsring");
+        throw new Exception("FormatValueAsString");
     }
 
     protected override bool TryParseValueFromString(string value, out PartialDate result, out string validationErrorMessage)
     {
-        throw new Exception("Tryparsevaluefromstring");
+        throw new Exception("TryParseValueFromString");
     }
 
     protected override void OnParametersSet()
     {
         if (Value != null)
         {
-            day = Value.Type == DateType.YearMonthDay ? Value.Date.Day.ToString() : "0";
-            month = Value.Type == DateType.YearMonth || Value.Type == DateType.YearMonthDay ? Value.Date.Month.ToString() : "0";
-            year = Value.Type != DateType.None ? Value.Date.Year.ToString() : "0";
+            _day = Value.Type == DateType.YearMonthDay ? Value.Date.Day.ToString() : "0";
+            _month = Value.Type == DateType.YearMonth || Value.Type == DateType.YearMonthDay ? Value.Date.Month.ToString() : "0";
+            _year = Value.Type != DateType.None ? Value.Date.Year.ToString() : "0";
+
+            _yearInt = int.Parse(_year);
+            _monthInt = int.Parse(_month);
+            _dayInt = int.Parse(_day);
         }
     }
 }
