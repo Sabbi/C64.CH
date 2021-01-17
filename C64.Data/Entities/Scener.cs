@@ -7,7 +7,7 @@ using System.Text;
 
 namespace C64.Data.Entities
 {
-    public class Scener
+    public class Scener : ILinkJoinable
     {
         public int ScenerId { get; set; }
 
@@ -60,6 +60,11 @@ namespace C64.Data.Entities
             }
 
             return sb.ToString();
+        }
+
+        public KeyValuePair<int, string> KeyValue()
+        {
+            return new KeyValuePair<int, string>(ScenerId, Handle);
         }
     }
 }

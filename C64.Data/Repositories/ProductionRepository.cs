@@ -23,6 +23,7 @@ namespace C64.Data.Repositories
                 .Include(p => p.ProductionPictures)
                 .Include(p => p.ProductionFiles)
                 .Include(p => p.ProductionsGroups).ThenInclude(p => p.Group)
+                .Include(p => p.ProductionsSceners).ThenInclude(p => p.Scener)
                 .Include(p => p.HiddenParts)
                 .Include(p => p.ProductionVideos)
                 .Include(p => p.ProductionsParties).ThenInclude(p => p.Party)
@@ -58,7 +59,7 @@ namespace C64.Data.Repositories
 
         public async Task<IEnumerable<Production>> GetForScener(int scenerId)
         {
-            var productions = await context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionPictures).Include(p => p.ProductionCredits).ThenInclude(p => p.Scener).Where(p => p.ProductionCredits.Any(q => q.ScenerId == scenerId)).ToListAsync();
+            var productions = await context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionsSceners).ThenInclude(p => p.Scener).Include(p => p.ProductionPictures).Include(p => p.ProductionCredits).ThenInclude(p => p.Scener).Where(p => p.ProductionCredits.Any(q => q.ScenerId == scenerId)).ToListAsync();
             return productions;
         }
 
@@ -92,7 +93,7 @@ namespace C64.Data.Repositories
 
         public Task<PaginatedResult<Production>> GetPaginatedWithGroups(Expression<Func<Production, bool>> predicate, string orderBy, bool isSortedAscending, int page, int pageSize)
         {
-            var query = context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group);
+            var query = context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionsSceners).ThenInclude(p => p.Scener);
             return FindPaginated(query, predicate, orderBy, isSortedAscending, page, pageSize);
         }
 

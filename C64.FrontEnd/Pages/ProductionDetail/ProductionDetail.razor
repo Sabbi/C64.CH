@@ -18,7 +18,7 @@
     <Box>
         <Title>
             @production.Name<br />
-            by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
+            by <MultiLinkJoiner LastSeparator=" and  " Separator=", " AlsoAddValue="true" MultiLinkJoinables="production.GetCreatorLinks()" />
             <div class="float-right pr-3 position-absolute fav-heart">
                 @if (isFavorite)
                 {
@@ -63,7 +63,7 @@
                         <tr>
                             <th>By:</th>
                             <td>
-                                <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="production.ProductionsGroups.Select(p => p.Group)" />
+                                <MultiLinkJoiner LastSeparator=" and  " Separator=", " AlsoAddValue="true" MultiLinkJoinables="production.GetCreatorLinks()" />
                             </td>
                         </tr>
                         <tr>
