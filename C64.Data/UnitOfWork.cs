@@ -23,6 +23,8 @@ namespace C64.Data
         public IUserRepository Users { get; private set; }
 
         public IToolRepository Tools { get; private set; }
+
+        public IChangeLogRepository ChangeLogs { get; private set; }
         public IStatisticRepository Statistics { get; private set; }
 
         public UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger)
@@ -40,6 +42,7 @@ namespace C64.Data
             Sceners = new ScenerRepository(context, logger);
             Users = new UserRepository(context, logger);
             Tools = new ToolRepository(context, logger);
+            ChangeLogs = new ChangeLogRepository(context, logger);
             Statistics = new StatisticRepository(context, logger);
         }
 

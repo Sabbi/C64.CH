@@ -74,6 +74,8 @@ namespace C64.Data
 
         public virtual DbSet<HistoryRecord> HistoryRecords { get; set; }
 
+        public virtual DbSet<ChangeLogEntry> ChangeLogEntries { get; set; }
+
         public virtual DbSet<Statistic> Statistics { get; set; }
 
         public virtual DbSet<Tool> Tools { get; set; }

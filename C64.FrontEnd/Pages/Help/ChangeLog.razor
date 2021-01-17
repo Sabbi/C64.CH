@@ -1,4 +1,7 @@
 ﻿@page "/help/changelog"
+
+@inject IUnitOfWork unitOfWork
+
 <Box>
     <Title>Changelog</Title>
     <Content>
@@ -7,15 +10,15 @@
                 <th>Date</th>
                 <th>Changes</th>
             </tr>
-            @foreach (var change in model)
+            @foreach (var change in entries.GroupBy(p => p.Date))
             {
                 <tr>
-                    <td>@change.Date.ToShortDateString()</td>
+                    <td>@change.Key.ToShortDateString()</td>
                     <td>
                         <ul>
-                            @foreach (var entry in change.Changes)
+                            @foreach (var entry in change)
                             {
-                                <li>@entry</li>
+                                <li>@entry.Change</li>
                             }
                         </ul>
                     </td>
@@ -25,10 +28,11 @@
     </Content>
 </Box>
 @code{
-    private List<ChangeLogModel> model = new List<ChangeLogModel>();
+
+    private IEnumerable<ChangeLogEntry> entries = new HashSet<ChangeLogEntry>();
 
     protected override void OnInitialized()
     {
-        model.Add(new ChangeLogModel(new DateTime(2021, 1, 12), "Initial Version"));
+        entries = unitOfWork.ChangeLogs.GetAll().OrderByDescending(p => p.Date);
     }
 }
