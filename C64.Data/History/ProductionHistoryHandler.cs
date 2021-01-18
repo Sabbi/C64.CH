@@ -188,6 +188,7 @@ namespace C64.Data.History
         ProductionFiles,
         AddProduction,
         ProductionCredits,
+        Sceners,
 
         // Groups,
 
