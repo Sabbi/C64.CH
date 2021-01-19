@@ -49,6 +49,22 @@ namespace C64.FrontEnd.Controllers
             return DoRedirect("/programming");
         }
 
+        // /programming/ta-docs.php	 -> /programming/tadocs
+        [Route("/programming/ta-docs.php")]
+        public IActionResult ProgrammingTaDocs()
+        {
+            return DoRedirect("/programming/tadocs");
+        }
+
+        // /programming/ta-docs.php	 -> /programming/tadocs
+        [Route("/programming/ta-docsprnt.php")]
+        public IActionResult ProgrammingTaDocsPrintable()
+        {
+            var taprintable = System.IO.File.ReadAllText("Data/ta-docsprnt.html");
+
+            return Content(taprintable, "text/html");
+        }
+
         // /sources
         [Route("/sources")]
         public IActionResult Sources()
@@ -162,7 +178,7 @@ namespace C64.FrontEnd.Controllers
                 default:
                     if (partyid > 0)
                         return DoRedirect($"/parties/{partyid}");
-                    throw new ArgumentException($"Source {source} invalid");
+                    throw new ArgumentException($"Source '{source}' invalid (Other params: groups '{group}', demoname '{demoname}', groupname '{groupname}', year '{year}', search '{search}'");
             }
         }
 

@@ -207,6 +207,12 @@
     <ProjectReference Include="..\C64.Services\C64.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\ta-docsprnt.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <ProjectExtensions>
     <VisualStudio>
       <UserProperties appsettings_1json__JsonSchema="" />
