@@ -14,6 +14,9 @@ namespace C64.Data.History
                 case HistoryEditProperty.Groups:
                     return new GroupsApplier();
 
+                case HistoryEditProperty.Sceners:
+                    return new ScenersApplier();
+
                 case HistoryEditProperty.ReleaseDate:
                 case HistoryEditProperty.FoundedDate:
                 case HistoryEditProperty.ClosedDate:

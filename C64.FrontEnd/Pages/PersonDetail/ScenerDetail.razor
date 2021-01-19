@@ -92,6 +92,11 @@
                     }
                 </table>
             }
+            @if (productionIds != null && productionIds.Any())
+            {
+                <h5>Productions released by @scener.Handle:</h5>
+                <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" ScrollIntoView="true" />
+            }
         </Content>
     </Box>
     <Box>
@@ -117,6 +122,9 @@
     private Scener scener;
 
     private IEnumerable<Production> scenerProductions;
+
+    private IEnumerable<int> productionIds;
+    private string baseUrl => $"sceners/{ScenerId}/{Handle}";
 
     protected override async Task OnParametersSetAsync()
     {
@@ -179,6 +187,8 @@
 
         scener = await unitOfWork.Sceners.GetDetails(id);
         scenerProductions = await unitOfWork.Productions.GetForScener(id);
+
+        productionIds = scener.ProductionsSceners.Select(p => p.ProductionId);
 
         StateHasChanged();
     }

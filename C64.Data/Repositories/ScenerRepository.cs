@@ -30,6 +30,7 @@ namespace C64.Data.Repositories
             var scener = await context.Set<Scener>()
                 .Include(p => p.ScenersGroups).ThenInclude(p => p.Group)
                 .Include(p => p.ScenersGroups).ThenInclude(p => p.ScenerGroupJobs)
+                .Include(p => p.ProductionsSceners)
                 .Include(p => p.Jobs)
                 .Include(p => p.Country).FirstOrDefaultAsync(p => p.ScenerId == scenerId);
 

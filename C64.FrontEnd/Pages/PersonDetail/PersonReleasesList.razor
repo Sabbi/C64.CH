@@ -15,7 +15,7 @@
                             <a href="/productions/@prod.ProductionId/@prod.Name.UrlEncode()">
                                 @prod.Name
                             </a>
-                            by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="prod.ProductionsGroups.Select(p => p.Group)" />
+                            by <MultiLinkJoiner LastSeparator=" and  " Separator=", " AlsoAddValue="true" MultiLinkJoinables="prod.GetCreatorLinks()" />
                         </p>
                         <p>
                             Credited for:<br />

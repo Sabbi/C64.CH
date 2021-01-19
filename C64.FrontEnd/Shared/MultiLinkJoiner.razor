@@ -1,0 +1,56 @@
+﻿@((MarkupString)links)
+
+@code {
+    [Parameter]
+    public Dictionary<string, IEnumerable<ILinkJoinable>> MultiLinkJoinables { get; set; }
+
+    [Parameter]
+    public string Separator { get; set; } = ", ";
+
+    [Parameter]
+    public string LastSeparator { get; set; } = " and ";
+
+    [Parameter]
+    public bool AlsoAddValue { get; set; } = false;
+
+    private string links = "";
+
+    protected override void OnParametersSet()
+    {
+        var multiLinks = new List<MultiLink>();
+
+        foreach (var linkJoinables in MultiLinkJoinables)
+        {
+
+            var baseUrl = linkJoinables.Key;
+            foreach (var joinable in linkJoinables.Value)
+            {
+                var data = joinable.KeyValue();
+                var url = AlsoAddValue ? string.Format(baseUrl, data.Key, data.Value.UrlEncode()) : string.Format(baseUrl, data.Key);
+
+                multiLinks.Add(new MultiLink { Url = url, Text = data.Value });
+            }
+        }
+
+        links = "";
+
+        foreach (var joinable in multiLinks)
+        {
+            var tmpSeparator = Separator;
+
+            if (LastSeparator != null && multiLinks.Count() > 1 && joinable == multiLinks[multiLinks.Count() - 2])
+                tmpSeparator = LastSeparator;
+
+            links += $"<a href=\"{joinable.Url}\">{joinable.Text}</a>";
+
+            links += (joinable == multiLinks.Last()) ? "" : tmpSeparator;
+        }
+
+    }
+
+    private class MultiLink
+    {
+        public string Url { get; set; }
+        public string Text { get; set; }
+    }
+}

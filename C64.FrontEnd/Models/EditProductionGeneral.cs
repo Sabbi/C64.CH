@@ -21,6 +21,7 @@ namespace C64.FrontEnd.Models
         public SubCategory SubCategory { get; set; }
 
         public IList<Group> SelectedGroups { get; set; } = new List<Group>();
+        public IList<Scener> SelectedSceners { get; set; } = new List<Scener>();
 
         public Party Party { get; set; }
 
