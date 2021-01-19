@@ -61,6 +61,9 @@ namespace C64.Services.ViceLoader
 
              // productions/24/Fierce_Creations (Issue #180)
             new ViceLoaderSpecialCase("fierce.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "fierce*")),
+
+            // productions/1344/Illmatic (Issue #199)
+            new ViceLoaderSpecialCase("elysium-illmatic.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "? l l*")),
         };
     }
 
