@@ -16,7 +16,7 @@ else
 
 @if (!string.IsNullOrEmpty(Party.Url))
 {
-    <p><a href="@Party.Url">Visit Homepage (@Party.Url)</a></p>
+    <p><a href="@Party.Url" target="_blank">Visit Homepage (@Party.Url)</a></p>
 }
 
 @if (!string.IsNullOrEmpty(Party.Email))
@@ -32,7 +32,6 @@ else
     </p>
 
 }
-<p><a href="/parties/@Party.PartyId/@Party.Name.UrlEncode()">View Details</a></p>
 
 @code {
     [Parameter]
