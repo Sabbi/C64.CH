@@ -62,8 +62,23 @@
                                 }
                             </div>
                             <div class="float-left small">
-
-                                @info.EmailFixed @@  @info.WrittenAt
+                                @if (!string.IsNullOrEmpty(info.Name))
+                                {
+                                    @info.Name
+                                    @if (!string.IsNullOrEmpty(info.Email))
+                                    {
+                                        @($" ({info.EmailFixed})")
+                                    }
+                                }
+                                else if (!string.IsNullOrEmpty(info.Email))
+                                {
+                                    @info.EmailFixed
+                                }
+                                else
+                                {
+                                    <span>Anonymous</span>
+                                }
+                                <span>&nbsp;@@  @info.WrittenAt</span>
                             </div>
                             <div class="clearfix"></div>
                             <hr />
