@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label>Groups:</label>
+                <label>Released by groups:</label>
                 <div>
                     <BlazoredTypeahead @bind-Values="@editProductionGeneral.SelectedGroups" SearchMethod="SearchGroups">
                         <SelectedTemplate Context="group">
@@ -40,6 +40,22 @@
                         </ResultTemplate>
                         <NotFoundTemplate>
                             No group named @searchText found - please add it on the groups page first
+                        </NotFoundTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Released by sceners:</label>
+                <div>
+                    <BlazoredTypeahead @bind-Values="@editProductionGeneral.SelectedSceners" SearchMethod="SearchSceners">
+                        <SelectedTemplate Context="scener">
+                            @scener.Handle
+                        </SelectedTemplate>
+                        <ResultTemplate Context="scener">
+                            @scener.ScenerId (@scener.Handle)
+                        </ResultTemplate>
+                        <NotFoundTemplate>
+                            No scener named @scenerSearchText found - please add it on the sceners page first
                         </NotFoundTemplate>
                     </BlazoredTypeahead>
                 </div>
@@ -121,6 +137,7 @@
     private EditProductionGeneral editProductionGeneral = new EditProductionGeneral();
 
     private string searchText = string.Empty;
+    private string scenerSearchText = string.Empty;
 
     private IEnumerable<PartyCategory> partyCategories { get; set; } = new List<PartyCategory>();
 
@@ -145,6 +162,15 @@
 
     }
 
+    private async Task<IEnumerable<Scener>> SearchSceners(string searchText)
+    {
+        this.scenerSearchText = searchText;
+
+        var result = (await unitOfWork.Sceners.Find(p => p.Handle.Contains(searchText, StringComparison.OrdinalIgnoreCase))).OrderBy(p => p.Handle);
+        return await Task.FromResult(result.OrderBy(p => p.Handle));
+
+    }
+
     private async Task OnValidSubmit()
     {
         logger.LogInformation("OnValidSubmit");
@@ -159,6 +185,9 @@
 
         foreach (var selectedGroup in editProductionGeneral.SelectedGroups)
             Production.ProductionsGroups.Add(new ProductionsGroups { GroupId = selectedGroup.GroupId });
+
+        foreach (var selectedScener in editProductionGeneral.SelectedSceners)
+            Production.ProductionsSceners.Add(new ProductionsSceners { ScenerId = selectedScener.ScenerId });
 
         if (editProductionGeneral.Party != null)
         {
