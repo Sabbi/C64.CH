@@ -12133,3 +12133,6 @@ img.active {
   @media (min-width: 576px) {
     .fav-heart {
       right: 220px; } }
+
+.blazored-typeahead__clear {
+  color: #212529; }
