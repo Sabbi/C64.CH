@@ -142,11 +142,11 @@
                         }
 
                         <tr><th>Added:</th><td>@production.Added.ParseDate()</td></tr>
-                        @if (!string.IsNullOrEmpty(production.UploaderFixed()) && production.UploaderFixed() != production.SubmitterFixed())
+                        @if (!string.IsNullOrEmpty(production.UploaderFixed()))
                         {
                             <tr><th>Added by:</th><td>@production.UploaderFixed()</td></tr>
                         }
-                        @if (!string.IsNullOrEmpty(production.SubmitterFixed()))
+                        @if (!string.IsNullOrEmpty(production.SubmitterFixed()) && !production.SubmitterFixed().Equals(production.UploaderFixed(), StringComparison.OrdinalIgnoreCase))
                         {
                             <tr><th><span class="text-nowrap">Submitted by:</span></th><td>@production.SubmitterFixed()</td></tr>
                         }
