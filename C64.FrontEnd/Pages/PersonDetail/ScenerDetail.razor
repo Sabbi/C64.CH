@@ -15,6 +15,7 @@
 
 @if (scener != null)
 {
+    <PageTitle TitleFunc="@(() => $"Details of {scener.Handle}")" />
     <Box MarginBottom="4">
         <Title>
             Details of @scener.Handle

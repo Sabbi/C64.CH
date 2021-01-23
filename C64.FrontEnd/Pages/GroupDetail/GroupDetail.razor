@@ -15,6 +15,7 @@
 
 @if (group != null)
 {
+    <PageTitle TitleFunc="@(() => $"Details of {group.Name}")" />
     <Box>
         <Title>
             Details of @group.Name
