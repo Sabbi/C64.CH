@@ -23,7 +23,7 @@ namespace C64.FrontEnd.Controllers
 
             var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
-            logger.LogError("Exception on first render ", exceptionHandlerPathFeature?.Error);
+            logger.LogError("Exception on first render {@exceptionHandler} ", exceptionHandlerPathFeature);
 
             var message = exceptionHandlerPathFeature?.Error.GetType().ToString() + "- " + exceptionHandlerPathFeature?.Error?.Message;
 
