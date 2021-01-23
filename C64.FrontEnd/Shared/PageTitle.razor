@@ -1,0 +1,33 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration configuration
+
+@using Microsoft.AspNetCore.Components.Web.Extensions.Head
+<Title Value="@displayTitle"></Title>
+@code {
+    [Parameter]
+    public string Title { get; set; } = "C64.CH - The C64 Demo Portal";
+
+    [Parameter]
+    public Func<string> TitleFunc { get; set; }
+
+    private string displayTitle = string.Empty;
+
+    private string pageTitleFull = string.Empty;
+    private string pageTitleDynamic = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        pageTitleFull = configuration.GetValue<string>("PageTitleFull");
+        pageTitleDynamic = configuration.GetValue<string>("PageTitleDynamic");
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (TitleFunc != null)
+            displayTitle = string.Format(pageTitleDynamic, TitleFunc.Invoke());
+        else if (!string.IsNullOrEmpty(Title))
+            displayTitle = string.Format(pageTitleDynamic, Title);
+        else
+            displayTitle = pageTitleFull;
+    }
+}
