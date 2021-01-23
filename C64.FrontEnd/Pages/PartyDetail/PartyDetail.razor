@@ -15,6 +15,7 @@
 
 @if (party != null)
 {
+    <PageTitle TitleFunc="@(() => $"Details of {party.Name}")" />
     <Box>
         <Title>
             Details of @party.Name

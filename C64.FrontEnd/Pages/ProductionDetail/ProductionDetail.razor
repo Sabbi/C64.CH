@@ -15,6 +15,7 @@
 
 @if (production != null)
 {
+    <PageTitle TitleFunc="@(() => $"Details for {@production.Name}")" />
     <Box>
         <Title>
             @production.Name<br />
