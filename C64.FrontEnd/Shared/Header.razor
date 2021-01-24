@@ -95,20 +95,20 @@
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
                     <div class="navOverlay-content">
                         <ul>
-                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/"))"><i class="fas fa-home w-25px" title="Home"></i> Home</a></li>
-                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/productions/demos"))"><i class="fas fa-laptop-code w-25px" title="Demos"></i> Demos</a></li>
-                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/parties"))"><i class="fas fa-glass-cheers w-25px" title="Partis"></i> Parties</a></li>
-                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/links"))"><i class="fas fa-link w-25px" title="Links"></i> Links</a></li>
+                            <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/"))"><i class="fas fa-home w-25px" title="Home"></i> Home</a></li>
+                            <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/productions/demos"))"><i class="fas fa-laptop-code w-25px" title="Demos"></i> Demos</a></li>
+                            <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/parties"))"><i class="fas fa-glass-cheers w-25px" title="Partis"></i> Parties</a></li>
+                            <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/links"))"><i class="fas fa-link w-25px" title="Links"></i> Links</a></li>
                             <li>
                                 <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-microchip w-25px" title="Programming"></i> Programming</a>
                                 <nav class="nav-items" style="display:none">
                                     <ul>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming"))">Tutorial</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming/sourcecodes"))">Sourcecodes</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming"))">Tutorial</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/programming/sourcecodes"))">Sourcecodes</a></li>
                                     </ul>
                                 </nav>
                             </li>
-                            <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/guestbook"))"><i class="fas fa-atlas w-25px" title="Guestbook"></i> Guestbook</a></li>
+                            <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/guestbook"))"><i class="fas fa-atlas w-25px" title="Guestbook"></i> Guestbook</a></li>
                             <li>
                                 <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-folder-plus w-25px" title="Add"></i> Add</a>
                                 <nav class="nav-items" style="display:none">
@@ -131,13 +131,13 @@
                                     <AuthorizeView>
                                         <Authorized>
                                             <ul>
-                                                <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/account"))">Manage your account</a></li>
-                                                <li><a href="" @onclick:preventDefault @onclick="@(() => navigationManager.NavigateTo("/user/logout",true))">Logout</a></li>
+                                                <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/account"))">Manage your account</a></li>
+                                                <li><a href="#" @onclick:preventDefault @onclick="@(() => navigationManager.NavigateTo("/user/logout",true))">Logout</a></li>
                                             </ul>
                                         </Authorized>
                                         <NotAuthorized>
                                             <ul>
-                                                <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/account/register"))">Register</a></li>
+                                                <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/account/register"))">Register</a></li>
                                                 <li><LoginLink ExecuteBefore="CloseMenu"><Content>Login</Content></LoginLink></li>
                                             </ul>
                                         </NotAuthorized>
@@ -149,20 +149,19 @@
                                 <a class="trigger" onclick="onTrigger(this)"><i class="fas fa-question w-25px" title="Help"></i> Help</a>
                                 <nav class="nav-items" style="display:none">
                                     <ul>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/faq"))">FAQ</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/feedback"))">Feedback</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/contribute"))">Contribute</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/changelog"))">Changelog</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/donations"))">Donations</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/tools"))">Tools</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/faq"))">FAQ</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/feedback"))">Feedback</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/contribute"))">Contribute</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/changelog"))">Changelog</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/donations"))">Donations</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/tools"))">Tools</a></li>
                                         <li><div class="dropdown-divider"></div></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/about"))">About</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/technical"))">Technical</a></li>
-                                        <li><a href="" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/contact"))">Contact</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/about"))">About</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/technical"))">Technical</a></li>
+                                        <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/help/contact"))">Contact</a></li>
                                     </ul>
                                 </nav>
                             </li>
-                            @*<partial name="_LoginPartialMobile" />*@
                         </ul>
                     </div>
                 </div>

@@ -23,11 +23,11 @@
             <div class="float-right pr-3 position-absolute fav-heart">
                 @if (isFavorite)
                 {
-                    <a title="Remove from favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(false))"><i class="fas fa-heart red" title="Remove from favorites"></i></a>
+                    <a title="Remove from favorites" href="#" @onclick:preventDefault @onclick="(() => SetFavorite(false))"><i class="fas fa-heart red" title="Remove from favorites"></i></a>
                 }
                 else
                 {
-                    <a title="Add to favorites" href="" @onclick:preventDefault @onclick="(() => SetFavorite(true))"><i class="far fa-heart red"></i></a>
+                    <a title="Add to favorites" href="#" @onclick:preventDefault @onclick="(() => SetFavorite(true))"><i class="far fa-heart red"></i></a>
                 }
             </div>
             <div class="d-none d-sm-block float-right pr-3 position-absolute" style="right:0; top:5px">
@@ -184,7 +184,7 @@
                         <Authorized>
                             @if (!CommentsBlocked)
                             {
-                                <a href="" @onclick:preventDefault @onclick="OpenWriteCommentModal" class="badge badge-success">Write your comment</a>
+                                <a href="#" @onclick:preventDefault @onclick="OpenWriteCommentModal" class="badge badge-success">Write your comment</a>
                             }
                             else
                             {

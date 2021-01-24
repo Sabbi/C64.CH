@@ -14,10 +14,10 @@
         @if (download.IsArchive)
         {
             <p>
-                <a href="" @onclick="(() => ShowFileContents(download.ProductionFileId, download.Filename))" @onclick:preventDefault><i class="far fa-list-alt"></i> Show File-Contents</a>
+                <a href="#" @onclick="(() => ShowFileContents(download.ProductionFileId, download.Filename))" @onclick:preventDefault><i class="far fa-list-alt"></i> Show File-Contents</a>
             </p>
             <p>
-                <a href="" @onclick="(() => StartEmulator(download.ProductionFileId))" @onclick:preventDefault><i class="fas fa-gamepad"></i> Emulate in Browser (Experimental)</a><br />
+                <a href="#" @onclick="(() => StartEmulator(download.ProductionFileId))" @onclick:preventDefault><i class="fas fa-gamepad"></i> Emulate in Browser (Experimental)</a><br />
             </p>
         }
         <hr />
