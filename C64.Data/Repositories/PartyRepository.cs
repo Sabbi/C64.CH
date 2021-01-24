@@ -26,6 +26,7 @@ namespace C64.Data.Repositories
                     .Include(p => p.ProductionsParties).ThenInclude(p => p.PartyCategory)
                     .Include(p => p.ProductionsParties).ThenInclude(p => p.Production).ThenInclude(p => p.ProductionPictures)
                     .Include(p => p.ProductionsParties).ThenInclude(p => p.Production).ThenInclude(p => p.ProductionsGroups).ThenInclude(p => p.Group)
+                    .Include(p => p.ProductionsParties).ThenInclude(p => p.Production).ThenInclude(p => p.ProductionsSceners).ThenInclude(p => p.Scener)
                     .FirstOrDefaultAsync(p => p.PartyId == partyId);
 
             return context.Set<Party>().Include(p => p.Country).Include(p => p.ProductionsParties).ThenInclude(p => p.Production).FirstOrDefaultAsync(p => p.PartyId == partyId);

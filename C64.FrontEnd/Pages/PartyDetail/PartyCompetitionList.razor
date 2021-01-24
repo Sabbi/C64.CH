@@ -25,7 +25,7 @@
                                 @prod.Production.Name
                             </a>
                         </h5>
-                        by <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="prod.Production.ProductionsGroups.Select(p => p.Group)" />
+                        by <MultiLinkJoiner LastSeparator=" and " Separator=", " AlsoAddValue="true" MultiLinkJoinables="prod.Production.GetCreatorLinks()" />
                     </div>
                     <hr />
                 </div>
