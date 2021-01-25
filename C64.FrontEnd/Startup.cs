@@ -104,8 +104,9 @@ namespace C64.FrontEnd
                 var consumerSecret = Configuration.GetValue<string>("Twitter:ConsumerSecret");
                 var accessToken = Configuration.GetValue<string>("Twitter:AccessToken");
                 var accessTokenSecret = Configuration.GetValue<string>("Twitter:AccessTokenSecret");
+                var twitterLogo = Configuration.GetValue<string>("Twitter:Logo");
 
-                services.AddTransient<ITweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, x.GetRequiredService<ILogger<DefaultTweeter>>()));
+                services.AddTransient<ITweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
             }
             else
                 services.AddTransient<ITweeter, NullTweeter>();
