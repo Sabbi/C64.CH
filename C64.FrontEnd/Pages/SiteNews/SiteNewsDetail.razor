@@ -1,6 +1,8 @@
 ﻿@namespace C64.FrontEnd.Pages
 
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
+@inject IModalService Modal
+@inject IToastService toastService
 
 <li class="my-1">
     <div class="row">
@@ -17,6 +19,7 @@
                         <Authorized>
                             <div class="float-right">
                                 <a href="" @onclick:preventDefault @onclick="(() => StartEdit())" class="badge badge-success">Edit @SiteInfo.Title</a>
+                                <br />
                             </div>
                         </Authorized>
                     </AuthorizeView>
@@ -24,6 +27,15 @@
                 <div class="col-12">
                     <div class="small float-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
                     <RenderMarkdown MarkdownContent="@SiteInfo.Text.Replace("<br>", "\n")" />
+                    <AuthorizeView Roles="Moderator">
+                        <Authorized>
+                            <div class="text-right">
+                                <a href="" @onclick:preventDefault @onclick="(() => Tweet())" class="btn-sm btn-warning">
+                                    <i class="fab fa-twitter"></i>Tweet @(SiteInfo.TweetedAt == null ? "" : $"(Last tweeted: {SiteInfo.TweetedAt}")
+                                </a>
+                            </div>
+                        </Authorized>
+                    </AuthorizeView>
                     <hr>
                 </div>
             }
@@ -126,4 +138,20 @@
         showEdit = false;
     }
 
+    private async Task Tweet()
+    {
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(TweetSiteInfoModal.SiteInfo), SiteInfo);
+        var reference = Modal.Show<TweetSiteInfoModal>("", parameters);
+
+        var result = await reference.Result;
+
+        if (!result.Cancelled)
+        {
+            SiteInfo.TweetedAt = DateTime.Now;
+            await OnEdited.InvokeAsync(SiteInfo);
+            toastService.ShowSuccess("Tweet sent out!");
+        }
+    }
 }
