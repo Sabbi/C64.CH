@@ -10,6 +10,8 @@ namespace C64.Data.Entities
 
         public DateTime PublishedAt { get; set; }
 
+        public DateTime? TweetedAt { get; set; }
+
         [MaxLength(65535)]
         public string Text { get; set; }
 
