@@ -44,11 +44,16 @@
 
     private async Task OnValidSubmit()
     {
-        disabled = true;
-        tweetButtonText = "Tweeting....";
-        StateHasChanged();
-        await tweeter.SendTweet(tweet.Tweet);
-        await bootstrapModal.Close(ModalResult.Ok("Ok"));
+        if (httpContext.HttpContext.UserIsModerator())
+        {
+            disabled = true;
+            tweetButtonText = "Tweeting....";
+            StateHasChanged();
+            await tweeter.SendTweet(tweet.Tweet);
+            await bootstrapModal.Close(ModalResult.Ok("Ok"));
+        }
+        else
+            throw new UnauthorizedAccessException("Non-Mod trying to tweet");
     }
 
     private class TweetModel
