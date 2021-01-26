@@ -1,0 +1,67 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using System.ComponentModel.DataAnnotations;
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger
+@inject IToastService toastService
+
+@inject C64.Services.Tweeter.ITweeter tweeter
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Tweet {@SiteInfo.Title}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <EditForm Model="tweet" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <InputTextArea class="form-control" rows="10" @bind-Value="@tweet.Tweet"></InputTextArea>
+            <ValidationMessage For="@(() => tweet.Tweet)" />
+            <div class="pt-1">
+                <button class="btn btn-primary" type="submit" disabled=@disabled>@tweetButtonText</button>
+                <div class="float-right">
+                    <button class="btn btn-secondary" @onclick="@(() => bootstrapModal.Cancel())" disabled=@disabled>Cancel</button>
+                </div>
+            </div>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [Parameter]
+    public SiteInfo SiteInfo { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private TweetModel tweet = new TweetModel();
+
+    private bool disabled = false;
+
+    private string tweetButtonText = "Tweet";
+
+    protected override void OnInitialized()
+    {
+        tweet.Tweet = $"{SiteInfo.Title}: {SiteInfo.Text}\n{SiteInfo.WriterFixed} / https://c64.ch -  #c64 #commodore #demoscene #retro";
+    }
+
+    private async Task OnValidSubmit()
+    {
+        if (httpContext.HttpContext.UserIsModerator())
+        {
+            disabled = true;
+            tweetButtonText = "Tweeting....";
+            StateHasChanged();
+            await tweeter.SendTweet(tweet.Tweet);
+            await bootstrapModal.Close(ModalResult.Ok("Ok"));
+        }
+        else
+            throw new UnauthorizedAccessException("Non-Mod trying to tweet");
+    }
+
+    private class TweetModel
+    {
+        [Required]
+        [MaxLength(240)]
+        public string Tweet { get; set; }
+
+    }
+
+}

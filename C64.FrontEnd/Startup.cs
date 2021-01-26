@@ -6,6 +6,7 @@ using C64.Data.Storage;
 using C64.FrontEnd.Helpers;
 using C64.Services;
 using C64.Services.Archive;
+using C64.Services.Tweeter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -96,6 +97,19 @@ namespace C64.FrontEnd
             {
                 hubOptions.MaximumReceiveMessageSize = 1024 * 1024;
             });
+
+            if (!string.IsNullOrEmpty(Configuration.GetValue<string>("Twitter:ConsumerKey")))
+            {
+                var consumerKey = Configuration.GetValue<string>("Twitter:ConsumerKey");
+                var consumerSecret = Configuration.GetValue<string>("Twitter:ConsumerSecret");
+                var accessToken = Configuration.GetValue<string>("Twitter:AccessToken");
+                var accessTokenSecret = Configuration.GetValue<string>("Twitter:AccessTokenSecret");
+                var twitterLogo = Configuration.GetValue<string>("Twitter:Logo");
+
+                services.AddTransient<ITweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
+            }
+            else
+                services.AddTransient<ITweeter, NullTweeter>();
 
             // Use en-US as culture, but tweak some to a more readable format.
             // -------------------------------------------------------------------------------------------------------------
