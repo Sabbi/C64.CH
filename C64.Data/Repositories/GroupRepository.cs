@@ -25,6 +25,9 @@ namespace C64.Data.Repositories
         {
             var group = await GetWithProductions(groupId);
 
+            if (group == null)
+                return group;
+
             var members = await context.Set<ScenersGroups>().Include(p => p.Scener).Include(p => p.ScenerGroupJobs).Where(p => p.GroupId == groupId).ToListAsync();
             group.ScenersGroups = members;
 

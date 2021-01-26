@@ -181,6 +181,13 @@
 
         group = await unitOfWork.Groups.GetDetails(GroupId);
 
+        if (group == null)
+        {
+            logger.LogWarning("Group with Id {id} cannot be loaded");
+            navigationManager.NavigateTo("/");
+
+        }
+
         productionIds = group.ProductionsGroups.Select(p => p.ProductionId);
 
         sw.Stop();
