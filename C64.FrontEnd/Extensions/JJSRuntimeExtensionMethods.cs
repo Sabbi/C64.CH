@@ -45,24 +45,31 @@ namespace C64.FrontEnd.Extensions
 
         public static async ValueTask<bool> CanRedoAction(this IJSRuntime js, string trigger, TimeSpan minimumInterval)
         {
-            string created;
             try
             {
-                created = await js.GetFromLocalStorage(trigger);
+                string created;
+                try
+                {
+                    created = await js.GetFromLocalStorage(trigger);
+                }
+                catch (InvalidOperationException)
+                {
+                    return true;
+                }
+
+                if (DateTime.TryParse(created, out var result))
+                {
+                    var span = DateTime.Now.Subtract(result);
+
+                    if (span < minimumInterval)
+                        return false;
+                }
+                return true;
             }
-            catch (InvalidOperationException)
+            catch
             {
                 return true;
             }
-
-            if (DateTime.TryParse(created, out var result))
-            {
-                var span = DateTime.Now.Subtract(result);
-
-                if (span < minimumInterval)
-                    return false;
-            }
-            return true;
         }
     }
 }
