@@ -17,21 +17,40 @@ namespace C64.FrontEnd.Extensions
         }
 
         public static ValueTask<object> SetInLocalStorage(this IJSRuntime js, string key, string content)
-                => js.InvokeAsync<object>(
-                    "localStorage.setItem",
-                    key, content
-                 );
+        {
+            try
+            {
+                return js.InvokeAsync<object>("localStorage.setItem", key, content);
+            }
+            catch
+            {
+                return ValueTask.FromResult<object>(null);
+            }
+        }
 
         public static ValueTask<string> GetFromLocalStorage(this IJSRuntime js, string key)
-            => js.InvokeAsync<string>(
-                "localStorage.getItem",
-                key
-                );
+        {
+            try
+            {
+                return js.InvokeAsync<string>("localStorage.getItem", key);
+            }
+            catch
+            {
+                return ValueTask.FromResult<string>(null);
+            }
+        }
 
         public static ValueTask<object> RemoveItem(this IJSRuntime js, string key)
-            => js.InvokeAsync<object>(
-                "localStorage.removeItem",
-                key);
+        {
+            try
+            {
+                return js.InvokeAsync<object>("localStorage.removeItem", key);
+            }
+            catch
+            {
+                return ValueTask.FromResult<object>(null);
+            }
+        }
 
         public static ValueTask<bool> ScrollToElementId(this IJSRuntime js, string elementId)
         {
