@@ -16,39 +16,39 @@ namespace C64.FrontEnd.Extensions
             await js.InvokeVoidAsync("my_function", message);
         }
 
-        public static ValueTask<object> SetInLocalStorage(this IJSRuntime js, string key, string content)
+        public static async ValueTask<object> SetInLocalStorage(this IJSRuntime js, string key, string content)
         {
             try
             {
-                return js.InvokeAsync<object>("localStorage.setItem", key, content);
+                return await js.InvokeAsync<object>("localStorage.setItem", key, content);
             }
             catch
             {
-                return ValueTask.FromResult<object>(null);
+                return await ValueTask.FromResult<object>(null);
             }
         }
 
-        public static ValueTask<string> GetFromLocalStorage(this IJSRuntime js, string key)
+        public static async ValueTask<string> GetFromLocalStorage(this IJSRuntime js, string key)
         {
             try
             {
-                return js.InvokeAsync<string>("localStorage.getItem", key);
+                return await js.InvokeAsync<string>("localStorage.getItem", key);
             }
             catch
             {
-                return ValueTask.FromResult<string>(null);
+                return await ValueTask.FromResult<string>(null);
             }
         }
 
-        public static ValueTask<object> RemoveItem(this IJSRuntime js, string key)
+        public static async ValueTask<object> RemoveItem(this IJSRuntime js, string key)
         {
             try
             {
-                return js.InvokeAsync<object>("localStorage.removeItem", key);
+                return await js.InvokeAsync<object>("localStorage.removeItem", key);
             }
             catch
             {
-                return ValueTask.FromResult<object>(null);
+                return await ValueTask.FromResult<object>(null);
             }
         }
 
@@ -57,9 +57,16 @@ namespace C64.FrontEnd.Extensions
             return js.InvokeAsync<bool>("scrollToElementId", elementId);
         }
 
-        public static ValueTask<object> SetRedoTrigger(this IJSRuntime js, string trigger)
+        public static async ValueTask<object> SetRedoTrigger(this IJSRuntime js, string trigger)
         {
-            return js.SetInLocalStorage(trigger, DateTime.Now.ToString());
+            try
+            {
+                return await js.SetInLocalStorage(trigger, DateTime.Now.ToString());
+            }
+            catch
+            {
+                return await ValueTask.FromResult<object>(null);
+            }
         }
 
         public static async ValueTask<bool> CanRedoAction(this IJSRuntime js, string trigger, TimeSpan minimumInterval)

@@ -96,7 +96,7 @@
             var i = function (e) {
                 o++, s[e] = !1
             };
-            n.disableLocalStorage ? (this.getSourceTypeFromLocalStorageByUrl = function () { }, this.handleReceivedSourceTypeForUrl = function () { }) : (t = JSON.parse(localStorage.getItem("fslightbox-types"))) || (t = {}, this.getSourceTypeFromLocalStorageByUrl = i)
+            localStorage == null ? (this.getSourceTypeFromLocalStorageByUrl = function () { }, this.handleReceivedSourceTypeForUrl = function () { }) : (t = JSON.parse(localStorage.getItem("fslightbox-types"))) || (t = {}, this.getSourceTypeFromLocalStorageByUrl = i)
         }
 
         function F(e, t, n, o) {
@@ -762,24 +762,29 @@
         }
 
         function ne() {
-            var e = localStorage.getItem("fslightbox-scrollbar-width");
-            if (e) return e;
-            var t = function () {
-                var e = document.createElement("div"),
-                    t = e.style;
-                return t.visibility = "hidden", t.width = "100px", t.msOverflowStyle = "scrollbar", t.overflow = "scroll", e
-            }(),
-                n = function () {
-                    var e = document.createElement("div");
-                    return e.style.width = "100%", e
-                }();
-            document.body.appendChild(t);
-            var o = t.offsetWidth;
-            t.appendChild(n);
-            var s = n.offsetWidth;
-            document.body.removeChild(t);
-            var i = o - s;
-            return localStorage.setItem("fslightbox-scrollbar-width", i.toString()), i
+            try {
+                var e = localStorage.getItem("fslightbox-scrollbar-width");
+                if (e) return e;
+                var t = function () {
+                    var e = document.createElement("div"),
+                        t = e.style;
+                    return t.visibility = "hidden", t.width = "100px", t.msOverflowStyle = "scrollbar", t.overflow = "scroll", e
+                }(),
+                    n = function () {
+                        var e = document.createElement("div");
+                        return e.style.width = "100%", e
+                    }();
+                document.body.appendChild(t);
+                var o = t.offsetWidth;
+                t.appendChild(n);
+                var s = n.offsetWidth;
+                document.body.removeChild(t);
+                var i = o - s;
+                return localStorage.setItem("fslightbox-scrollbar-width", i.toString()), i
+            }
+            catch {
+                return 0;
+            }
         }
 
         function oe() {
