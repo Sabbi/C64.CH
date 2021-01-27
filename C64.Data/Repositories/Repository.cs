@@ -61,7 +61,7 @@ namespace C64.Data.Repositories
 
         public void Remove(T entity)
         {
-            throw new NotImplementedException();
+            context.Remove(entity);
         }
 
         public void RemoveRange(IEnumerable<T> entities)
