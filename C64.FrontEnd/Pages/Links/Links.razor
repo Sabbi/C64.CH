@@ -7,6 +7,8 @@
 @inject IModalService Modal
 @inject IToastService toastService
 
+@inject IHttpContextAccessor httpContextAccessor
+
 <PageTitle Title="Links" />
 <Box>
     <Title>Links - Select category</Title>
@@ -53,6 +55,13 @@
                     <div class="media-body">
                         <p class="mt-0 mb-1">
                             <a target="_blank" href="/links/follow/@link.LinkId" class="normal">@link.Name</a>
+                            <AuthorizeView Roles="Admin, Moderator">
+                                <Authorized>
+                                    <div class="float-right">
+                                        <div class="badge badge-warning cursor-pointer" @onclick="@(() => EditLink(link))">Edit</div>
+                                    </div>
+                                </Authorized>
+                            </AuthorizeView>
                         </p>
                         <div class="float-left">
                             <a target="_blank" href="/links/follow/@link.LinkId">@link.Url</a>
@@ -95,8 +104,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        links = (await unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId)).OrderByDescending(p => p.Added);
-        title = $"{linkCategories.FirstOrDefault(p => p.LinkCategoryId == CategoryId).Name} ({links.Count()} links found)";
+        await LoadLinks();
     }
 
     private async Task AddLink()
@@ -119,6 +127,37 @@
             await jsRuntime.SetRedoTrigger("Link");
             await UpdateCanAddLink();
         }
+    }
+
+    private async Task EditLink(Link link)
+    {
+        if (!httpContextAccessor.HttpContext.UserIsModerator())
+            throw new UnauthorizedAccessException();
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(EditLinkModal.Link), link);
+        var reference = Modal.Show<EditLinkModal>("", parameters);
+
+        var result = await reference.Result;
+
+        if (!result.Cancelled)
+        {
+            if (link.Url == null && link.Name == null)
+            {
+                unitOfWork.Links.Remove(link);
+
+            }
+
+            await unitOfWork.Commit();
+
+            await LoadLinks();
+        }
+    }
+
+    private async Task LoadLinks()
+    {
+        links = (await unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId)).OrderByDescending(p => p.Added);
+        title = $"{linkCategories.FirstOrDefault(p => p.LinkCategoryId == CategoryId).Name} ({links.Count()} links found)";
     }
 
 }

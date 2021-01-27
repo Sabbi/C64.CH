@@ -1,0 +1,96 @@
+﻿@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger
+@inject IUnitOfWork unitOfWork
+
+@inject IJSRuntime jsRuntime
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit Link")" Size="BootstrapModal.ModalSize.Default">
+    <Content>
+        <EditForm Model="model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label>Category:</label>
+                <div>
+                    <InputSelect @bind-Value="@model.CategoryId" class="form-control">
+                        @foreach (var item in linkCategories)
+                        {
+                            <option value="@item.LinkCategoryId">@item.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Link Title:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@model.Title" />
+                    <ValidationMessage For="@(() => model.Title)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Address:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@model.Url" placeholder="https://interest.ing/link" />
+                    <ValidationMessage For="@(() => model.Url)" />
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Update Link</button>
+            <div class="float-right">
+                <button class="btn btn-danger" type="button" @onclick="@Delete">Delete</button>
+                <button class="btn btn-secondary" type="button" @onclick="@(() => bootstrapModal.Cancel())">Cancel</button>
+            </div>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter]
+    public Link Link { get; set; }
+
+    [Parameter]
+    public EventCallback<Link> OnEditLink { get; set; }
+
+    private AddLinkModel model = new AddLinkModel();
+
+    private BootstrapModal bootstrapModal;
+
+    private List<LinkCategory> linkCategories = new List<LinkCategory>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        linkCategories = (await unitOfWork.Links.GetCategories()).ToList();
+        model.CategoryId = Link.LinkCategoryId.ToString();
+        model.Title = Link.Name;
+        model.Url = Link.Url;
+    }
+
+    private async Task OnValidSubmit()
+    {
+        if (httpContext.HttpContext.UserIsModerator())
+        {
+            Link.LinkCategoryId = int.Parse(model.CategoryId);
+            Link.Name = model.Title;
+            Link.Url = model.Url;
+            await bootstrapModal.Close(ModalResult.Ok("Ok"));
+        }
+
+    }
+
+    private async Task Delete()
+    {
+        if (httpContext.HttpContext.UserIsModerator())
+        {
+            var result = await jsRuntime.InvokeAsync<bool>("confirm", "Sure to delete this link?");
+
+            if (result)
+            {
+                Link.Name = null;
+                Link.Url = null;
+                await bootstrapModal.Close(ModalResult.Ok("Ok"));
+            }
+        }
+    }
+}
