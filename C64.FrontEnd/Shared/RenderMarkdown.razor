@@ -1,4 +1,5 @@
 ﻿@using Markdig
+@using System.Text.RegularExpressions
 
 @if (HtmlContent != null)
 {
@@ -16,6 +17,13 @@
         {
             var pipeline = new MarkdownPipelineBuilder().DisableHtml().UseTaskLists().Build();
             HtmlContent = Markdown.ToHtml(MarkdownContent, pipeline);
+
+            HtmlContent = Regex.Replace(HtmlContent,
+            @"((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?)",
+            "<a target='_blank' href='$1'>$1</a>");
+
+            HtmlContent = HtmlContent.Replace("target='_blank' href='https://c64.ch/", "href='/");
+
         }
         else
         {
