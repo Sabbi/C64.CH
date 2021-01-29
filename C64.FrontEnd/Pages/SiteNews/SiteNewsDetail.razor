@@ -6,95 +6,56 @@
 
 <li class="my-1">
     <div class="row">
-        @if (!showEdit)
+        @if (SiteInfo.Show)
         {
-            if (SiteInfo.Show)
-            {
-                <div class="col-12 mb-2">
+            <div class="col-12 mb-1">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="d-inline">
+                            @SiteInfo.Title
+                        </h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="small text-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div>
+                    <RenderMarkdown MarkdownContent="@SiteInfo.Text?.Replace("<br>", "\n")" />
+                </div>
 
-                    <h4 class="d-inline">
-                        @SiteInfo.Title
-                    </h4>
-                    <AuthorizeView Roles="Moderator">
-                        <Authorized>
-                            <div class="float-right">
-                                <a href="" @onclick:preventDefault @onclick="(() => StartEdit())" class="badge badge-success">Edit @SiteInfo.Title</a>
-                                <br />
-                            </div>
-                        </Authorized>
-                    </AuthorizeView>
-                </div>
-                <div class="col-12">
-                    <div class="small float-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
-                    <RenderMarkdown MarkdownContent="@SiteInfo.Text.Replace("<br>", "\n")" />
-                    <AuthorizeView Roles="Moderator">
-                        <Authorized>
-                            <div class="text-right">
-                                <a href="" @onclick:preventDefault @onclick="(() => Tweet())" class="btn-sm btn-warning">
-                                    <i class="fab fa-twitter"></i>Tweet @(SiteInfo.TweetedAt == null ? "" : $"(Last tweeted: {SiteInfo.TweetedAt}")
-                                </a>
-                            </div>
-                        </Authorized>
-                    </AuthorizeView>
-                    <hr>
-                </div>
-            }
-            else
-            {
                 <AuthorizeView Roles="Moderator">
                     <Authorized>
-                        <div class="col-12 mb-2" style="background-color:#808080">
-                            <h4 class="d-inline">
-                                <small><del>@SiteInfo.Title</del></small>
-                            </h4>
-                            <div class="float-right">
-                                <a href="" @onclick:preventDefault @onclick="(() => StartEdit())" class="badge badge-success">Edit @SiteInfo.Title</a>
-                            </div>
+                        <div class="text-right">
+                            <a href="" @onclick:preventDefault @onclick="(() => StartEdit())" class="btn-sm btn-success">
+                                <i class="far fa-edit"></i>Edit
+                            </a>&nbsp;
+                            <a href="" @onclick:preventDefault @onclick="(() => Tweet())" class="btn-sm btn-warning">
+                                <i class="fab fa-twitter"></i>Tweet @(SiteInfo.TweetedAt == null ? "" : $"(Last tweeted: {SiteInfo.TweetedAt}")
+                            </a>
                         </div>
                     </Authorized>
                 </AuthorizeView>
-            }
+                <hr>
+            </div>
         }
         else
         {
-            <div class="col-12 mb-2">
-                <EditForm Model="SiteInfo" OnValidSubmit="OnValidSubmit">
-                    <DataAnnotationsValidator />
-                    <div class="form-group">
-                        <label>Title:</label>
-                        <div>
-                            <InputText class="form-control" @bind-Value="@SiteInfo.Title" />
-                            <ValidationMessage For="@(() => SiteInfo.Title)" />
+            <AuthorizeView Roles="Moderator">
+                <Authorized>
+                    <div class="col-12 mb-2" style="background-color:#c0c0c0">
+                        <h4 class="d-inline">
+                            <small><del>@SiteInfo.Title</del></small>
+                        </h4>
+                        <div class="float-right">
+                            <a href="" @onclick:preventDefault @onclick="(() => StartEdit())" class="btn-sm btn-success">
+                                <i class="far fa-edit"></i>Edit
+                            </a>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Content (Markdown is ok):</label>
-                        <div>
-                            <InputTextArea rows="5" class="form-control" @bind-Value="@SiteInfo.Text" />
-                            <ValidationMessage For="@(() => SiteInfo.Text)" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Show:</label>
-                        <div>
-                            <InputCheckbox @bind-Value="@SiteInfo.Show" id="showInfo" />
-                            <label for="showInfo">Show News</label>
-                        </div>
-                    </div>
-                    <div class="float-right">
-                        <button class="btn btn-warning" type="button" @onclick="Cancel">Cancel</button>
-                    </div>
-                    <button class="btn btn-primary" type="submit">Update News</button>
-
-                    <div class="form-group mt-4">
-                        <label>Preview:</label>
-                        <div>
-                            <RenderMarkdown MarkdownContent="@SiteInfo.Text"></RenderMarkdown>
-                        </div>
-                    </div>
-                </EditForm>
-            </div>
-
+                </Authorized>
+            </AuthorizeView>
         }
     </div>
 </li>
@@ -106,8 +67,6 @@
     [Parameter]
     public EventCallback<SiteInfo> OnEdited { get; set; }
 
-    private bool showEdit = false;
-
     private SiteInfo back = new SiteInfo();
 
     protected override void OnInitialized()
@@ -115,27 +74,18 @@
         base.OnInitialized();
     }
 
-    private void StartEdit()
+    private async Task StartEdit()
     {
-        back.Title = SiteInfo.Title;
-        back.Text = SiteInfo.Text;
-        back.Show = SiteInfo.Show;
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(SiteInfo), SiteInfo);
+        var reference = Modal.Show<EditSiteInfoModal>("", parameters);
 
-        showEdit = true;
-    }
+        var result = await reference.Result;
 
-    private void Cancel()
-    {
-        SiteInfo.Title = back.Title;
-        SiteInfo.Text = back.Text;
-        SiteInfo.Show = back.Show;
-        showEdit = false;
-    }
-
-    private async Task OnValidSubmit()
-    {
-        await OnEdited.InvokeAsync(SiteInfo);
-        showEdit = false;
+        if (!result.Cancelled)
+        {
+            await OnEdited.InvokeAsync(SiteInfo);
+        }
     }
 
     private async Task Tweet()

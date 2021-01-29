@@ -1,0 +1,68 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject IUnitOfWork unitOfWork
+@inject ILogger<SiteNews> logger
+
+@inject NavigationManager navigationManager
+
+@if (paginatedResult?.Data != null)
+{
+    <ul class="list-unstyled">
+        @foreach (var info in paginatedResult.Data)
+        {
+            <SiteNewsDetail SiteInfo="@info" OnEdited="OnEdited" />
+        }
+    </ul>
+    <Paginator CurrentPage="@paginatedResult.CurrentPage" TotalAmountPages="@paginatedResult.NumberOfPages" SelectedPage="OnSelectPage" MoveToAnchor="@(ChangeUrl ? null : Anchor)" />
+    <PaginatorRecordInfo CurrentPage="@paginatedResult.CurrentPage" PageSize="@PageSize" TotalNumberOfRecords="@paginatedResult.TotalNumberOfRecords" />
+}
+
+@code {
+    [Parameter]
+    public int Page { get; set; } = 1;
+
+    [Parameter]
+    public int PageSize { get; set; } = 10;
+
+    [Parameter]
+    public bool ChangeUrl { get; set; } = true;
+
+    [Parameter]
+    public string Anchor { get; set; }
+
+    [Parameter]
+    public int Category { get; set; } = 0;
+
+    [Parameter]
+    public string PageUrl { get; set; }
+
+    private PaginatedResult<SiteInfo> paginatedResult;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Page < 1)
+            Page = 1;
+        await Load(Page);
+    }
+
+    private async Task OnSelectPage(int selectedPage)
+    {
+        if (ChangeUrl)
+            navigationManager.NavigateTo(string.Format(PageUrl, selectedPage));
+
+        await Load(selectedPage);
+    }
+
+    private async Task OnEdited(SiteInfo info)
+    {
+        // TODO: is this safe?
+        await unitOfWork.Commit();
+        await Load(Page);
+    }
+
+    private async Task Load(int selectedPage)
+    {
+        paginatedResult = await unitOfWork.SiteInfos.GetPaginatedWithUser(p => p.Category == Category, "PublishedAt", false, selectedPage, PageSize);
+        Page = selectedPage;
+    }
+} 

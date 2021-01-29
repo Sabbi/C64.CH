@@ -1,47 +1,41 @@
-﻿@namespace C64.FrontEnd.Pages
+﻿@page "/sitenews"
+@page "/sitenews/{Page:int}"
+@namespace C64.FrontEnd.Pages
 
 @using C64.Data.Models
 
 @inject IUnitOfWork unitOfWork
 @inject ILogger<SiteNews> logger
 
-@if (paginatedResult?.Data != null)
-{
-    <ul class="list-unstyled">
-        @foreach (var info in paginatedResult.Data)
+@inject NavigationManager navigationManager
+
+<Box Anchor="SiteNews">
+    <Title>
+        <text>Latest Site News</text>
+        @if (!ChangeUrl)
         {
-            <SiteNewsDetail SiteInfo="@info" OnEdited="OnEdited" />
+            <text> - <a href="/sitenews/"><i class="far fa-newspaper"></i> See more</a></text>
         }
-    </ul>
-    <Paginator CurrentPage="@paginatedResult.CurrentPage" TotalAmountPages="@paginatedResult.NumberOfPages" SelectedPage="OnSelectPage" />
-    <PaginatorRecordInfo CurrentPage="@paginatedResult.CurrentPage" PageSize="@pageSize" TotalNumberOfRecords="@paginatedResult.TotalNumberOfRecords" />
-}
+
+        @*<div class="float-right pr-3">
+                <h5 class="d-inline">
+                    <a href="/help/contribute" class="badge badge-success">Got some news?</a>
+                </h5>
+            </div>*@
+    </Title>
+    <Content>
+        <SiteNewsComponent Category="0" Page="@Page" PageSize="@PageSize" ChangeUrl="@ChangeUrl" PageUrl="/sitenews/{0}" Anchor="@("SiteNews")" />
+    </Content>
+</Box>
 
 @code {
-    private int page = 1;
-    private int pageSize = 3;
 
-    private PaginatedResult<SiteInfo> paginatedResult;
+    [Parameter]
+    public int Page { get; set; } = 1;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Load(1);
-    }
+    [Parameter]
+    public int PageSize { get; set; } = 10;
 
-    private async Task OnSelectPage(int selectedPage)
-    {
-        await Load(selectedPage);
-    }
-
-    private void OnEdited(SiteInfo info)
-    {
-        // TODO: is this safe?
-        unitOfWork.Commit();
-    }
-
-    private async Task Load(int selectedPage)
-    {
-        paginatedResult = await unitOfWork.SiteInfos.GetPaginatedWithUser(p => true, "PublishedAt", false, selectedPage, pageSize);
-        page = selectedPage;
-    }
+    [Parameter]
+    public bool ChangeUrl { get; set; } = true;
 }
