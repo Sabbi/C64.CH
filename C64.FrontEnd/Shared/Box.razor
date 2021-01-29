@@ -1,4 +1,4 @@
-﻿<div class="card mb-@MarginBottom">
+﻿<div id="@Anchor" class="card mb-@MarginBottom">
     <div class="card-header card-header-big">
         @Title
         <span></span>
@@ -20,4 +20,6 @@
     [Parameter]
     public int MarginBottom { get; set; } = 2;
 
+    [Parameter]
+    public string Anchor { get; set; }
 }
