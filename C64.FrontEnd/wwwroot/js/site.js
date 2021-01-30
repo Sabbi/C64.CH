@@ -40,7 +40,7 @@ toastr.options = {
     "hideMethod": "fadeOut"
 }
 
-window.initializeCarousel = () => {
+function initializeCarousel() {
     $('#carousel1').carousel({ interval: 20000 });
     $('#carousel1').carousel(0);
     $('#carousel1-prev').click(
