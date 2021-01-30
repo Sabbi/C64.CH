@@ -5,19 +5,6 @@
 
 <PageTitle Title="Main" />
 <Box>
-    <Title>
-        Site News
-        <div class="float-right pr-3">
-            <h5 class="d-inline">
-                <a href="/help/contribute" class="badge badge-success">Got some news?</a>
-            </h5>
-        </div>
-    </Title>
-    <Content>
-        <SiteNews />
-    </Content>
-</Box>
-<Box>
     <Title>Latest Additions</Title>
     <Content>
         @if (latestAdded?.Data != null)
@@ -49,6 +36,9 @@
         }
     </Content>
 </Box>
+<SceneNews PageSize="3" ChangeUrl="false" />
+<SiteNews PageSize="3" ChangeUrl="false" />
+
 @code
 {
 

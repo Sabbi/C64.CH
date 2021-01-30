@@ -8,6 +8,8 @@ namespace C64.Data.Entities
     {
         public int SiteInfoId { get; set; }
 
+        public int Category { get; set; } = 0;
+
         public DateTime PublishedAt { get; set; }
 
         public DateTime? TweetedAt { get; set; }
@@ -35,7 +37,12 @@ namespace C64.Data.Entities
             get
             {
                 if (!string.IsNullOrEmpty(Writer))
-                    return Writer;
+                {
+                    if (Category != 0)
+                        return $"Contributed by {Writer}";
+                    else
+                        return Writer;
+                }
 
                 if (User != null)
                     return User.UserName;
@@ -47,7 +54,7 @@ namespace C64.Data.Entities
         public string TextExcerpt(int maxLength = 40)
         {
             if (Text == null || Text.Length <= maxLength)
-                return Text;
+                return "";
 
             return Text.Substring(0, maxLength) + "...";
         }

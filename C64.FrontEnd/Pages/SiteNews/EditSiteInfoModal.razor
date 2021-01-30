@@ -1,0 +1,38 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using System.ComponentModel.DataAnnotations;
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger
+@inject IToastService toastService
+
+@inject C64.Services.Tweeter.ITweeter tweeter
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Tweet {@SiteInfo.Title}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <NewsForm SiteInfo="SiteInfo" OnCancel="Cancel" OnValidSubmit="OnValidSubmit" ButtonCaption="Edit" />
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [Parameter]
+    public SiteInfo SiteInfo { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private async Task Cancel()
+    {
+        await bootstrapModal.Close(ModalResult.Cancel());
+    }
+
+    private async Task OnValidSubmit()
+    {
+        if (httpContext.HttpContext.UserIsModerator())
+        {
+            await bootstrapModal.Close(ModalResult.Ok("Ok"));
+        }
+        else
+            throw new UnauthorizedAccessException("Non-Mod trying edit news");
+    }
+}

@@ -352,3 +352,10 @@ function BlazorScrollToId(id) {
 function isFirefox() {
     return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 }
+
+// https://stackoverflow.com/questions/13735912/anchor-jumping-by-using-javascript
+function jump(h) {
+    var url = location.href;
+    location.href = "#" + h;
+    history.replaceState(null, null, url);
+}

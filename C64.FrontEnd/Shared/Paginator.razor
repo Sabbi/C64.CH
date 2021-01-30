@@ -1,4 +1,6 @@
-﻿@if (TotalAmountPages > 1)
+﻿@inject IJSRuntime jsRuntime
+
+@if (TotalAmountPages > 1)
 {
     <nav>
         <ul class="pagination justify-content-center">
@@ -23,6 +25,12 @@
     public int Radius { get; set; } = 3;
 
     [Parameter]
+    public bool MoveToTop { get; set; } = false;
+
+    [Parameter]
+    public string MoveToAnchor { get; set; }
+
+    [Parameter]
     public EventCallback<int> SelectedPage { get; set; }
 
     private List<LinkModel> links;
@@ -37,6 +45,11 @@
     {
         if (link.Page == CurrentPage || !link.Enabled)
             return;
+
+        if (!string.IsNullOrEmpty(MoveToAnchor))
+            await jsRuntime.InvokeVoidAsync("jump", MoveToAnchor);
+        else if (MoveToTop)
+            await jsRuntime.InvokeVoidAsync("scroll", 0, 0);
 
         CurrentPage = link.Page;
 

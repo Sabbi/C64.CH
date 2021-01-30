@@ -7,56 +7,28 @@
 
 <BootstrapModal @ref="bootstrapModal" Title="Add new news" Size="BootstrapModal.ModalSize.Large">
     <Content>
-        <EditForm Model="addNewsModel" OnValidSubmit="OnValidSubmit">
-            <DataAnnotationsValidator />
-            <div class="form-group">
-                <label>Title:</label>
-                <div>
-                    <InputText class="form-control" @bind-Value="@addNewsModel.Title" />
-                    <ValidationMessage For="@(() => addNewsModel.Title)" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Content (Markdown is ok):</label>
-                <div>
-                    <InputTextArea rows="5" class="form-control" @bind-Value="@addNewsModel.Content" />
-                    <ValidationMessage For="@(() => addNewsModel.Title)" />
-                </div>
-            </div>
-            <button class="btn btn-primary" type="submit">Add News</button>
-
-            <div class="form-group mt-4">
-                <label>Preview:</label>
-                <div>
-                    <RenderMarkdown MarkdownContent="@addNewsModel.Content"></RenderMarkdown>
-                </div>
-            </div>
-        </EditForm>
+        <NewsForm SiteInfo="siteNews" ButtonCaption="Add" OnCancel="OnCancel" OnValidSubmit="OnValidSubmit" />
     </Content>
 </BootstrapModal>
 
 @code {
 
-    private AddNewsModel addNewsModel = new AddNewsModel();
     private BootstrapModal bootstrapModal;
 
-    protected override void OnInitialized()
+    private SiteInfo siteNews = new SiteInfo();
+
+    protected override async Task OnParametersSetAsync()
     {
         var allowed = httpContext.HttpContext.CheckRole("Moderator");
         if (!allowed)
             throw new UnauthorizedAccessException("Insuffiencts rights");
+
     }
 
     private async Task OnValidSubmit()
     {
-        var siteNews = new SiteInfo()
-        {
-            PublishedAt = DateTime.Now,
-            Show = true,
-            Text = addNewsModel.Content,
-            Title = addNewsModel.Title,
-            UserId = httpContext.HttpContext.GetUserId()
-        };
+        siteNews.UserId = httpContext.HttpContext.GetUserId();
+        siteNews.PublishedAt = DateTime.Now;
 
         unitOfWork.SiteInfos.Add(siteNews);
 
@@ -67,13 +39,8 @@
         navigationManager.NavigateTo("/");
     }
 
-    private class AddNewsModel
+    private async Task OnCancel()
     {
-        [System.ComponentModel.DataAnnotations.Required]
-        public string Title { get; set; }
-
-        [System.ComponentModel.DataAnnotations.Required]
-        public string Content { get; set; }
+        await bootstrapModal.Close();
     }
-
 }

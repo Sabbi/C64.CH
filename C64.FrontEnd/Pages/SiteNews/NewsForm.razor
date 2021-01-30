@@ -1,0 +1,122 @@
+﻿@namespace C64.FrontEnd.Pages
+
+<EditForm Model="model" OnValidSubmit="ValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Category:</label>
+        <div>
+            <InputSelect class="form-control" @bind-Value="@model.CategoryId">
+                <option value="0">Site News</option>
+                <option value="1">Scene News</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => model.CategoryId)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>
+            Title:
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@model.Title" />
+            <ValidationMessage For="@(() => model.Title)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Text:</label><button class="btn btn-xs btn-primary float-right" type="button" @onclick="ToggleShowMarkDown">Toggle Preview</button>
+        <div>
+            @if (showMarkDown)
+            {
+                <div class="border border-secondary p-3">
+                    <RenderMarkdown MarkdownContent="@model.Text" />
+                </div>
+            }
+            else
+            {
+                <InputTextArea rows="10" class="form-control" @bind-Value="@model.Text" />
+                <ValidationMessage For="@(() => model.Text)" />
+            }
+        </div>
+    </div>
+    <div class="form-check">
+        <InputCheckbox class="form-check-input" id="ShowNews" @bind-Value="model.Show" />
+        <label class="form-check-label" for="ShowNews">Show</label>
+    </div>
+
+    <div class="form-group">
+        <label>
+            Contributor:
+        </label>
+        <div>
+            <InputText class="form-control" @bind-Value="@model.Writer" />
+            <ValidationMessage For="@(() => model.Writer)" />
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(model.User))
+    {
+        <div class="form-group">
+            <label>
+                Added by:
+            </label>
+            <div>
+                <p>@model.User</p>
+            </div>
+        </div>
+    }
+
+    <div class="pt-1">
+        <button class="btn btn-primary" type="submit">@ButtonCaption</button>
+        <div class="float-right">
+            <button class="btn btn-secondary" type="button" @onclick="@Cancel">Cancel</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public SiteInfo SiteInfo { get; set; }
+
+    [Parameter]
+    public string ButtonCaption { get; set; } = "Add";
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    private SiteInfoModel model = new SiteInfoModel();
+
+    private bool showMarkDown = false;
+
+    protected override void OnInitialized()
+    {
+        model.Title = SiteInfo.Title;
+        model.Text = SiteInfo.Text;
+        model.Show = SiteInfo.Show;
+        model.Writer = SiteInfo.Writer;
+        model.CategoryId = SiteInfo.Category;
+        model.User = SiteInfo.User?.UserName;
+    }
+
+    private void ToggleShowMarkDown()
+    {
+        showMarkDown = !showMarkDown;
+    }
+
+    private async Task Cancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+    private async Task ValidSubmit()
+    {
+        SiteInfo.Title = model.Title;
+        SiteInfo.Text = model.Text;
+        SiteInfo.Show = model.Show;
+        SiteInfo.Writer = model.Writer;
+        SiteInfo.Category = model.CategoryId;
+
+        await OnValidSubmit.InvokeAsync();
+    }
+}

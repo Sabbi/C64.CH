@@ -1,0 +1,41 @@
+﻿@page "/scenenews"
+@page "/scenenews/{Page:int}"
+@namespace C64.FrontEnd.Pages
+
+@using C64.Data.Models
+
+@inject IUnitOfWork unitOfWork
+@inject ILogger<SiteNews> logger
+
+@inject NavigationManager navigationManager
+
+<Box Anchor="SceneNews">
+    <Title>
+        <text>Latest Scene News</text>
+        @if (!ChangeUrl)
+        {
+            <text> - <a href="/scenenews/"><i class="far fa-newspaper"></i> See more</a></text>
+        }
+
+        <div class="float-right pr-3">
+            <h5 class="d-inline">
+                <a href="/help/contribute" class="badge badge-success">Got some news?</a>
+            </h5>
+        </div>
+    </Title>
+    <Content>
+        <SiteNewsComponent Category="1" Page="@Page" PageSize="@PageSize" ChangeUrl="@ChangeUrl" PageUrl="/scenenews/{0}" Anchor="@("SceneNews")" />
+    </Content>
+</Box>
+
+@code {
+
+    [Parameter]
+    public int Page { get; set; } = 1;
+
+    [Parameter]
+    public int PageSize { get; set; } = 10;
+
+    [Parameter]
+    public bool ChangeUrl { get; set; } = true;
+}
