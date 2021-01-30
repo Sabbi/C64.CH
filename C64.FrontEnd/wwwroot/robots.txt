@@ -1,3 +1,12 @@
 ﻿# Welcome everybody!
 User-agent: *
 Disallow: 
+Sitemap: https://c64.ch/sitemap.xml
+Sitemap: https://c64.ch/sitemap_main.xml
+Sitemap: https://c64.ch/sitemap_news.xml
+Sitemap: https://c64.ch/sitemap_productions.xml
+Sitemap: https://c64.ch/sitemap_toplists.xml
+Sitemap: https://c64.ch/sitemap_groups.xml
+Sitemap: https://c64.ch/sitemap_sceners.xml
+Sitemap: https://c64.ch/sitemap_parties.xml
+Sitemap: https://c64.ch/sitemap_downloads.xml
