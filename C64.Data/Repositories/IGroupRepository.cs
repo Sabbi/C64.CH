@@ -11,6 +11,7 @@ namespace C64.Data.Repositories
         Task<IEnumerable<Group>> FindWithSceners(Expression<Func<Group, bool>> predicate);
         Task<Group> GetDetails(int groupId);
         Task<IEnumerable<HistoryRecord>> GetHistory(int groupId);
+        Task<Dictionary<string, int>> GetNumberOfReleasesPerLetter();
         Task<Group> GetWithProductions(int groupId);
 
         void UpdateGroupStats();
