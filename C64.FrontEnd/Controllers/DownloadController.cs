@@ -2,7 +2,6 @@
 using C64.Data.Storage;
 using C64.FrontEnd.Extensions;
 using C64.Services.Archive;
-using D64Reader;
 using D64Reader.Renderers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -96,14 +95,14 @@ namespace C64.FrontEnd.Controllers
             {
                 archiveService.Load(fileData);
                 var d64FileName = archiveService.ArchiveInfo.CompressedFileInfos.Where(p => p.IsD64).ElementAt(counter).FileName;
-                var d64Reader = new D64ReaderCore(archiveService.GetFile(d64FileName));
+                var d64Reader = new D64Reader.D64ReaderCore(archiveService.GetFile(d64FileName));
                 return new FileContentResult(d64Reader.Render(new D64PngRenderer()), "image/png");
             }
             catch
             {
                 fallbackArchiveService.Load(fileData);
                 var d64FileName = fallbackArchiveService.ArchiveInfo.CompressedFileInfos.Where(p => p.IsD64).ElementAt(counter).FileName;
-                var d64Reader = new D64ReaderCore(fallbackArchiveService.GetFile(d64FileName));
+                var d64Reader = new D64Reader.D64ReaderCore(fallbackArchiveService.GetFile(d64FileName));
                 return new FileContentResult(d64Reader.Render(new D64PngRenderer()), "image/png");
             }
         }
