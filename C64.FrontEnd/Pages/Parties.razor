@@ -14,6 +14,7 @@
         @if (!upcomingParties.Any())
         {
             <p>There are no upcoming parties, sorry</p>
+            <hr />
 
         }
         else
@@ -23,7 +24,6 @@
                 <PartyOverview Party="party" />
             }
         }
-        <hr />
         <div class="text-center mb-2">
             <h5 class="d-inline"><AddPartyLink class="badge badge-primary"><Content>You organize a party? Add it!</Content></AddPartyLink></h5>
         </div>

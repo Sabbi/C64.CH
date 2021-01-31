@@ -1,6 +1,6 @@
 ﻿@namespace C64.FrontEnd.Pages
 
-<h4>@Party.Name</h4>
+<h3>@Party.Name</h3>
 
 @if (IsPast())
 {
@@ -10,9 +10,9 @@ else
 {
     <p>The party will take place from <b><PartialDateDisplay DateValue="Party.From" /> to <PartialDateDisplay DateValue="Party.To" /></b> in @Party.Location (@Party.CountryId) </p>
 }
-<p>
+<h5>
     Organized by: @Party.Organizers
-</p>
+</h5>
 
 @if (!string.IsNullOrEmpty(Party.Url))
 {
@@ -26,13 +26,13 @@ else
 
 @if (!string.IsNullOrEmpty(Party.Description))
 {
-    <h4>Description:</h4>
+    <h5>Description:</h5>
     <p>
         <RenderMarkdown MarkdownContent="@Party.Description" />
     </p>
 
 }
-
+<hr />
 @code {
     [Parameter]
     public Party Party { get; set; } = new Party();
