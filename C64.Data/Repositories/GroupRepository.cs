@@ -98,5 +98,27 @@ namespace C64.Data.Repositories
             group.AverageRating = group.NumberOfRatings > 0 ? ((decimal)group.SumOfRatings / group.NumberOfRatings) : 0;
             group.NumberOfReleases = productions.Count();
         }
+
+        public async Task<Dictionary<string, int>> GetNumberOfReleasesPerLetter()
+        {
+            var allGroups = await context.Set<Group>().ToListAsync();
+
+            var retVal = new Dictionary<string, int>();
+
+            for (var i = (int)'A'; i <= (int)'Z'; i++)
+            {
+                var searchFor = ((char)i).ToString();
+                var groups = allGroups.Where(p => p.Name.StartsWith(searchFor, StringComparison.OrdinalIgnoreCase));
+                var count = groups.Sum(p => p.NumberOfReleases);
+
+                retVal.Add(searchFor, count);
+            }
+
+            var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var noLetterGrups = allGroups.Where(p => !letters.Contains(p.Name.Substring(0, 1)));
+            retVal.Add("other", noLetterGrups.Sum(p => p.NumberOfReleases));
+
+            return retVal;
+        }
     }
 }

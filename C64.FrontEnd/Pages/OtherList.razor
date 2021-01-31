@@ -99,28 +99,13 @@
                 }
                 break;
             case "groupname":
-                var groups = new List<Group>();
-
                 if (StartLetter.Equals("other", StringComparison.OrdinalIgnoreCase))
-                {
-                    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                    groups = (await unitOfWork.Groups.Find(p => !letters.Contains(p.Name.Substring(0, 1)))).ToList();
                     title = "Demos from groups not starting with a letter";
-                }
                 else
-                {
-                    groups = (await unitOfWork.Groups.Find(p => p.Name.StartsWith(StartLetter, StringComparison.OrdinalIgnoreCase))).ToList();
                     title = $"Demos from groups starting with {StartLetter}";
-                }
 
-                var prodIds = new List<int>();
-
-                foreach (var group in groups.Take(10))
-                {
-                    var groupProdsIds = (await unitOfWork.Groups.GetWithProductions(group.GroupId)).ProductionsGroups.Select(p => p.ProductionId);
-                    prodIds.AddRange(groupProdsIds);
-                }
-                productionIds = prodIds;
+                var prodIds = await unitOfWork.Productions.GetIdsOfGroupReleasesByLetter(StartLetter);
+                productionIds = prodIds.ToList();
 
                 break;
             case "year":

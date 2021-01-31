@@ -23,6 +23,10 @@ namespace C64.Data.Repositories
 
         Task<IEnumerable<HistoryRecord>> GetHistory(int productionId);
 
+        Task<Dictionary<string, int>> GetNumberOfReleasesPerLetter();
+
+        Task<Dictionary<int, int>> GetNumberOfReleasesPerYear();
+
         Task<PaginatedResult<Production>> GetPaginatedWithGroups(Expression<Func<Production, bool>> predicate, string orderBy, bool isSortedAscending, int page, int pageSize);
 
         Task<ProductionFile> GetProductionFileByProductionId(int productionId);
@@ -30,6 +34,8 @@ namespace C64.Data.Repositories
         Task<Production> GetRandomProduction();
 
         Task<IEnumerable<Rating>> GetRatings(int productionId);
+
+        Task<IEnumerable<int>> GetIdsOfGroupReleasesByLetter(string letter);
 
         Task<IEnumerable<ProductionFile>> ProductionFiles(int productionId);
 

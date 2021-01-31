@@ -158,5 +158,53 @@ namespace C64.Data.Repositories
         {
             context.Set<HistoryRecord>().Add(historyProduction);
         }
+
+        public async Task<Dictionary<int, int>> GetNumberOfReleasesPerYear()
+        {
+            var results = context.Set<Production>().GroupBy(p => new { Year = p.ReleaseDate.Year }).Select(p => new KeyValuePair<int, int>(p.Key.Year, p.Count()));
+
+            var retVal = new Dictionary<int, int>();
+
+            foreach (var result in results)
+                retVal.Add(result.Key, result.Value);
+
+            return await Task.FromResult(retVal);
+        }
+
+        public async Task<Dictionary<string, int>> GetNumberOfReleasesPerLetter()
+        {
+            var allProductions = await context.Set<Production>().Select(p => p.Name).ToListAsync();
+
+            var retVal = new Dictionary<string, int>();
+
+            var totalCount = 0;
+
+            for (var i = (int)'A'; i <= (int)'Z'; i++)
+            {
+                var searchFor = ((char)i).ToString();
+                var count = allProductions.Count(p => p.StartsWith(searchFor, StringComparison.OrdinalIgnoreCase));
+
+                retVal.Add(searchFor, count);
+
+                totalCount += count;
+            }
+
+            retVal.Add("other", allProductions.Count - totalCount);
+
+            return retVal;
+        }
+
+        public async Task<IEnumerable<int>> GetIdsOfGroupReleasesByLetter(string letter)
+        {
+            if (letter == "other")
+            {
+                var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                var noLetterIds = context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Where(p => p.ProductionsGroups.Any(p => !letters.Contains(p.Group.Name.Substring(0, 1)))).Select(p => p.ProductionId);
+                return await Task.FromResult(noLetterIds);
+            }
+
+            var ids = context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Where(p => p.ProductionsGroups.Any(p => p.Group.Name.StartsWith(letter, StringComparison.OrdinalIgnoreCase))).Select(p => p.ProductionId);
+            return await Task.FromResult(ids);
+        }
     }
 }
