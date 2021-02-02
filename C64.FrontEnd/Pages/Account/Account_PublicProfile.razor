@@ -42,6 +42,13 @@
                 </div>
             </div>
             <div class="form-group">
+                <label>Public Email:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.PublicEmail" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.PublicEmail)" />
+                </div>
+            </div>
+            <div class="form-group">
                 <label>ICQ:</label>
                 <div>
                     <InputText class="form-control" @bind-Value="@editPublicProfileModel.Icq" />
@@ -49,7 +56,14 @@
                 </div>
             </div>
             <div class="form-group">
-                <label>orempty:</label>
+                <label>Location:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.Location" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.Location)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Country:</label>
                 <div>
                     <InputSelect class="form-control" @bind-Value="@editPublicProfileModel.CountryId">
                         <option value="">Select Country:</option>
@@ -66,6 +80,27 @@
                 <div>
                     <InputText class="form-control" @bind-Value="@editPublicProfileModel.Occupation" />
                     <ValidationMessage For="@(() => editPublicProfileModel.Occupation)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Groups you are/were in:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.Groups" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.Groups)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Your favorite Groups:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.FavGroups" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.FavGroups)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Your favorite Demos::</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@editPublicProfileModel.FavDemos" />
+                    <ValidationMessage For="@(() => editPublicProfileModel.FavDemos)" />
                 </div>
             </div>
             <div class="form-group">
