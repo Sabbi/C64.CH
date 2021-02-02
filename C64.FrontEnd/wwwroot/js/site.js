@@ -111,11 +111,13 @@ function initSelectPicker() {
 }
 
 function ResetProdEditSelect() {
-    prodEditSelect.selectedIndex = 0
+    if (typeof (prodEditSelect) != "undefined")
+        prodEditSelect.selectedIndex = 0
 }
 
 function ResetGroupEditSelect() {
-    groupEditSelect.selectedIndex = 0
+    if (typeof (groupEditSelect) != "undefined")
+        groupEditSelect.selectedIndex = 0
 }
 
 window.scrollToElementId = (elementId) => {
