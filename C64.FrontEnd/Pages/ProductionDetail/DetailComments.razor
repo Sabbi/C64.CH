@@ -9,7 +9,17 @@
                 <p class="mt-0">
                     <RenderMarkdown MarkdownContent="@comment.Text" />
                 </p>
-                <small>@(comment.User?.UserName ?? "Anonymous") @@ @comment.CommentedAt</small>
+                <small>
+                    @if (comment.User != null)
+                    {
+                        <a href="/profile/@comment.UserId/@comment.User.UserName.UrlEncode()">@comment.User.UserName</a>
+                    }
+                    else
+                    {
+                        @:Anonymous
+                    }
+                    <span>&nbsp;@@ @comment.CommentedAt</span>
+                </small>
             </div>
         </li>
     }

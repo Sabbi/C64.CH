@@ -12038,6 +12038,7 @@ img.active {
 .break-word {
   word-break: break-word; }
 
+.nobr,
 .nowrap {
   white-space: nowrap; }
 

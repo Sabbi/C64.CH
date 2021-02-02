@@ -16,7 +16,14 @@
                         </h5>
                     </div>
                     <div class="col-md-6">
-                        <div class="small text-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
+                        @if (SiteInfo.User != null && string.IsNullOrEmpty(SiteInfo.Writer))
+                        {
+                            <div class="small text-right"><a href="/profile/@SiteInfo.UserId/@SiteInfo.User.UserName.UrlEncode()">@SiteInfo.User</a> @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
+                        }
+                        else
+                        {
+                            <div class="small text-right">@SiteInfo.WriterFixed @@ @SiteInfo.PublishedAt.ToLongDateString()</div>
+                        }
                     </div>
                 </div>
             </div>
