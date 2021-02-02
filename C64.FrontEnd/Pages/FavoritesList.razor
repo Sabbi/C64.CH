@@ -5,7 +5,7 @@
 
 <PageTitle TitleFunc="@(() => $"Favorites of {username}")" />
 <Box>
-    <Title>@title</Title>
+    <Title><a href="/profile/@userId/@username">@title</a></Title>
     <Content>
         @if (!allowed)
         {

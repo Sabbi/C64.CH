@@ -12,11 +12,18 @@ namespace C64.FrontEnd.Models
         [MaxLength(255)]
         public string RealName { get; set; }
 
+        [MaxLength(255)]
+        [NotRequiredEmailAddress]
+        public string PublicEmail { get; set; }
+
         [NotRequiredUrl]
         [MaxLength(1024)]
         public string Homepage { get; set; }
 
         public string Icq { get; set; }
+
+        [MaxLength(255)]
+        public string Location { get; set; }
 
         public string CountryId { get; set; }
 
@@ -29,6 +36,15 @@ namespace C64.FrontEnd.Models
         [MaxLength(65535)]
         public string Blabla { get; set; }
 
+        [MaxLength(1023)]
+        public string Groups { get; set; }
+
+        [MaxLength(255)]
+        public string FavDemos { get; set; }
+
+        [MaxLength(255)]
+        public string FavGroups { get; set; }
+
         public void Load(User user)
         {
             RealName = user.Realname;
@@ -40,6 +56,11 @@ namespace C64.FrontEnd.Models
             Blabla = user.Blabla;
             Birthday.Date = user.Birthday;
             Birthday.Type = user.BirthdayType;
+            Location = user.Location;
+            PublicEmail = user.PublicEmail;
+            Groups = user.Groups;
+            FavDemos = user.FavDemos;
+            FavGroups = user.FavGroups;
         }
 
         public void Update(User user)
@@ -53,6 +74,11 @@ namespace C64.FrontEnd.Models
             user.Blabla = Blabla;
             user.Birthday = Birthday.Date;
             user.BirthdayType = Birthday.Type;
+            user.Location = Location;
+            user.PublicEmail = PublicEmail;
+            user.Groups = Groups;
+            user.FavDemos = FavDemos;
+            user.FavGroups = FavGroups;
         }
     }
 }

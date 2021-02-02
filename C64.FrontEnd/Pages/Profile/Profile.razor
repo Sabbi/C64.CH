@@ -1,0 +1,193 @@
+﻿@page "/profile/{UserId}"
+@page "/profile/{UserId}/{Username}"
+
+@using Microsoft.Extensions.DependencyInjection
+@inherits OwningComponentBase
+
+@implements IDisposable
+
+@inject IJSRuntime jsRuntime
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IModalService Modal
+@inject IToastService toastService
+@inject NavigationManager naviagationManager
+@inject NavigationManager navigationManager
+
+@if (user != null)
+{
+    <PageTitle TitleFunc="@(() => $"Details of {user.UserName}")" />
+    <Box MarginBottom="4">
+        <Title>Details of @user.UserName</Title>
+        <Content>
+            <table class="table table-prod-list">
+                <tr><th>Username:</th><td>@user.UserName</td></tr>
+                @if (!string.IsNullOrEmpty(user.Realname))
+                {
+                    <tr><th>Real name:</th><td>@user.Realname</td></tr>
+                }
+                @if (user.BirthdayType != DateType.None)
+                {
+                    <tr><th>Birthday:</th><td><PartialDateDisplay DateType="user.BirthdayType" DateValue="user.Birthday" /></td></tr>
+                }
+                @if (!string.IsNullOrEmpty(user.Homepage))
+                {
+                    <tr><th>Homepage:</th><td><a href="@user.Homepage" target="_blank" rel="noopener">@user.Homepage</a></td></tr>
+                }
+                @if (!string.IsNullOrEmpty(user.PublicEmail))
+                {
+                    <tr><th>Public EMail:</th><td>@publicEmail</td></tr>
+                }
+                @if (!string.IsNullOrEmpty(user.Icq))
+                {
+                    <tr><th>ICQ:</th><td>@user.Icq</td></tr>
+                }
+
+                @if (!string.IsNullOrEmpty(user.Location))
+                {
+                    <tr><th>Location:</th><td>@user.Location</td></tr>
+                }
+                <tr><th>Country:</th><td>@(user.Country != null ? user.Country.Name : "Unknown")</td></tr>
+
+                @if (!string.IsNullOrEmpty(user.Occupation))
+                {
+                    <tr><th>Occupation:</th><td>@user.Occupation</td></tr>
+                }
+                @if (!string.IsNullOrEmpty(user.Blabla))
+                {
+                    <tr><th>Tell us something (blabla):</th><td>@user.Blabla</td></tr>
+                }
+                @if (!string.IsNullOrEmpty(user.Watching))
+                {
+                    <tr><th>Watching demos on:</th><td>@user.Watching</td></tr>
+
+                }
+                @if (!string.IsNullOrEmpty(user.Groups))
+                {
+                    <tr><th>In Groups:</th><td>@user.Groups</td></tr>
+                }
+                @if (!string.IsNullOrEmpty(user.FavGroups))
+                {
+                    <tr><th>Favorite Groups:</th><td>@user.FavGroups</td></tr>
+                }
+                @if (!string.IsNullOrEmpty(user.FavDemos))
+                {
+                    <tr><th>Favorite Demos:</th><td>@user.FavDemos</td></tr>
+                }
+                <tr><th>Registered on:</th><td><PartialDateDisplay DateType="DateType.YearMonthDay" DateValue="user.Registered" /> (@((int)(DateTime.Now - user.Registered).TotalDays) Days ago)</td></tr>
+
+                @if (hasPublicFavorites)
+                {
+                    <tr><th>&nbsp;</th><td>&nbsp;</td></tr>
+                    <tr><th>Public Favorites</th><td>Cool, @user.UserName has public favorites! <a href="/favorites/@user.Id">See them here!</a></td></tr>
+                }
+            </table>
+        </Content>
+    </Box>
+
+    @if (paginatedResult != null)
+    {
+        <Box>
+            <Title>Edits</Title>
+            <Content>
+                @if (paginatedResult.TotalNumberOfRecords == 0)
+                {
+                    <p>This user has no edits yet</p>
+                }
+                else
+                {
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Edited</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var hist in paginatedResult.Data)
+                            {
+                                <tr>
+                                    <td class="nobr">@hist.Applied</td>
+                                    <td>@hist.Description</td>
+                                    <td>
+                                        @if (hist.AffectedProductionId != null)
+                                        {
+                                            <p class="nowrap"><a href="/productions/@hist.AffectedProductionId/@hist.AffectedProduction.Name.UrlEncode()"><i class="fas fa-microchip"></i> @hist.AffectedProduction.Name</a></p>
+                                        }
+                                        @if (hist.AffectedGroupId != null)
+                                        {
+                                            <p class="nowrap"><a href="/groups/@hist.AffectedGroupId/@hist.AffectedGroup.Name.UrlEncode()"><i class="fas fa-users-cog"></i>@hist.AffectedGroup.Name</a></p>
+                                        }
+                                        @if (hist.AffectedScenerId != null)
+                                        {
+                                            <p class="nowrap"><a href="/sceners/@hist.AffectedScenerId/@hist.AffectedScener.Handle.UrlEncode()"><i class="fas fa-snowman"></i> @hist.AffectedScener.Handle</a></p>
+                                        }
+
+                                        @if (hist.AffectedPartyId != null)
+                                        {
+                                            <p class="nowrap"><a href="/parties/@hist.AffectedPartyId/@hist.AffectedParty.Name.UrlEncode()"><i class="fas fa-glass-cheers"></i> @hist.AffectedParty.Name</a></p>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                <Paginator CurrentPage="@paginatedResult.CurrentPage" TotalAmountPages="@paginatedResult.NumberOfPages" SelectedPage="OnSelectPage" MoveToAnchor="" />
+                <PaginatorRecordInfo CurrentPage="@paginatedResult.CurrentPage" PageSize="20" TotalNumberOfRecords="@paginatedResult.TotalNumberOfRecords" />
+            </Content>
+        </Box>
+    }
+
+}
+
+@code {
+
+    [Parameter]
+    public string UserId { get; set; }
+
+    // Fake, only for nicer URL.
+    [Parameter]
+    public string Username { get; set; }
+
+    private IUnitOfWork unitOfWork;
+
+    private User user;
+
+    private string publicEmail;
+
+    private bool hasPublicFavorites = false;
+
+    private PaginatedResult<HistoryRecord> paginatedResult;
+
+    private async Task OnSelectPage(int selectedPage)
+    {
+        paginatedResult = await unitOfWork.Users.GetPaginatedHistory(p => p.UserId == UserId, "Applied", false, selectedPage, 20);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadUser(UserId);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (user != null && !firstRender)
+        {
+            publicEmail = user.PublicEmail;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadUser(string userId)
+    {
+        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        user = await unitOfWork.Users.GetWithFavorites(userId);
+        hasPublicFavorites = user.PublicFavorites && user.Favorites.Any();
+
+        paginatedResult = await unitOfWork.Users.GetPaginatedHistory(p => p.UserId == user.Id, "Applied", false, 1, 10);
+
+        return;
+
+    }
+}

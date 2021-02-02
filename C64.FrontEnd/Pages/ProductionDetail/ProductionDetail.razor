@@ -143,11 +143,20 @@
                         }
 
                         <tr><th>Added:</th><td>@production.Added.ParseDate()</td></tr>
-                        @if (!string.IsNullOrEmpty(production.UploaderFixed()))
+                        @if (production.User != null)
+                        {
+                            <tr><th>Added by:</th><td><a href="/profile/@production.User.Id/@production.User.UserName.UrlEncode()">@production.User.UserName</a></td></tr>
+                        }
+                        else if (!string.IsNullOrEmpty(production.UploaderFixed()))
                         {
                             <tr><th>Added by:</th><td>@production.UploaderFixed()</td></tr>
                         }
-                        @if (!string.IsNullOrEmpty(production.SubmitterFixed()) && !production.SubmitterFixed().Equals(production.UploaderFixed(), StringComparison.OrdinalIgnoreCase))
+
+                        @if (production.SubmitterUser != null && production.SubmitterUser != production.User)
+                        {
+                            <tr><th>Submitted by:</th><td><a href="/profile/@production.SubmitterUser.Id/@production.SubmitterUser.UserName.UrlEncode()">@production.SubmitterUser.UserName</a></td></tr>
+                        }
+                        else if (!string.IsNullOrEmpty(production.SubmitterFixed()) && !production.SubmitterFixed().Equals(production.UploaderFixed(), StringComparison.OrdinalIgnoreCase))
                         {
                             <tr><th><span class="text-nowrap">Submitted by:</span></th><td>@production.SubmitterFixed()</td></tr>
                         }
