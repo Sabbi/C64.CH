@@ -48,7 +48,14 @@
 
     protected override void OnParametersSet()
     {
+        foreach (var partyProd in Party.ProductionsParties)
+        {
+            if (partyProd.Rank == 0)
+                partyProd.Rank = 99;
+        }
+
         competitions = Party.ProductionsParties.Select(p => p.PartyCategoryId).Distinct();
+
     }
 
     private string GetCompetitionName(int competition)
