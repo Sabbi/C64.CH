@@ -1,0 +1,44 @@
+﻿@page "/help/edits"
+@page "/help/edits/{Page:int}"
+
+@inject IUnitOfWork unitOfWork
+
+@inject NavigationManager navigationManager
+
+<PageTitle Title="Edits and Additions" />
+<Box>
+    <Title>Edits and Additions</Title>
+    <Content>
+        <h4 class="text-center"><i class="fas fa-heart red"></i> <b>Huge Thank You to all our supporters!</b> <i class="fas fa-heart red"></i></h4>
+        <EditHistory PaginatedResult="paginatedResult" OnSelectPage="OnSelectPage" DisplayUser="true" />
+        <div class="text-center">Want to contribute too? <a href="/help/contribute">Contact us for an upgraded account!</a></div>
+    </Content>
+</Box>
+@code{
+
+    [Parameter]
+    public int Page { get; set; }
+
+    private IEnumerable<ChangeLogEntry> entries = new HashSet<ChangeLogEntry>();
+
+    private PaginatedResult<HistoryRecord> paginatedResult;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Page == 0)
+            Page = 1;
+
+        await LoadPage(Page);
+    }
+
+    private async Task LoadPage(int page)
+    {
+        paginatedResult = await unitOfWork.Users.GetPaginatedHistory(p => true, "Applied", false, page, 20);
+    }
+
+    private async Task OnSelectPage(int selectedPage)
+    {
+        navigationManager.NavigateTo($"/help/edits/{selectedPage}");
+    }
+
+}

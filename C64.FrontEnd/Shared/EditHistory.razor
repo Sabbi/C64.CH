@@ -1,0 +1,70 @@
+﻿@if (PaginatedResult != null)
+{
+
+@if (PaginatedResult.TotalNumberOfRecords == 0)
+    {
+<p>This user has no edits yet</p>
+    }
+    else
+    {
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            @if (DisplayUser)
+                    {
+            <th>User</th>
+                    }
+            <th>Date</th>
+            <th>Edited</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hist in PaginatedResult.Data)
+                {
+        <tr>
+            @if (DisplayUser)
+                        {
+            <td class="nobr"><a href="/profile/@hist.UserId/@hist.User.UserName.UrlEncode()">@hist.User.UserName</a></td>
+                        }
+            <td class="nobr">@hist.Applied</td>
+            <td>
+                @if (hist.AffectedProductionId != null)
+                            {
+                <span class="nowrap"><a href="/productions/@hist.AffectedProductionId/@hist.AffectedProduction.Name.UrlEncode()"><i class="fas fa-microchip"></i> @hist.AffectedProduction.Name</a></span><br />
+                            }
+                @if (hist.AffectedGroupId != null)
+                            {
+                <span class="nowrap"><a href="/groups/@hist.AffectedGroupId/@hist.AffectedGroup.Name.UrlEncode()"><i class="fas fa-users-cog"></i> @hist.AffectedGroup.Name</a></span><br />
+                            }
+                @if (hist.AffectedScenerId != null)
+                            {
+                <span class="nowrap"><a href="/sceners/@hist.AffectedScenerId/@hist.AffectedScener.Handle.UrlEncode()"><i class="fas fa-snowman"></i> @hist.AffectedScener.Handle</a></span><br />
+                            }
+
+                @if (hist.AffectedPartyId != null)
+                            {
+                <span class="nowrap"><a href="/parties/@hist.AffectedPartyId/@hist.AffectedParty.Name.UrlEncode()"><i class="fas fa-glass-cheers"></i> @hist.AffectedParty.Name</a></span><br />
+                            }
+            </td>
+            <td>@hist.Description</td>
+        </tr>
+                }
+    </tbody>
+</table>
+
+<Paginator CurrentPage="@PaginatedResult.CurrentPage" TotalAmountPages="@PaginatedResult.NumberOfPages" SelectedPage="OnSelectPage" MoveToAnchor="" />
+<PaginatorRecordInfo CurrentPage="@PaginatedResult.CurrentPage" PageSize="20" TotalNumberOfRecords="@PaginatedResult.TotalNumberOfRecords" />
+    }
+}
+
+@code {
+    [Parameter]
+    public PaginatedResult<HistoryRecord> PaginatedResult { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnSelectPage { get; set; }
+
+    [Parameter]
+    public bool DisplayUser { get; set; } = false;
+}

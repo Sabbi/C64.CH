@@ -41,7 +41,7 @@ namespace C64.Data.Repositories
 
         public async Task<PaginatedResult<HistoryRecord>> GetPaginatedHistory(Expression<Func<HistoryRecord, bool>> predicate, string orderBy, bool isSortedAscending, int page, int pageSize)
         {
-            var query = context.Set<HistoryRecord>().Include(p => p.AffectedGroup).Include(p => p.AffectedProduction).Include(p => p.AffectedParty).Include(p => p.AffectedScener);
+            var query = context.Set<HistoryRecord>().Include(p => p.AffectedGroup).Include(p => p.AffectedProduction).Include(p => p.AffectedParty).Include(p => p.AffectedScener).Include(p => p.User);
             return await FindPaginated(query, predicate, orderBy, isSortedAscending, page, pageSize);
         }
 
