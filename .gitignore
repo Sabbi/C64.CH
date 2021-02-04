@@ -341,6 +341,7 @@ healthchecksdb
 
 !/Dependencies/*
 
+C64.BackEnd/appsettings.*.json
 C64.FrontEnd/appsettings.*.json
 OldDataImporter/appsettings.*.json
 Seeder/appsettings.*.json
