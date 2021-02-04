@@ -103,7 +103,8 @@ namespace C64.Services
                 client.ServerCertificateValidationCallback = delegate (object obj, X509Certificate certificate, X509Chain chain, SslPolicyErrors errors) { return (true); };
 
                 await client.ConnectAsync(settings.MailServer, settings.MailPort);
-                await client.AuthenticateAsync(settings.SmtpName, settings.SmtpPassword);
+                if (!string.IsNullOrEmpty(settings.SmtpName))
+                    await client.AuthenticateAsync(settings.SmtpName, settings.SmtpPassword);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
                 return;
