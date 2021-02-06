@@ -47,7 +47,19 @@
                 {
                     <tr><th>Terminated</th><td><PartialDateDisplay DateType="@group.ClosedDateType" DateValue="@group.ClosedDate" /></td></tr>
                 }
-                <tr><th>Homepage</th><td>@group.Url.ValueOrNa()</td></tr>
+                <tr>
+                    <th>Homepage</th>
+                    <td>
+                        @if (!string.IsNullOrEmpty(group.Url))
+                        {
+                            <a href="@group.Url" target="_blank">@group.Url</a>
+                        }
+                        else
+                        {
+                            <span>n/a</span>
+                        }
+                    </td>
+                </tr>
                 <tr><th>Email</th><td>@group.Email.ValueOrNa()</td></tr>
                 <tr><th>Releases</th><td>@group.NumberOfReleases</td></tr>
                 @if (group.AverageRating > 0)
