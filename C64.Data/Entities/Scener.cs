@@ -7,7 +7,7 @@ using System.Text;
 
 namespace C64.Data.Entities
 {
-    public class Scener : ILinkJoinable
+    public class Scener : MainModelBase, ILinkJoinable
     {
         public int ScenerId { get; set; }
 

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace C64.Data.Entities
 {
-    public class Party
+    public class Party : MainModelBase
     {
         public int PartyId { get; set; }
 

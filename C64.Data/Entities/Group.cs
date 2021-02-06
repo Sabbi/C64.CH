@@ -10,7 +10,7 @@ namespace C64.Data.Entities
         KeyValuePair<int, string> KeyValue();
     }
 
-    public class Group : ILinkJoinable
+    public class Group : MainModelBase, ILinkJoinable
     {
         [NotMapped]
         public int Id

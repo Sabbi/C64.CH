@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace C64.Data.Entities
 {
-    public class Production
+    public class Production : MainModelBase
     {
         public int ProductionId { get; set; }
 
