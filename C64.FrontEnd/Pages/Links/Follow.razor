@@ -15,6 +15,10 @@
     private async Task FollowLink(int linkId)
     {
         var link = await unitOfWork.Links.Get(linkId);
+
+        if (link == null)
+            navigationManager.NavigateTo("/links", true);
+
         link.Hits++;
         await unitOfWork.Commit();
 
