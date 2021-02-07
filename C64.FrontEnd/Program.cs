@@ -28,8 +28,10 @@ namespace C64.FrontEnd
                     MailServer = loggerConfig.GetValue<string>("EmailSettings:MailServer"),
                     Port = loggerConfig.GetValue<int>("EmailSettings:MailPort"),
                     EnableSsl = loggerConfig.GetValue<bool>("EmailSettings:EnableSsl"),
-                    NetworkCredentials = new NetworkCredential(loggerConfig.GetValue<string>("EmailSettings:SmtpName"), loggerConfig.GetValue<string>("EmailSettings:SmtpPassword"))
                 };
+
+                if (!string.IsNullOrEmpty(loggerConfig.GetValue<string>("EmailSettings:SmtpName")))
+                    emailConf.NetworkCredentials = new NetworkCredential(loggerConfig.GetValue<string>("EmailSettings:SmtpName"), loggerConfig.GetValue<string>("EmailSettings:SmtpPassword"));
 
                 Log.Logger = new LoggerConfiguration()
                     .ReadFrom.Configuration(loggerConfig)
