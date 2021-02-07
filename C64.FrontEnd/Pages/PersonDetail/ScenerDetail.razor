@@ -44,9 +44,16 @@
                         <tr><th>Real name:</th><td>@scener.RealName</td></tr>
                     }
 
-                    <tr><th>Birthday:</th><td><PartialDateDisplay DateType="scener.BirthdayType" DateValue="scener.Birthday" /></td></tr>
+                    @if (scener.BirthdayType != DateType.None)
+                    {
+                        <tr><th>Birthday:</th><td><PartialDateDisplay DateType="scener.BirthdayType" DateValue="scener.Birthday" /></td></tr>
+                    }
 
-                    <tr><th>Location:</th><td>@(scener.Location != null ? scener.Location : "Unknown")</td></tr>
+                    @if (!string.IsNullOrEmpty(scener.Location))
+                    {
+                        <tr><th>Location:</th><td>@scener.Location</td></tr>
+                    }
+
                     <tr><th>Country:</th><td>@(scener.Country != null ? scener.Country.Name : "Unknown")</td></tr>
                     <tr>
                         <th>Jobs:</th>
@@ -73,7 +80,7 @@
                                 <p>Groups:</p>
                                 <table class="table table-prod-list">
                                     <tr><th>Group</th><th>Job(s)</th><th>Joined</th><th>Left</th></tr>
-                                    @foreach (var scenergroup in scener.ScenersGroups)
+                                    @foreach (var scenergroup in scener.ScenersGroups.OrderBy(p => p.Group.Name))
                                     {
                                         <tr>
                                             <td><a href="/groups/@scenergroup.GroupId/@scenergroup.Group.Name.UrlEncode()">@scenergroup.Group.Name</a></td>
