@@ -64,6 +64,9 @@ namespace C64.Services.ViceLoader
 
             // productions/1344/Illmatic (Issue #199)
             new ViceLoaderSpecialCase("elysium-illmatic.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "? l l*")),
+
+            // productions/6601/2nd_Demo
+             new ViceLoaderSpecialCase("hondani-2nd_demo.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "a.*")),
         };
     }
 
