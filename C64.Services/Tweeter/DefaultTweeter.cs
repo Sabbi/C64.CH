@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Tweetinvi;
+using Tweetinvi.Exceptions;
 using Tweetinvi.Models;
 using Tweetinvi.Parameters;
 
@@ -35,10 +38,17 @@ namespace C64.Services.Tweeter
 
             if (uploadedImage != null)
                 tweetParams.Medias = new List<IMedia>() { uploadedImage };
-
-            var result = await client.Tweets.PublishTweetAsync(tweetParams);
-
-            logger.LogInformation("Sent tweet {text}, Result {@result}", text, result);
+            try
+            {
+                var result = await client.Tweets.PublishTweetAsync(tweetParams);
+                logger.LogInformation("Sent tweet {text}, Result {@result}", text, result);
+            }
+            catch (TwitterException e)
+            {
+                logger.LogError(e, "Send tweet failed");
+                var errors = string.Join(", ", e.TwitterExceptionInfos.Select(p => p.Message));
+                throw new Exception(errors);
+            }
         }
     }
 }

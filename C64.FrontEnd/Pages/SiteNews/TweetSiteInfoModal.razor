@@ -12,6 +12,10 @@
     <Content>
         <EditForm Model="tweet" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
+            @if (!string.IsNullOrEmpty(exception))
+            {
+                <p style="color:red">Exception sending tweet: @exception</p>
+            }
             <InputTextArea class="form-control" rows="10" @bind-Value="@tweet.Tweet"></InputTextArea>
             <ValidationMessage For="@(() => tweet.Tweet)" />
             <div class="pt-1">
@@ -33,6 +37,8 @@
 
     private TweetModel tweet = new TweetModel();
 
+    private string exception = null;
+
     private bool disabled = false;
 
     private string tweetButtonText = "Tweet";
@@ -47,10 +53,22 @@
         if (httpContext.HttpContext.UserIsModerator())
         {
             disabled = true;
+            exception = "";
             tweetButtonText = "Tweeting....";
             StateHasChanged();
-            await tweeter.SendTweet(tweet.Tweet);
-            await bootstrapModal.Close(ModalResult.Ok("Ok"));
+            try
+            {
+                await tweeter.SendTweet(tweet.Tweet);
+                await bootstrapModal.Close(ModalResult.Ok("Ok"));
+            }
+            catch (Exception e)
+            {
+                exception = e.Message;
+
+                disabled = false;
+                tweetButtonText = "Tweet";
+                StateHasChanged();
+            }
         }
         else
             throw new UnauthorizedAccessException("Non-Mod trying to tweet");
@@ -59,7 +77,6 @@
     private class TweetModel
     {
         [Required]
-        [MaxLength(240)]
         public string Tweet { get; set; }
 
     }
