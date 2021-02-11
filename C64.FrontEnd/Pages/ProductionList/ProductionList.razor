@@ -49,6 +49,9 @@
     [Parameter]
     public bool HideSorter { get; set; } = false;
 
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
     private IEnumerable<Production> productions;
 
     // Pagination
@@ -96,7 +99,7 @@
         NavigateTo();
     }
 
-    private void OnSelectPage(int page)
+    private async Task OnSelectPage(int page)
     {
         currentPage = page;
         NavigateTo();
@@ -108,6 +111,8 @@
         await LoadProductions();
         StateHasChanged();
         await ScrollToFragment();
+
+        await OnPageChanged.InvokeAsync(currentPage);
 
     }
 
