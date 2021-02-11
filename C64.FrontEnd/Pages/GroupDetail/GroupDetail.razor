@@ -13,7 +13,7 @@
 @inject IToastService toastService
 @inject NavigationManager navigationManager
 
-@if (group != null)
+@if (group != null && currentPage == 1)
 {
     <PageTitle TitleFunc="@(() => $"Details of {group.Name}")" />
     <Box>
@@ -98,8 +98,23 @@
 
             @if (productionIds != null)
             {
-                <h5>Productions:</h5>
-                <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" ScrollIntoView="true" />
+                <h5>Releases:</h5>
+                <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" OnPageChanged="OnPageChanged" />
+            }
+        </Content>
+    </Box>
+}
+else if (group != null && currentPage > 1)
+{
+    <PageTitle TitleFunc="@(() => $"Releases of {group.Name}")" />
+    <Box>
+        <Title>
+            Releases of @group.Name
+        </Title>
+        <Content>
+            @if (productionIds != null)
+            {
+                <ProductionList ProductionIds="@productionIds" BaseUrl="@baseUrl" OnPageChanged="OnPageChanged" />
             }
         </Content>
     </Box>
@@ -118,12 +133,22 @@
 
     private Group group;
 
+    private int currentPage;
+
     private string baseUrl => $"groups/{GroupId}/{GroupName}";
     private IEnumerable<int> productionIds;
 
     protected override async Task OnParametersSetAsync()
     {
+        currentPage = navigationManager.GetFromQueryString<int>("currentPage");
+        if (currentPage < 1) currentPage = 1;
         await LoadGroup(GroupId);
+    }
+
+    private void OnPageChanged(int page)
+    {
+        currentPage = page;
+        StateHasChanged();
     }
 
     private async Task OnSelectEdit(ChangeEventArgs args)

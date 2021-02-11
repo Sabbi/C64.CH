@@ -4,7 +4,7 @@
         {
             @foreach (var prod in Productions)
             {
-                <div class="row p-3" style="background-color:@(counter % 2 == 0 ? BackgroundColor : BackgroundColorAlt)">
+                <div class="row p-1" style="background-color:@(counter % 2 == 0 ? BackgroundColor : BackgroundColorAlt)">
                     <div class="flex-column pl-1 pr-3">
                         <a href="/productions/@prod.ProductionId/@prod.Name.UrlEncode()">
                             <FirstProductionThumbnail Production="@prod" Size="ThumbnailSize.Thumbanil80x56" />
@@ -17,7 +17,7 @@
                             </a>
                             by <MultiLinkJoiner LastSeparator=" and  " Separator=", " AlsoAddValue="true" MultiLinkJoinables="prod.GetCreatorLinks()" />
                         </p>
-                        <p>
+                        <p class="pb-0">
                             Credited for:<br />
                             @foreach (var scener in prod.ProductionCredits.Where(p => p.ScenerId == ScenerId))
                             {
