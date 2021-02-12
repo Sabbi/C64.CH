@@ -107,9 +107,13 @@ namespace C64.FrontEnd
                 var twitterLogo = Configuration.GetValue<string>("Twitter:Logo");
 
                 services.AddTransient<ITweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
+                services.AddTransient<IPictureTweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
             }
             else
+            {
                 services.AddTransient<ITweeter, NullTweeter>();
+                services.AddTransient<IPictureTweeter, NullTweeter>();
+            }
 
             // Use en-US as culture, but tweak some to a more readable format.
             // -------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,119 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@using System.ComponentModel.DataAnnotations;
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject ILogger<WriteComment>  logger
+@inject IToastService toastService
+@inject IFileStorageService fileStorageService
+
+@inject C64.Services.Tweeter.IPictureTweeter tweeter
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Tweet {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        @if (Production.TweetedAt != null)
+        {
+            <p class="red">Attention, this production was already tweeted @@ @Production.TweetedAt.GetValueOrDefault().ToShortDateString() (@((DateTime.Now - Production.TweetedAt.GetValueOrDefault()).TotalDays.ToString("N0")) days ago)</p>
+        }
+        <EditForm Model="tweet" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            @if (!string.IsNullOrEmpty(exception))
+            {
+                <p style="color:red">Exception sending tweet: @exception</p>
+            }
+            <div class="row">
+                <div class="col-8">
+                    <InputTextArea class="form-control" rows="10" @bind-Value="@tweet.Tweet"></InputTextArea>
+                    <ValidationMessage For="@(() => tweet.Tweet)" />
+                </div>
+                <div class="col-4">
+                    <img class="w-100" src="/data/productionpictures/@firstPicture" />
+                </div>
+            </div>
+
+            <div class="pt-1">
+                <button class="btn btn-primary" type="submit" disabled=@disabled>@tweetButtonText</button>
+                <div class="float-right">
+                    <button class="btn btn-secondary" type="button" @onclick="@(() => bootstrapModal.Cancel())" disabled=@disabled>Cancel</button>
+                </div>
+            </div>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+
+    [Parameter]
+    public Production Production { get; set; }
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private TweetModel tweet = new TweetModel();
+
+    private string exception = null;
+
+    private byte[] firstPictureData = null;
+    private string firstPicture = null;
+
+    private bool disabled = false;
+
+    private string tweetButtonText = "Tweet";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var releasedby = Production.ProductionsGroups.Select(p => p.Group).Select(p => p.Name).ToList();
+        releasedby.AddRange(Production.ProductionsSceners.Select(p => p.Scener).Select(p => p.Handle));
+
+        firstPicture = Production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show)?.Filename;
+        if (firstPicture != null)
+            firstPictureData = await fileStorageService.GetFileContents("productionPictures", firstPicture);
+
+        tweet.Tweet = $"{Production.Name} by {string.Join(", ", releasedby)}, released on {Production.ReleaseDate.ParseDate(Production.ReleaseDateType)}. Check it out @ https://c64.ch/productions/{Production.Id}/{Production.Name.UrlEncode()} \n/ c64.ch -  #c64 #commodore #demoscene #retro";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstPictureData == null)
+        {
+            toastService.ShowError("Only Productions with a picture can be tweeted!");
+            await bootstrapModal.Close(ModalResult.Cancel());
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        if (httpContext.HttpContext.UserIsModerator())
+        {
+            disabled = true;
+            exception = "";
+            tweetButtonText = "Tweeting....";
+            StateHasChanged();
+            try
+            {
+                await tweeter.SendPictureTweet(tweet.Tweet, firstPictureData);
+                await bootstrapModal.Close(ModalResult.Ok("Ok"));
+            }
+            catch (Exception e)
+            {
+                exception = e.Message;
+
+                disabled = false;
+                tweetButtonText = "Tweet";
+                StateHasChanged();
+            }
+        }
+        else
+            throw new UnauthorizedAccessException("Non-Mod trying to tweet");
+    }
+
+    private class TweetModel
+    {
+        [Required]
+        public string Tweet { get; set; }
+
+    }
+
+}

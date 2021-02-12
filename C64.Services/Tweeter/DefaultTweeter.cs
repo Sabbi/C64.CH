@@ -11,7 +11,7 @@ using Tweetinvi.Parameters;
 
 namespace C64.Services.Tweeter
 {
-    public class DefaultTweeter : ITweeter
+    public class DefaultTweeter : ITweeter, IPictureTweeter
     {
         private readonly string logoPath;
         private readonly ILogger<DefaultTweeter> logger;
@@ -25,6 +25,12 @@ namespace C64.Services.Tweeter
             this.logger = logger;
         }
 
+        public async Task SendPictureTweet(string text, byte[] pictureData)
+        {
+            var media = await client.Upload.UploadTweetImageAsync(pictureData);
+            await SendMediaTweet(text, new List<IMedia>() { media });
+        }
+
         public async Task SendTweet(string text)
         {
             IMedia uploadedImage = null;
@@ -34,10 +40,19 @@ namespace C64.Services.Tweeter
                 uploadedImage = await client.Upload.UploadTweetImageAsync(logo);
             }
 
-            var tweetParams = new PublishTweetParameters(text);
+            var medias = new List<IMedia>();
 
             if (uploadedImage != null)
-                tweetParams.Medias = new List<IMedia>() { uploadedImage };
+                medias = new List<IMedia>() { uploadedImage };
+
+            await SendMediaTweet(text, medias);
+        }
+
+        private async Task SendMediaTweet(string text, IEnumerable<IMedia> medias)
+        {
+            var tweetParams = new PublishTweetParameters(text);
+            tweetParams.Medias = medias.ToList();
+
             try
             {
                 var result = await client.Tweets.PublishTweetAsync(tweetParams);
