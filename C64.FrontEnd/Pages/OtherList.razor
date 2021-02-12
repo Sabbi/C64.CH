@@ -70,7 +70,7 @@
             case "latestreleased":
                 defaultSortColumn = "ReleaseDate";
                 defaultSortedAscending = false;
-                title = "Latest released demo";
+                title = "Latest released demos";
                 productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
                 break;
             case "toprated":
