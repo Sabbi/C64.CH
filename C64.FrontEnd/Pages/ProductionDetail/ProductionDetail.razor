@@ -40,6 +40,18 @@
                     <option value="videos">- Videos</option>
                     <option value="credits">- Credits</option>
                     <option value="additional">- Additional info</option>
+                    @if (httpContext.HttpContext.UserIsModerator())
+                    {
+                        <optgroup label="---------------------------"></optgroup>
+                        @if (production.TweetedAt == null)
+                        {
+                            <option value="tweet">- Tweet</option>
+                        }
+                        else
+                        {
+                            <option value="tweet">- Tweet (last @(((DateTime.Now - production.TweetedAt.GetValueOrDefault()).TotalDays).ToString("N2")) days ago)</option>
+                        }
+                    }
                     <optgroup label="---------------------------"></optgroup>
                     <option value="viewHistory">View history</option>
                 </select>
@@ -327,6 +339,23 @@
             parameters.Add(nameof(EditRemarksModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditCreditsModal>("", parameters);
             await reference.Result;
+        }
+        else if (args.Value.ToString() == "tweet")
+        {
+            if (httpContext.HttpContext.UserIsModerator())
+            {
+                var parameters = new ModalParameters();
+                parameters.Add(nameof(ProductionTweetModal.Production), production);
+                parameters.Add(nameof(ProductionTweetModal.unitOfWork), unitOfWork);
+                reference = Modal.Show<ProductionTweetModal>("", parameters);
+                var result = await reference.Result;
+
+                if (!result.Cancelled)
+                {
+                    production.TweetedAt = DateTime.Now;
+                    await unitOfWork.Commit();
+                }
+            }
         }
         else if (args.Value.ToString() == "viewHistory")
         {
