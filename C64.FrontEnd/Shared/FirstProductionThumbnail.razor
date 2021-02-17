@@ -4,7 +4,14 @@
 }
 else
 {
-    <img class="prodlistitem-img" src="/images/nopicture.jpg" width="@x" height="@y" alt="No screenshot yet" />
+    if (Production.SubCategory == SubCategory.Music)
+    {
+        <img class="prodlistitem-img" src="/images/sid.png" width="@x" height="@y" alt="Sorry, no screenshot / picture yet">
+    }
+    else
+    {
+        <img class="prodlistitem-img" src="/images/nopicture.jpg" width="@x" height="@y" alt="Sorry, no screenshot / picture yet">
+    }
 }
 
 @code {

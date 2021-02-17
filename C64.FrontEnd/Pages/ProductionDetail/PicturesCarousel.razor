@@ -4,9 +4,16 @@
 {
     <a data-fslightbox href="/data/productionpictures/@ProductionPictures.FirstOrDefault(p => p.Show).Filename"><img class="d-block w-100" src="/data/productionpictures/@ProductionPictures.FirstOrDefault(p => p.Show).Filename" alt="@ProductionPictures.FirstOrDefault(p => p.Show).Filename"></a>
 }
-else if (!ProductionPictures.Any() && !ProductionVideos.Any())
+else if (!ProductionPictures.Any(p => p.Show) && !ProductionVideos.Any())
 {
-    <img class="d-block w-100" src="/images/nopicture.jpg" alt="Sorry, no screenshot / picture yet">
+    if (ProductionSubCategory == SubCategory.Music)
+    {
+        <img class="d-block w-100" src="/images/sid.png" alt="Sorry, no screenshot / picture yet">
+    }
+    else
+    {
+        <img class="d-block w-100" src="/images/nopicture.jpg" alt="Sorry, no screenshot / picture yet">
+    }
 }
 else
 {
@@ -82,6 +89,9 @@ else
 
     [Parameter]
     public string ProductionName { get; set; }
+
+    [Parameter]
+    public SubCategory ProductionSubCategory { get; set; } = SubCategory.Demo;
 
     private IEnumerable<ProductionPicture> ProductionPicturesSorted => ProductionPictures.OrderBy(p => p.Sort).ToList();
 

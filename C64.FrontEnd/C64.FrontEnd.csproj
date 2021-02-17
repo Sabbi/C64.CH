@@ -209,6 +209,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\images\sid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Data\staticpages.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
