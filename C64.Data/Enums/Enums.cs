@@ -22,6 +22,10 @@ namespace C64.Data
         OneFileDemo = 2,
 
         Intro = 20,
+
+        Music = 23,
+        Graphics = 27,
+
         Magazine = 30,
         Invitation = 40
     }
