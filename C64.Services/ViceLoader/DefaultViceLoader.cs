@@ -59,14 +59,17 @@ namespace C64.Services.ViceLoader
             // productions/717/Lazer_Link (Issue #192)
             new ViceLoaderSpecialCase("tat-lazerlink.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "?tat*")),
 
-             // productions/24/Fierce_Creations (Issue #180)
+            // productions/24/Fierce_Creations (Issue #180)
             new ViceLoaderSpecialCase("fierce.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "fierce*")),
 
             // productions/1344/Illmatic (Issue #199)
             new ViceLoaderSpecialCase("elysium-illmatic.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "? l l*")),
 
             // productions/6601/2nd_Demo
-             new ViceLoaderSpecialCase("hondani-2nd_demo.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "a.*")),
+            new ViceLoaderSpecialCase("hondani-2nd_demo.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "a.*")),
+
+            // /productions/2716/Amiga_Ball
+            new ViceLoaderSpecialCase("various-amiga_ball.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "amiga-ball*")),
         };
     }
 
