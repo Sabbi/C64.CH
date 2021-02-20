@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace C64.FrontEnd.Models
 {
@@ -14,5 +15,8 @@ namespace C64.FrontEnd.Models
         [MaxLength(255)]
         [Url]
         public string Url { get; set; }
+
+        [Required]
+        public DateTime Timestamp { get; set; }
     }
 }
