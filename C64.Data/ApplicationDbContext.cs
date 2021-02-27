@@ -80,6 +80,8 @@ namespace C64.Data
 
         public virtual DbSet<Tool> Tools { get; set; }
 
+        public virtual DbSet<AdminQueue> AdminQueues { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

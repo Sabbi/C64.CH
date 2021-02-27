@@ -27,6 +27,8 @@ namespace C64.Data
         public IChangeLogRepository ChangeLogs { get; private set; }
         public IStatisticRepository Statistics { get; private set; }
 
+        public IAdminQueueRepository AdminQueues { get; private set; }
+
         public UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger)
         {
             this.context = context;
@@ -44,6 +46,7 @@ namespace C64.Data
             Tools = new ToolRepository(context, logger);
             ChangeLogs = new ChangeLogRepository(context, logger);
             Statistics = new StatisticRepository(context, logger);
+            AdminQueues = new AdminQueueRepository(context, logger);
         }
 
         public async Task<int> Commit()
