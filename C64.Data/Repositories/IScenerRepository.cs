@@ -11,5 +11,6 @@ namespace C64.Data.Repositories
         Task<IEnumerable<Scener>> FindWithGroups(Expression<Func<Scener, bool>> predicate);
         Task<Scener> GetDetails(int scenerId);
         Task<IEnumerable<HistoryRecord>> GetHistory(int scenerId);
+        Task<Scener> GetWithProductions(int scenerId);
     }
 }

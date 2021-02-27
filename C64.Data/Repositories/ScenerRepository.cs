@@ -16,6 +16,11 @@ namespace C64.Data.Repositories
         {
         }
 
+        public Task<Scener> GetWithProductions(int scenerId)
+        {
+            return context.Set<Scener>().Include(p => p.Country).Include(p => p.ProductionsSceners).ThenInclude(p => p.Production).FirstOrDefaultAsync(p => p.ScenerId == scenerId);
+        }
+
         public async Task<IEnumerable<Scener>> FindWithGroups(Expression<Func<Scener, bool>> predicate)
         {
             var sceners = await context.Set<Scener>()

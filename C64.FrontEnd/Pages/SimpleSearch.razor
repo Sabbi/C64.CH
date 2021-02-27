@@ -57,11 +57,26 @@
     {
         var prodIds = (await unitOfWork.Productions.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase))).Select(p => p.ProductionId).ToList();
         var groups = await unitOfWork.Groups.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+        var sceners = await unitOfWork.Sceners.Find(p => p.Handle.Contains(Search, StringComparison.OrdinalIgnoreCase));
 
-        foreach (var group in groups.Take(10))
+        foreach (var group in groups.Take(20))
         {
             var groupProdsIds = (await unitOfWork.Groups.GetWithProductions(group.GroupId)).ProductionsGroups.Select(p => p.ProductionId);
             prodIds.AddRange(groupProdsIds);
+        }
+
+        // Released by Scener
+        foreach (var scener in sceners.Take(20))
+        {
+            var scenerProdIds = (await unitOfWork.Sceners.GetWithProductions(scener.ScenerId)).ProductionsSceners.Select(p => p.ProductionId);
+            prodIds.AddRange(scenerProdIds);
+        }
+
+        // Find productions where the search matches a credit
+        foreach (var scener in sceners.Take(20))
+        {
+            var scenerProdIds = (await unitOfWork.Productions.GetForScener(scener.Id)).Select(p => p.ProductionId);
+            prodIds.AddRange(scenerProdIds);
         }
 
         productionIds = prodIds;
