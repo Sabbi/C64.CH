@@ -27,6 +27,8 @@ namespace C64.Data
 
         IStatisticRepository Statistics { get; }
 
+        IAdminQueueRepository AdminQueues { get; }
+
         Task<int> Commit();
     }
 }

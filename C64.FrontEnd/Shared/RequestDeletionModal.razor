@@ -1,0 +1,98 @@
+﻿@namespace C64.FrontEnd.Shared
+
+@using Microsoft.AspNetCore.Identity
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IUnitOfWork unitOfWork
+
+@inject IToastService toastService
+@inject IEmailSender mailSender
+
+@inject UserManager<User> userManager
+
+<BootstrapModal @ref="bootstrapModal" Title="Request deletion" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+        <p>You like to have the @Type '@Name' removed.</p>
+        <p>Please fill out the form and we will take care about it - given that you provide a sensible reason to have '@Name' removed.</p>
+        <EditForm Model="requestDeletionForm" OnValidSubmit="ValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Your name / handle:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@requestDeletionForm.Name" />
+                    <ValidationMessage For="@(() => requestDeletionForm.Name)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Your EMail:</label>
+                <div>
+                    <InputText class="form-control" @bind-Value="@requestDeletionForm.Email" />
+                    <ValidationMessage For="@(() => requestDeletionForm.Email)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Why '@Name' should be removed:</label>
+                <div>
+                    <InputTextArea rows="5" class="form-control" @bind-Value="@requestDeletionForm.Comment" />
+                    <ValidationMessage For="@(() => requestDeletionForm.Comment)" />
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit" disabled="@disabled">Send request</button>
+        </EditForm>
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public string Type { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private RequestDeletionViewModel requestDeletionForm = new RequestDeletionViewModel();
+
+    private BootstrapModal bootstrapModal;
+
+    private bool disabled = false;
+
+    private string title;
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (httpContext.HttpContext.IsLoggedIn())
+        {
+            var user = await userManager.FindByIdAsync(httpContext.HttpContext.GetUserId());
+
+            requestDeletionForm.Name = user.UserName;
+            requestDeletionForm.Email = user.Email;
+        }
+    }
+
+    private async Task ValidSubmit()
+    {
+        disabled = true;
+        StateHasChanged();
+
+        var adminQueue = new AdminQueue()
+        {
+            CreatorEMail = requestDeletionForm.Email,
+            CreatorComment = requestDeletionForm.Comment,
+            CreatorName = requestDeletionForm.Name,
+            CreatorUserId = httpContext.HttpContext.GetUserId(),
+            AdminQueueRequestType = AdminQueueRequestType.DeleteRelease,
+            Created = DateTime.Now,
+            Data = Id.ToString()
+        };
+
+        unitOfWork.AdminQueues.Add(adminQueue);
+        await unitOfWork.Commit();
+
+        await mailSender.SendAdminEmailAsync(new MailAddress("noreply@c64.ch"), $"Request for deletion of '{Name}'", $"Request for deletion of {Type} '{Name}'<br><br>Requested by: {adminQueue.CreatorName} ({adminQueue.CreatorEMail})<br>Comment: {adminQueue.CreatorComment}<br><br>Data: {adminQueue.Data}");
+
+        toastService.ShowSuccess("Thank you, we received your request");
+        await bootstrapModal.Close();
+    }
+}
