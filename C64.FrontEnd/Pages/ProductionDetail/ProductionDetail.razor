@@ -40,9 +40,10 @@
                     <option value="videos">- Videos</option>
                     <option value="credits">- Credits</option>
                     <option value="additional">- Additional info</option>
+
+                    <optgroup label="---------------------------"></optgroup>
                     @if (httpContext.HttpContext.UserIsModerator())
                     {
-                        <optgroup label="---------------------------"></optgroup>
                         @if (production.TweetedAt == null)
                         {
                             <option value="tweet">- Tweet</option>
@@ -52,6 +53,7 @@
                             <option value="tweet">- Tweet (last @(((DateTime.Now - production.TweetedAt.GetValueOrDefault()).TotalDays).ToString("N2")) days ago)</option>
                         }
                     }
+                    <option value="requestDeletion">- Request deletion</option>
                     <optgroup label="---------------------------"></optgroup>
                     <option value="viewHistory">View history</option>
                 </select>
@@ -270,12 +272,12 @@
 
     private async Task OnSelectEdit(ChangeEventArgs args)
     {
-        if (httpContext.HttpContext.GetUserId() == null && args.Value.ToString() != "viewHistory")
+        if (httpContext.HttpContext.GetUserId() == null && args.Value.ToString() != "viewHistory" && args.Value.ToString() != "requestDeletion")
         {
             Modal.Show<LoginModal>();
             return;
         }
-        else if (!httpContext.HttpContext.CanEdit() && args.Value.ToString() != "viewHistory")
+        else if (!httpContext.HttpContext.CanEdit() && args.Value.ToString() != "viewHistory" && args.Value.ToString() != "requestDeletion")
         {
             navigationManager.NavigateTo("/help/upgradeaccount");
             toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
@@ -356,6 +358,15 @@
                     await unitOfWork.Commit();
                 }
             }
+        }
+        else if (args.Value.ToString() == "requestDeletion")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(RequestDeletionModal.Type), "Production");
+            parameters.Add(nameof(RequestDeletionModal.Name), production.Name);
+            parameters.Add(nameof(RequestDeletionModal.Id), production.Id);
+            reference = Modal.Show<RequestDeletionModal>("", parameters);
+            await reference.Result;
         }
         else if (args.Value.ToString() == "viewHistory")
         {

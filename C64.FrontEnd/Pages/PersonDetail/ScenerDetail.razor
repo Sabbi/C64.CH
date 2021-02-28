@@ -26,6 +26,8 @@
                     <option value="addgroup">- Add Groups</option>
                     <option value="editgroup">- Edit Groups</option>
                     <optgroup label="---------------------------"></optgroup>
+                    <option value="requestDeletion">- Request deletion</option>
+                    <optgroup label="---------------------------"></optgroup>
                     <option value="viewHistory">View history</option>
                 </select>
             </div>
@@ -147,12 +149,12 @@
 
     private async Task OnSelectEdit(ChangeEventArgs args)
     {
-        if (httpContext.HttpContext.GetUserId() == null && args.Value.ToString() != "viewHistory")
+        if (httpContext.HttpContext.GetUserId() == null && args.Value.ToString() != "viewHistory" && args.Value.ToString() != "requestDeletion")
         {
             Modal.Show<LoginModal>();
             return;
         }
-        else if (!httpContext.HttpContext.CanEdit() && args.Value.ToString() != "viewHistory")
+        else if (!httpContext.HttpContext.CanEdit() && args.Value.ToString() != "viewHistory" && args.Value.ToString() != "requestDeletion")
         {
             navigationManager.NavigateTo("/help/upgradeaccount");
             toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
@@ -183,6 +185,15 @@
             parameters.Add(nameof(EditScenerGroupsModal.Scener), scener);
             parameters.Add(nameof(EditScenerGroupsModal.unitOfWork), unitOfWork);
             reference = Modal.Show<EditScenerGroupsModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "requestDeletion")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(RequestDeletionModal.Type), "Scener");
+            parameters.Add(nameof(RequestDeletionModal.Name), scener.Handle);
+            parameters.Add(nameof(RequestDeletionModal.Id), scener.Id);
+            reference = Modal.Show<RequestDeletionModal>("", parameters);
             await reference.Result;
         }
         else if (args.Value.ToString() == "viewHistory")
