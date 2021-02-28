@@ -1,4 +1,5 @@
-﻿using C64.Data.Entities;
+﻿using C64.Data;
+using C64.Data.Entities;
 using C64.Services.Archive;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -6,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace C64.Data.Storage
+namespace C64.Services.Storage
 {
     public class DbFileStorageService : IFileStorageService
     {

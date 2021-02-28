@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace C64.Data.Storage
+namespace C64.Services.Storage
 {
     public class FileInformation
     {
