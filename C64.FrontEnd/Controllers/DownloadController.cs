@@ -6,7 +6,6 @@ using D64Reader.Renderers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Drawing;
@@ -25,17 +24,15 @@ namespace C64.FrontEnd.Controllers
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IFileStorageService fileStorageService;
-        private readonly ILogger<DownloadController> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly string productionContainer = "productionfiles";
         private readonly string pictureContainer = "productionpictures";
-        private static int cacheTtl = 24 * 60 * 60 * 365; // 1 year
+        private readonly static int cacheTtl = 24 * 60 * 60 * 365; // 1 year
 
-        public DownloadController(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, ILogger<DownloadController> logger, IHttpContextAccessor httpContextAccessor)
+        public DownloadController(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, IHttpContextAccessor httpContextAccessor)
         {
             this.unitOfWork = unitOfWork;
             this.fileStorageService = fileStorageService;
-            this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
         }
 
@@ -108,7 +105,7 @@ namespace C64.FrontEnd.Controllers
         }
 
         [Route("/data/productions/archive/{fileId}-{counter}.bin")]
-        public async Task<IActionResult> GetArchiveFile(int fileId, int counter, [FromServices] IHttpContextAccessor contextAccessor, [FromServices] IArchiveService archiveService, [FromServices] IFallbackArchiveService fallbackArchiveService)
+        public async Task<IActionResult> GetArchiveFile(int fileId, int counter, [FromServices] IArchiveService archiveService, [FromServices] IFallbackArchiveService fallbackArchiveService)
         {
             var productionFile = await unitOfWork.Productions.GetFile(fileId);
             var fileData = await fileStorageService.GetFileContents(productionContainer, productionFile.Filename);
@@ -138,8 +135,11 @@ namespace C64.FrontEnd.Controllers
         [Route("data/thumbnails/{x}x{y}/{filename}")]
         public async Task<IActionResult> GetThumb(int x, int y, string filename)
         {
-            if (x < 1 || x > 1920 || y < 1 || y > 1080)
-                throw new ArgumentOutOfRangeException("invalid size");
+            if (x < 1 || x > 1920)
+                throw new ArgumentOutOfRangeException(nameof(x), "invalid size");
+
+            if (y < 1 || y > 1080)
+                throw new ArgumentOutOfRangeException(nameof(y), "invalid size");
 
             byte[] fileData;
             FileInformation fileInformation;
@@ -213,7 +213,7 @@ namespace C64.FrontEnd.Controllers
             }
         }
 
-        private ImageCodecInfo GetEncoder(ImageFormat format)
+        private static ImageCodecInfo GetEncoder(ImageFormat format)
         {
             ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
             foreach (ImageCodecInfo codec in codecs)
@@ -226,17 +226,12 @@ namespace C64.FrontEnd.Controllers
             return null;
         }
 
-        private float Ratio(Bitmap source, Bitmap destination)
+        private static float Ratio(Bitmap source, Bitmap destination)
         {
             return Math.Min((float)destination.Width / source.Width, (float)destination.Height / source.Height);
         }
 
-        private float Ratio(int sourceWidth, int sourceHeight, int maxWidth, int maxHeight)
-        {
-            return Math.Min((float)maxWidth / sourceWidth, (float)maxHeight / sourceHeight);
-        }
-
-        private string GetContentType(string fileName)
+        private static string GetContentType(string fileName)
         {
             var provider = new FileExtensionContentTypeProvider();
             provider.TryGetContentType(fileName, out var mimeType);

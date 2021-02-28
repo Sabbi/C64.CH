@@ -112,7 +112,7 @@ namespace C64.Services.Storage
             return context.DbFiles.Any(p => p.Container == container && p.FileName == fileName);
         }
 
-        private string SanitizeFilename(string fileName)
+        private static string SanitizeFilename(string fileName)
         {
             foreach (char c in Path.GetInvalidFileNameChars())
                 fileName = fileName.Replace(c, '_');

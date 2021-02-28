@@ -36,7 +36,7 @@
         paginatedResult = await unitOfWork.Users.GetPaginatedHistory(p => true, "Applied", false, page, 20);
     }
 
-    private async Task OnSelectPage(int selectedPage)
+    private void OnSelectPage(int selectedPage)
     {
         navigationManager.NavigateTo($"/help/edits/{selectedPage}");
     }

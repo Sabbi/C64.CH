@@ -184,7 +184,7 @@ namespace C64.Data
             modelBuilder.Entity<LinkCategory>().HasData(GetLinkCategories());
         }
 
-        private IEnumerable<Country> GetCountries()
+        private static IEnumerable<Country> GetCountries()
         {
             try
             {
@@ -197,7 +197,7 @@ namespace C64.Data
             }
         }
 
-        private IEnumerable<LinkCategory> GetLinkCategories()
+        private static IEnumerable<LinkCategory> GetLinkCategories()
         {
             try
             {

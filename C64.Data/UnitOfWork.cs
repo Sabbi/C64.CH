@@ -62,6 +62,7 @@ namespace C64.Data
         public void Dispose()
         {
             context.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
