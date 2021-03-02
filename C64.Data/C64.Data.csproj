@@ -60,8 +60,4 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\C64.Services\C64.Services.csproj" />
-  </ItemGroup>
 </Project>

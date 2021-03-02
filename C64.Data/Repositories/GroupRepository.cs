@@ -84,7 +84,7 @@ namespace C64.Data.Repositories
 
                 //// Calculate ratings
                 var sumOfRatings = production.Ratings.Sum(p => p.Value);
-                var numberOfRatings = production.Ratings.Count();
+                var numberOfRatings = production.Ratings.Count;
                 var rating = numberOfRatings >= 5 ? (decimal)sumOfRatings / numberOfRatings : 0M;
 
                 groupDownloads += downloads;

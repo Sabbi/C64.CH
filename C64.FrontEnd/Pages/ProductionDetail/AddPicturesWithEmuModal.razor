@@ -16,52 +16,52 @@
     <Content>
         @if (state == "NoFiles")
         {
-        <p>No files found, please add some downloads first!</p>
+            <p>No files found, please add some downloads first!</p>
         }
 
         @if (state == "Emulation")
         {
-        <div class="row mb-1">
-            <div class="col-4">
-                <button class="btn btn-primary invisible emulator-control" @onclick="TakeScreenshot">Take Screenshot</button>
-            </div>
-            <div class="col-4 text-center">
-                @if (showDiskChange)
+            <div class="row mb-1">
+                <div class="col-4">
+                    <button class="btn btn-primary invisible emulator-control" @onclick="TakeScreenshot">Take Screenshot</button>
+                </div>
+                <div class="col-4 text-center">
+                    @if (showDiskChange)
                     {
-                <button class="btn btn-primary invisible emulator-control" type="button" disabled="@nextDiskDisabled" @onclick="NextDisk">Insert Next Disk</button>
+                        <button class="btn btn-primary invisible emulator-control" type="button" disabled="@nextDiskDisabled" @onclick="NextDisk">Insert Next Disk</button>
                     }
+                </div>
+                <div class="col-4 text-right">
+                    <button class="btn btn-primary invisible emulator-control" @onclick="SaveScreenshots">Save and add</button>
+                </div>
             </div>
-            <div class="col-4 text-right">
-                <button class="btn btn-primary invisible emulator-control" @onclick="SaveScreenshots">Save and add</button>
-            </div>
-        </div>
-        <div id="emularity-splash-screen"></div>
-        <canvas id="canvas" style="display: none; margin: 0 auto; background-color:#eeeeee" />
+            <div id="emularity-splash-screen"></div>
+            <canvas id="canvas" style="display: none; margin: 0 auto; background-color:#eeeeee" />
 
-        <div class="row">
+            <div class="row">
 
-            @for (var i = 0; i < screenshots.Count; i++)
+                @for (var i = 0; i < screenshots.Count; i++)
                 {
                     var local = i;
-            <div class="col-2 m-0 p-1">
-                <img class="slidethumb w-100" src="@screenshots[local]" @onclick="@(() => RemoveScreenshot(screenshots[local]))" />
-            </div>
+                    <div class="col-2 m-0 p-1">
+                        <img class="slidethumb w-100" src="@screenshots[local]" @onclick="@(() => RemoveScreenshot(screenshots[local]))" />
+                    </div>
                 }
-        </div>
+            </div>
 
         }
         @if (state == "ShowFileDropDown")
         {
-        <p>This production contains multiple files. Please select the one you want to take screenshots from:</p>
-        <p>
-            <select class="form-control" @onchange="OnChangeSelectedFile">
-                <option value="0">Select file:</option>
-                @foreach (var file in Production.ProductionFiles.Where(p => p.Show))
+            <p>This production contains multiple files. Please select the one you want to take screenshots from:</p>
+            <p>
+                <select class="form-control" @onchange="OnChangeSelectedFile">
+                    <option value="0">Select file:</option>
+                    @foreach (var file in Production.ProductionFiles.Where(p => p.Show))
                     {
-                <option value="@file.ProductionFileId">@file.Filename</option>
+                        <option value="@file.ProductionFileId">@file.Filename</option>
                     }
-            </select>
-        </p>
+                </select>
+            </p>
         }
     </Content>
 </BootstrapModal>
@@ -86,7 +86,7 @@
 
     private Timer timer = new Timer();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         var numberOfFiles = Production.ProductionFiles.Count(p => p.Show);
 
@@ -101,7 +101,6 @@
         {
             state = "ShowFileDropDown";
         }
-
     }
 
     private async Task OnChangeSelectedFile(ChangeEventArgs changeEventArgs)

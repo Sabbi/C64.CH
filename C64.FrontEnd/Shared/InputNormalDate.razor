@@ -124,12 +124,10 @@
 
     protected override void OnInitialized()
     {
-        if (CurrentValue != null)
-        {
-            day = CurrentValue.Day.ToString();
-            month = CurrentValue.Month.ToString();
-            year = CurrentValue.Year.ToString();
-        }
+
+        day = CurrentValue.Day.ToString();
+        month = CurrentValue.Month.ToString();
+        year = CurrentValue.Year.ToString();
 
         Updater();
     }

@@ -8,22 +8,22 @@
 
 @if (productions != null)
 {
-    @if (!HideSorter)
+@if (!HideSorter)
     {
-        <div id="@Identifier" class="text-right"><Sorter Sorted="OnSorted" SorterData="@sorterData" /></div>
+<div id="@Identifier" class="text-right"><Sorter Sorted="OnSorted" SorterData="@sorterData" /></div>
     }
-    <PaginatorRecordInfo CurrentPage="currentPage" PageSize="pageSize" TotalNumberOfRecords="totalNumberOfRecords" />
-    <Paginator CurrentPage="currentPage" TotalAmountPages="totalNumberOfPages" SelectedPage="OnSelectPage"></Paginator>
-    <div class="row">
-        @foreach (var prod in productions)
+<PaginatorRecordInfo CurrentPage="currentPage" PageSize="pageSize" TotalNumberOfRecords="totalNumberOfRecords" />
+<Paginator CurrentPage="currentPage" TotalAmountPages="totalNumberOfPages" SelectedPage="OnSelectPage"></Paginator>
+<div class="row">
+    @foreach (var prod in productions)
         {
-            <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
-                <ProdInList Production="prod" />
-            </div>
-        }
+    <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
+        <ProdInList Production="prod" />
     </div>
-    <PaginatorRecordInfo CurrentPage="currentPage" PageSize="pageSize" TotalNumberOfRecords="totalNumberOfRecords" />
-    <Paginator CurrentPage="currentPage" TotalAmountPages="totalNumberOfPages" SelectedPage="OnSelectPage"></Paginator>
+        }
+</div>
+<PaginatorRecordInfo CurrentPage="currentPage" PageSize="pageSize" TotalNumberOfRecords="totalNumberOfRecords" />
+<Paginator CurrentPage="currentPage" TotalAmountPages="totalNumberOfPages" SelectedPage="OnSelectPage"></Paginator>
 }
 
 @code {
@@ -99,7 +99,7 @@
         NavigateTo();
     }
 
-    private async Task OnSelectPage(int page)
+    private void OnSelectPage(int page)
     {
         currentPage = page;
         NavigateTo();

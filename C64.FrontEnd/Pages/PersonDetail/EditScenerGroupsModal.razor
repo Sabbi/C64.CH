@@ -104,7 +104,7 @@
 
     private AddScenerGroupModel addScenerGroupModel = new AddScenerGroupModel();
 
-    private async Task OnSelectGroup(ChangeEventArgs e)
+    private void OnSelectGroup(ChangeEventArgs e)
     {
         selectedGroupId = int.Parse(e.Value.ToString());
         disabled = selectedGroupId == 0;
@@ -124,8 +124,6 @@
         }
         else
             addScenerGroupModel.CanDeleteGroup = false;
-
-        return;
     }
 
     private async Task DeleteGroup()

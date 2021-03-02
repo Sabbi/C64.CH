@@ -17,7 +17,7 @@
 
     private SiteInfo siteNews = new SiteInfo();
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         var allowed = httpContext.HttpContext.CheckRole("Moderator");
         if (!allowed)
