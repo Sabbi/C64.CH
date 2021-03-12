@@ -37,6 +37,7 @@ namespace C64.Data.Repositories
                 .Include(p => p.ScenersGroups).ThenInclude(p => p.ScenerGroupJobs)
                 .Include(p => p.ProductionsSceners)
                 .Include(p => p.Jobs)
+                .Include(p => p.AlterEgos).ThenInclude(p => p.ScenerTo)
                 .Include(p => p.Country).FirstOrDefaultAsync(p => p.ScenerId == scenerId);
 
             return scener;

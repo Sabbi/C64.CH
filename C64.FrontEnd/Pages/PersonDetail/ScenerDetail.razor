@@ -66,6 +66,18 @@
                             }
                         </td>
                     </tr>
+                    @if (scener.AlterEgos.Any())
+                    {
+                        <tr>
+                            <th>Alter egos:</th>
+                            <td>
+                                @foreach (var ego in scener.AlterEgos)
+                                {
+                                    <a href="/sceners/@ego.ScenerToId/@ego.ScenerTo.Handle.UrlEncode()">@ego.ScenerTo.Handle</a><br />
+                                }
+                            </td>
+                        </tr>
+                    }
                     @if (!scener.ScenersGroups.Any())
                     {
                         <tr>
@@ -211,6 +223,7 @@
         unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
 
         scener = await unitOfWork.Sceners.GetDetails(id);
+
         scenerProductions = await unitOfWork.Productions.GetForScener(id);
 
         productionIds = scener.ProductionsSceners.Select(p => p.ProductionId);

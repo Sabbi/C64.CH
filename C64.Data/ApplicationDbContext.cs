@@ -149,9 +149,9 @@ namespace C64.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ScenersSceners>()
-                .HasOne(p => p.ScenerTo)
-                .WithMany(p => p.AlterEgos)
-                .HasForeignKey(p => p.ScenerToId);
+              .HasOne(p => p.Scener)
+              .WithMany(p => p.AlterEgos)
+              .HasForeignKey(p => p.ScenerId);
 
             // Many-To-Many Party <-> Groups
             modelBuilder.Entity<PartiesGroups>()
