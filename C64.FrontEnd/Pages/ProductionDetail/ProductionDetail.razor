@@ -134,7 +134,7 @@
                                     @{
                                         var currentCredit = "";
                                     }
-                                    @foreach (var credit in production.ProductionCredits.OrderBy(p => p.Credit))
+                                    @foreach (var credit in production.ProductionCredits.GetSorted())
                                     {
                                         if (currentCredit != credit.Credit.ToString())
                                         {
