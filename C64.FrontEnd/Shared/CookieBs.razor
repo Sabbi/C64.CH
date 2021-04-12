@@ -1,0 +1,28 @@
+﻿@inject IJSRuntime jsRuntime
+@if (show)
+{
+    <div class="cookieBs">
+        <i class="fas fa-poo"></i>
+        Like every other site since (almost) the dawn of the internets this site uses cookies, as explained in our <a href="/help/cookiebs">cookie policy</a>. By continuing to browse or by clicking 'Accept &amp; close', you agree to store some extremely important data directly your device to ridiculously enhance your site experience.
+        <i class="fas fa-poo"></i>
+        <div class="cookieBs-button">
+            <button class="btn btn-secondary" @onclick="setBs">Accept &amp; Close</button>
+        </div>
+    </div>
+}
+@code {
+    private bool show = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var bhasCookie = await jsRuntime.InvokeAsync<bool>("readBsCookie");
+        show = !bhasCookie;
+        StateHasChanged();
+    }
+
+    private async Task setBs()
+    {
+        await jsRuntime.InvokeVoidAsync("createCookieBsCookie");
+        show = false;
+    }
+}

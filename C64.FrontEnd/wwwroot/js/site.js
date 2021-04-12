@@ -361,3 +361,22 @@ function jump(h) {
     location.href = "#" + h;
     history.replaceState(null, null, url);
 }
+
+function createCookieBsCookie() {
+    var date = new Date();
+    date.setTime(date.getTime() + (1000000 * 24 * 60 * 60 * 1000));
+    var expires = "; expires=" + date.toGMTString();
+    document.cookie = "CookieBs=BsOk" + expires + "; path=/";
+}
+
+function readBsCookie() {
+    var cookies = document.cookie;
+
+    if (cookies) {
+        if (cookies.includes("CookieBs")) {
+            return true;
+        }
+    }
+
+    return false;
+}

@@ -8,50 +8,51 @@
 
 @if (Allowed)
 {
-<div id="page-container">
-    <div id="content-wrap">
-        <Header />
-        <div class="container-fluid" style="max-width:1400px">
-            <main role="main" class="pb-3">
-                <div class="row">
-                    <div class="col-12 col-md-9 col-lg-10" style="padding-left:5px; padding-right:5px">
-                        @Body
-                    </div>
-                    <div class="col-12 col-md-3 col-lg-2" style="padding-left:5px; padding-right:5px">
-                        <div class="pb-5 d-block d-md-none"></div>
-                        <div class="row">
-                            <div class="col-12 col-sm-6 col-md-12">
-                                <SideBarDemoRand />
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-12">
-                                <SideBarTopRated />
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-12">
+    <div id="page-container">
+        <div id="content-wrap">
+            <Header />
+            <div class="container-fluid" style="max-width:1400px">
+                <main role="main" class="pb-3">
+                    <div class="row">
+                        <div class="col-12 col-md-9 col-lg-10" style="padding-left:5px; padding-right:5px">
+                            @Body
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-2" style="padding-left:5px; padding-right:5px">
+                            <div class="pb-5 d-block d-md-none"></div>
+                            <div class="row">
+                                <div class="col-12 col-sm-6 col-md-12">
+                                    <SideBarDemoRand />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-12">
+                                    <SideBarTopRated />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-12">
 
-                                <SideBarLatest />
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-12">
-                                <SideBarTopDownloaded />
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-12">
-                                <SideBarStatistics />
-                            </div>
-                            <div class="col-12 col-sm-6 col-md-12">
-                                <SideBarCorporate />
+                                    <SideBarLatest />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-12">
+                                    <SideBarTopDownloaded />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-12">
+                                    <SideBarStatistics />
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-12">
+                                    <SideBarCorporate />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </main>
+                </main>
+            </div>
+            <div class="d-md-none d-sm-none mb-4"></div>
         </div>
-        <div class="d-md-none d-sm-none mb-4"></div>
+        <Footer />
     </div>
-    <Footer />
-</div>
+    <CookieBs />
 }
 else
 {
-<WallLogin />
+    <WallLogin />
 }
 @code{
     private bool Allowed = false;
