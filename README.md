@@ -6,7 +6,7 @@ C64.CH  - The relaunch
 
 This it the official source repository of [C64.CH](https://www.c64.ch), a portal dedicated to C64-Demos and the C64-Demoscene.
 
-The site runs on .NET 5.0 / Blazor (Webassembly) on Linux, with MySQL as the database. More details here: [C64.CH Technical Information](https://www.c64.ch/help/technical).
+The site runs on .NET 5.0 / Blazor (Serverside) on Linux, with MySQL as the database. More details here: [C64.CH Technical Information](https://www.c64.ch/help/technical).
 
 For more information please check out the [Wiki](https://github.com/Sabbi/C64.CH/wiki).
 
