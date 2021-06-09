@@ -117,7 +117,12 @@
                 productionIds = (await unitOfWork.Productions.Find(p => p.ReleaseDate.Year == year)).Select(p => p.ProductionId).ToList();
                 break;
             default:
-                throw new Exception("Invalid ListBy-Parameter");
+                // On invalid searched, show latest added
+                defaultSortColumn = "ReleaseDate";
+                defaultSortedAscending = false;
+                title = "Latest released demos";
+                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
+                break;
         }
 
         StateHasChanged();

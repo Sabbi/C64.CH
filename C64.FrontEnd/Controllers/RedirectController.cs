@@ -3,7 +3,6 @@ using C64.FrontEnd.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Threading.Tasks;
 
 namespace C64.FrontEnd.Controllers
@@ -178,7 +177,8 @@ namespace C64.FrontEnd.Controllers
                 default:
                     if (partyid > 0)
                         return DoRedirect($"/parties/{partyid}");
-                    throw new ArgumentException($"Source '{source}' invalid (Other params: groups '{group}', demoname '{demoname}', groupname '{groupname}', year '{year}', search '{search}'");
+
+                    return DoRedirect($"/demos/latestadded"); // On invalid searches, just go to latest added demos
             }
         }
 
