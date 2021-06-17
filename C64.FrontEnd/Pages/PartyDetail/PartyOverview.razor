@@ -1,6 +1,10 @@
 ﻿@namespace C64.FrontEnd.Pages
 
 <h3>@Party.Name</h3>
+@if (ShowSeeDetailsLink)
+{
+    <p><a href="/parties/@Party.PartyId/@Party.Name.UrlEncode()">See details</a></p>
+}
 
 @if (IsPast())
 {
@@ -36,6 +40,9 @@ else
 @code {
     [Parameter]
     public Party Party { get; set; } = new Party();
+
+    [Parameter]
+    public bool ShowSeeDetailsLink { get; set; } = false;
 
     private bool IsPast()
     {
