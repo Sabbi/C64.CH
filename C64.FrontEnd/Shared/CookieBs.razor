@@ -16,8 +16,12 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var bhasCookie = await jsRuntime.InvokeAsync<bool>("readBsCookie");
-        show = !bhasCookie;
-        StateHasChanged();
+
+        if (bhasCookie == show)
+        {
+            show = !bhasCookie;
+            StateHasChanged();
+        }
     }
 
     private async Task setBs()
