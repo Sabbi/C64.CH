@@ -70,6 +70,9 @@ namespace C64.Services.ViceLoader
 
             // /productions/2716/Amiga_Ball
             new ViceLoaderSpecialCase("various-amiga_ball.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "amiga-ball*")),
+
+            // /productions/8336/Crystal_Waters
+            new ViceLoaderSpecialCase("Crystal Waters - TNC.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "-cry*")),
         };
     }
 
