@@ -73,6 +73,9 @@ namespace C64.Services.ViceLoader
 
             // /productions/8336/Crystal_Waters
             new ViceLoaderSpecialCase("Crystal Waters - TNC.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "-cry*")),
+
+            // /productions/6835/One_Day_Demo
+            new ViceLoaderSpecialCase("hype-one_day_demo.zip", (int productionFileId, IArchiveService archiveService) =>  new ViceDepackerDifferentD64StartFile(productionFileId, archiveService.ArchiveInfo, "the one day demo")),
         };
     }
 
