@@ -127,6 +127,9 @@ else
 
         await OnDownload.InvokeAsync(productionFileId);
 
+        if (ProductionFiles.FirstOrDefault(p => p.ProductionFileId == productionFileId) != null)
+            ProductionFiles.FirstOrDefault(p => p.ProductionFileId == productionFileId).Downloads++;
+
         var parameters = new ModalParameters();
         parameters.Add(nameof(EmuModal.ProductionFile), productionFile);
         parameters.Add(nameof(EmuModal.SidModel), sidModel);
