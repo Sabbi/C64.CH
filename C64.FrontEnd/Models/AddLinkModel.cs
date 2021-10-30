@@ -16,6 +16,8 @@ namespace C64.FrontEnd.Models
         [Url]
         public string Url { get; set; }
 
+        public bool Dead { get; set; }
+
         [Required]
         public DateTime Timestamp { get; set; }
     }
