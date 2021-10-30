@@ -12,6 +12,8 @@ namespace C64.Data.Entities
 
         [MaxLength(255)]
         public string Url { get; set; }
+        
+        public bool Dead {get; set; }
 
         public int LinkCategoryId { get; set; }
         public virtual LinkCategory LinkCategory { get; set; }

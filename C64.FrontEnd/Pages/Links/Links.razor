@@ -54,7 +54,14 @@
                 <li class="media my-2">
                     <div class="media-body">
                         <p class="mt-0 mb-1">
-                            <a target="_blank" href="/links/follow/@link.LinkId" class="normal">@link.Name</a>
+                            @if (link.Dead)
+                            {
+                                <span class="normal">@link.Name</span>
+                            }
+                            else
+                            {
+                                <a target="_blank" href="/links/follow/@link.LinkId" class="normal">@link.Name</a>
+                            }
                             <AuthorizeView Roles="Admin, Moderator">
                                 <Authorized>
                                     <div class="float-right">
@@ -64,7 +71,14 @@
                             </AuthorizeView>
                         </p>
                         <div class="float-left">
-                            <a target="_blank" href="/links/follow/@link.LinkId">@link.Url</a>
+                            @if (link.Dead)
+                            {
+                                <i class="fas fa-skull-crossbones"></i> <span style="text-decoration:line-through">@link.Url</span> <span>(Offline)</span>
+                            }
+                            else
+                            {
+                                <a target="_blank" href="/links/follow/@link.LinkId">@link.Url</a>
+                            }
                         </div>
                         <div class="float-right small">@link.Added.ToLongDateString()</div>
                         <div class="clearfix"></div>
