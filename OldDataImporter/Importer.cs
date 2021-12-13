@@ -1,6 +1,6 @@
 ﻿using C64.Data;
 using C64.Data.Entities;
-using C64.Data.Storage;
+using C64.Services.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

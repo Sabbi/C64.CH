@@ -48,5 +48,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\C64.Data\C64.Data.csproj" />
+    <ProjectReference Include="..\C64.Services\C64.Services.csproj" />
   </ItemGroup>
 </Project>
