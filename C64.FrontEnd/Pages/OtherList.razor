@@ -65,22 +65,22 @@
                 defaultSortColumn = "Added";
                 defaultSortedAscending = false;
                 title = "Latest added demos";
-                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
+                productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted)).Select(p => p.ProductionId).ToList();
                 break;
             case "latestreleased":
                 defaultSortColumn = "ReleaseDate";
                 defaultSortedAscending = false;
                 title = "Latest released demos";
-                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
+                productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted)).Select(p => p.ProductionId).ToList();
                 break;
             case "toprated":
-                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
+                productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted)).Select(p => p.ProductionId).ToList();
                 defaultSortColumn = "AverageRating";
                 defaultSortedAscending = false;
                 title = "Top rated demos";
                 break;
             case "topdownloaded":
-                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
+                productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted)).Select(p => p.ProductionId).ToList();
                 defaultSortColumn = "Downloads";
                 defaultSortedAscending = false;
                 title = "Top downloaded demos";
@@ -89,12 +89,12 @@
                 if (StartLetter.Equals("other", StringComparison.OrdinalIgnoreCase))
                 {
                     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                    productionIds = (await unitOfWork.Productions.Find(p => !letters.Contains(p.Name.Substring(0, 1)))).Select(p => p.ProductionId).ToList();
+                    productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted && !letters.Contains(p.Name.Substring(0, 1)))).Select(p => p.ProductionId).ToList();
                     title = $"Demos not starting with a letter";
                 }
                 else
                 {
-                    productionIds = (await unitOfWork.Productions.Find(p => p.Name.StartsWith(StartLetter, StringComparison.OrdinalIgnoreCase))).Select(p => p.ProductionId).ToList();
+                    productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted && p.Name.StartsWith(StartLetter, StringComparison.OrdinalIgnoreCase))).Select(p => p.ProductionId).ToList();
                     title = $"Demos starting with {StartLetter}";
                 }
                 break;
@@ -114,14 +114,14 @@
                     navigationManager.NavigateTo("/productions/demos");
 
                 title = $"Demos released in {year}";
-                productionIds = (await unitOfWork.Productions.Find(p => p.ReleaseDate.Year == year)).Select(p => p.ProductionId).ToList();
+                productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted && p.ReleaseDate.Year == year)).Select(p => p.ProductionId).ToList();
                 break;
             default:
                 // On invalid searched, show latest added
                 defaultSortColumn = "ReleaseDate";
                 defaultSortedAscending = false;
                 title = "Latest released demos";
-                productionIds = (await unitOfWork.Productions.Find(p => true)).Select(p => p.ProductionId).ToList();
+                productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted)).Select(p => p.ProductionId).ToList();
                 break;
         }
 
