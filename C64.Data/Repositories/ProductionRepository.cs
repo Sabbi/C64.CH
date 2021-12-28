@@ -30,7 +30,7 @@ namespace C64.Data.Repositories
                 .Include(p => p.ProductionsParties).ThenInclude(p => p.PartyCategory)
                 .Include(p => p.User)
                 .Include(p => p.SubmitterUser)
-                .FirstOrDefaultAsync(p => p.ProductionId == productionId);
+                .FirstOrDefaultAsync(p => p.ProductionId == productionId && !p.Deleted);
 
             if (production == null)
                 return production;
@@ -59,7 +59,7 @@ namespace C64.Data.Repositories
 
         public async Task<IEnumerable<Production>> GetForScener(int scenerId)
         {
-            var productions = await context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionsSceners).ThenInclude(p => p.Scener).Include(p => p.ProductionPictures).Include(p => p.ProductionCredits).ThenInclude(p => p.Scener).Where(p => p.ProductionCredits.Any(q => q.ScenerId == scenerId)).ToListAsync();
+            var productions = await context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionsSceners).ThenInclude(p => p.Scener).Include(p => p.ProductionPictures).Include(p => p.ProductionCredits).ThenInclude(p => p.Scener).Where(p => p.ProductionCredits.Any(q => q.ScenerId == scenerId) && !p.Deleted).ToListAsync();
             return productions;
         }
 
@@ -93,7 +93,7 @@ namespace C64.Data.Repositories
 
         public Task<PaginatedResult<Production>> GetPaginatedWithGroups(Expression<Func<Production, bool>> predicate, string orderBy, bool isSortedAscending, int page, int pageSize)
         {
-            var query = context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionsSceners).ThenInclude(p => p.Scener);
+            var query = context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionsSceners).ThenInclude(p => p.Scener).Where(p => !p.Deleted);
             return FindPaginated(query, predicate, orderBy, isSortedAscending, page, pageSize);
         }
 
@@ -103,7 +103,7 @@ namespace C64.Data.Repositories
 
             var skip = new Random().Next(count);
 
-            return await context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Skip(skip).Take(1).FirstOrDefaultAsync();
+            return await context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Where(p => !p.Deleted).Skip(skip).Take(1).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Rating>> GetRatings(int productionId)

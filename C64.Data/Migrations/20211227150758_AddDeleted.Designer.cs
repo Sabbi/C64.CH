@@ -3,14 +3,16 @@ using System;
 using C64.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace C64.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211227150758_AddDeleted")]
+    partial class AddDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1755,8 +1757,6 @@ namespace C64.Data.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("Deleted");
-
                     b.ToTable("groups");
                 });
 
@@ -2087,8 +2087,6 @@ namespace C64.Data.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("Deleted");
-
                     b.ToTable("parties");
                 });
 
@@ -2215,8 +2213,6 @@ namespace C64.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ProductionId");
-
-                    b.HasIndex("Deleted");
 
                     b.HasIndex("SubmitterUserId");
 
@@ -2480,8 +2476,6 @@ namespace C64.Data.Migrations
                     b.HasKey("ScenerId");
 
                     b.HasIndex("CountryId");
-
-                    b.HasIndex("Deleted");
 
                     b.ToTable("sceners");
                 });

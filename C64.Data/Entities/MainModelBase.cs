@@ -12,5 +12,7 @@
         public int LemonId { get; set; }
 
         public int PouetId { get; set; }
+
+        public bool Deleted { get; set; }
     }
 }

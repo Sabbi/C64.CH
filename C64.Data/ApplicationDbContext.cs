@@ -180,6 +180,11 @@ namespace C64.Data
             modelBuilder.Entity<DbFile>().HasIndex(p => new { p.Container, p.FileName });
             modelBuilder.Entity<Tool>().HasIndex(p => new { p.Show });
 
+            modelBuilder.Entity<Production>().HasIndex(p => new { p.Deleted });
+            modelBuilder.Entity<Group>().HasIndex(p => new { p.Deleted });
+            modelBuilder.Entity<Scener>().HasIndex(p => new { p.Deleted });
+            modelBuilder.Entity<Party>().HasIndex(p => new { p.Deleted });
+
             modelBuilder.Entity<Country>().HasData(GetCountries());
             modelBuilder.Entity<LinkCategory>().HasData(GetLinkCategories());
         }
