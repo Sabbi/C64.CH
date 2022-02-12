@@ -3,7 +3,7 @@
 @inject IUnitOfWork unitOfWork
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
 
-<PageTitle TitleFunc="@(() => $"Favorites of {username}")" />
+<MyPageTitle TitleFunc="@(() => $"Favorites of {username}")" />
 <Box>
     <Title><a href="/profile/@userId/@username">@title</a></Title>
     <Content>
