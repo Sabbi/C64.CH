@@ -156,7 +156,18 @@
                             </tr>
                         }
 
-                        <tr><th>Added:</th><td>@production.Added.ParseDate()</td></tr>
+                        <tr><th>Added:</th>
+                            <td>
+                            @if (production.Added == DateTime.MinValue)
+                            {
+                                <text>Before December 1999</text>
+                            }
+                            else
+                            {
+                                @production.Added.ParseDate()
+                            }
+                            </td>
+                        </tr>    
                         @if (production.User != null)
                         {
                             <tr><th>Added by:</th><td><a href="/profile/@production.User.Id/@production.User.UserName.UrlEncode()">@production.User.UserName</a></td></tr>
