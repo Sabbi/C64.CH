@@ -15,7 +15,7 @@
 
 @if (production != null)
 {
-    <C64.Frontend.Pages.PageTitle TitleFunc="@(() => $"Details for {@production.Name}")" />
+    <MyPageTitle TitleFunc="@(() => $"Details for {@production.Name}")" />
     <Box>
         <Title>
             @production.Name<br />
