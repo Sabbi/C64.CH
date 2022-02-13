@@ -94,7 +94,7 @@
                 }
                 else
                 {
-                    productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted && p.Name.StartsWith(StartLetter, StringComparison.OrdinalIgnoreCase))).Select(p => p.ProductionId).ToList();
+                    productionIds = (await unitOfWork.Productions.Find(p => !p.Deleted && p.Name.StartsWith(StartLetter))).Select(p => p.ProductionId).ToList();
                     title = $"Demos starting with {StartLetter}";
                 }
                 break;
