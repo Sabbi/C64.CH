@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Serilog;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,7 @@ namespace C64.FrontEnd.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly string productionContainer = "productionfiles";
         private readonly string pictureContainer = "productionpictures";
-        private readonly static int cacheTtl = 24 * 60 * 60 * 365; // 1 year
+        private static readonly int cacheTtl = 24 * 60 * 60 * 365; // 1 year
 
         public DownloadController(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, IHttpContextAccessor httpContextAccessor)
         {
@@ -155,40 +156,31 @@ namespace C64.FrontEnd.Controllers
                 return Redirect("/images/nopicture.jpg");
             }
 
-            using (var image = new Bitmap(x, y))
+            using (var source = Image.Load(fileData))
             {
-                using (var source = new Bitmap(new MemoryStream(fileData)))
+                var resizeOptions = new ResizeOptions
                 {
-                    using (var graphics = Graphics.FromImage(image))
+                    Mode = ResizeMode.BoxPad,
+                    Size = new Size(x, y)
+                };
+
+                var destination = source.Clone(p =>
+                {
+                    p.Resize(resizeOptions);
+                    p.BackgroundColor(Color.Black);
+                });
+
+                using (var saveStream = new MemoryStream())
+                {
+                    destination.Save(saveStream, new JpegEncoder());
+
+                    Response.Headers.Add("Cache-Control", $"public, max-age={cacheTtl}");
+
+                    return new FileContentResult(saveStream.ToArray(), "image/jpg")
                     {
-                        var ratio = Ratio(source, image);
-
-                        var offsetX = (int)((image.Width - (source.Width * ratio)) / 2);
-                        var offsetY = (int)((image.Height - (source.Height * ratio)) / 2);
-
-                        var srcRectangle = new Rectangle(0, 0, source.Width, source.Height);
-                        var dstRectangle = new Rectangle(offsetX, offsetY, (int)(1 + (source.Width * ratio)), (int)(1 + (source.Height * ratio)));
-
-                        graphics.DrawImage(source, dstRectangle, srcRectangle, GraphicsUnit.Pixel);
-                    }
-
-                    // We always return JPEG, regardless of the original format. Browsers can handle that.
-                    using (var stream = new MemoryStream())
-                    {
-                        // Set JPG-quality the Microsoft-Way....
-                        var encoderParameters = new EncoderParameters(1);
-                        encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
-
-                        image.Save(stream, GetEncoder(ImageFormat.Jpeg), encoderParameters);
-
-                        Response.Headers.Add("Cache-Control", $"public, max-age={cacheTtl}");
-
-                        return new FileContentResult(stream.ToArray(), "image/jpeg")
-                        {
-                            EnableRangeProcessing = true,
-                            LastModified = fileInformation.Created
-                        };
-                    }
+                        EnableRangeProcessing = true,
+                        LastModified = fileInformation.Created
+                    };
                 }
             }
         }
@@ -211,24 +203,6 @@ namespace C64.FrontEnd.Controllers
             {
                 return NotFound();
             }
-        }
-
-        private static ImageCodecInfo GetEncoder(ImageFormat format)
-        {
-            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
-            foreach (ImageCodecInfo codec in codecs)
-            {
-                if (codec.FormatID == format.Guid)
-                {
-                    return codec;
-                }
-            }
-            return null;
-        }
-
-        private static float Ratio(Bitmap source, Bitmap destination)
-        {
-            return Math.Min((float)destination.Width / source.Width, (float)destination.Height / source.Height);
         }
 
         private static string GetContentType(string fileName)
