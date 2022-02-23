@@ -53,7 +53,15 @@
                             <option value="tweet">- Tweet (last @(((DateTime.Now - production.TweetedAt.GetValueOrDefault()).TotalDays).ToString("N2")) days ago)</option>
                         }
                     }
-                    <option value="requestDeletion">- Request deletion</option>
+
+                    @if (httpContext.HttpContext.UserIsModerator())
+                    {
+                        <option value="delete">- Delete</option>   
+                    }
+                    else
+                    {
+                        <option value="requestDeletion">- Request deletion</option>
+                    }
                     <optgroup label="---------------------------"></optgroup>
                     <option value="viewHistory">View history</option>
                 </select>
@@ -377,6 +385,14 @@
             parameters.Add(nameof(RequestDeletionModal.Name), production.Name);
             parameters.Add(nameof(RequestDeletionModal.Id), production.Id);
             reference = Modal.Show<RequestDeletionModal>("", parameters);
+            await reference.Result;
+        }
+        else if (args.Value.ToString() == "delete")
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(DeleteProductionModal.Production), production);
+            parameters.Add(nameof(ProductionTweetModal.unitOfWork), unitOfWork);
+            reference = Modal.Show<DeleteProductionModal>("", parameters);
             await reference.Result;
         }
         else if (args.Value.ToString() == "viewHistory")
