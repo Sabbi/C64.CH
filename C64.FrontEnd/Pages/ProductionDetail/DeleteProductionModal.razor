@@ -1,0 +1,44 @@
+﻿@namespace C64.FrontEnd.Pages
+
+@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@inject IToastService toastService
+@inject NavigationManager navigationManager
+@inject ILogger<DeleteProductionModal>  logger;
+
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit additional information of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+    <Content>
+            <h4>@Production.Name</h4>
+            <p>Do you really want to 'delete' this production?</p>
+            <button class="btn btn-danger" @onclick="OnValidSubmit">Delete Production</button>
+            <div class="float-right">
+            <button class="btn btn-secondary" @onclick="OnExit">Nope, I've changed my mind!</button>
+            </div>
+     
+    </Content>
+</BootstrapModal>
+
+@code {
+    [Parameter]
+    public Production Production { get; set; } = new Production();
+
+    [Parameter]
+    public IUnitOfWork unitOfWork { get; set; }
+
+    private BootstrapModal bootstrapModal;
+
+    private async Task OnValidSubmit()
+    {
+        Production.Deleted = true;
+        await unitOfWork.Commit();
+        await bootstrapModal.Close();
+
+        logger.LogError("Production ID {Id} deleted by {UserId}/{UserName}", Production.ProductionId, httpContext.HttpContext.GetUserId(), httpContext.HttpContext.GetUserName());
+        toastService.ShowSuccess("Production deleted");
+        navigationManager.NavigateTo("/");
+    }
+
+    private async Task OnExit()
+    {
+        await bootstrapModal.Close();
+    }
+}
