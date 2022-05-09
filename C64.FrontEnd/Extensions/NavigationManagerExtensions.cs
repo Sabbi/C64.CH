@@ -42,7 +42,14 @@ namespace C64.FrontEnd.Extensions
             Type t = typeof(T);
             t = Nullable.GetUnderlyingType(t) ?? t;
 
-            return (value == null || DBNull.Value.Equals(value)) ? default(T) : (T)Convert.ChangeType(value, t);
+            try
+            {
+                return (value == null || DBNull.Value.Equals(value)) ? default(T) : (T) Convert.ChangeType(value, t);
+            }
+            catch
+            {
+                return default(T);
+            }
         }
 
         private static Dictionary<string, string> ParseUrl(string url)
