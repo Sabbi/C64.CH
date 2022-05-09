@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "OldDataImporter": {
-      "commandName": "Project",
-      "workingDirectory": "S:\\OldC64Complete\\c64.ch\\data"
-    }
-  }
-}
