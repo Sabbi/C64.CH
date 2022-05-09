@@ -121,7 +121,7 @@
 
     private async Task<IEnumerable<Scener>> SearchScener(string searchText)
     {
-        var sceners = (await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText, StringComparison.OrdinalIgnoreCase))).ToList();
+        var sceners = (await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText))).ToList();
 
         // TODO: Linqify
         foreach (var inGroup in Group.ScenersGroups.Select(p => p.Scener))

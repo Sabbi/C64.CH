@@ -58,6 +58,6 @@
 
     private async Task<IEnumerable<Scener>> SearchScener(string searchText)
     {
-        return await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+        return await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText));
     }
 }

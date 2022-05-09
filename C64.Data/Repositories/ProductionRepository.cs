@@ -203,7 +203,7 @@ namespace C64.Data.Repositories
                 return await Task.FromResult(noLetterIds);
             }
 
-            var ids = context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Where(p => p.ProductionsGroups.Any(p => p.Group.Name.StartsWith(letter, StringComparison.OrdinalIgnoreCase))).Select(p => p.ProductionId);
+            var ids = context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Where(p => p.ProductionsGroups.Any(p => p.Group.Name.StartsWith(letter))).Select(p => p.ProductionId);
             return await Task.FromResult(ids);
         }
     }

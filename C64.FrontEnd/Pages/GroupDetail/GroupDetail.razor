@@ -15,7 +15,7 @@
 
 @if (group != null && currentPage == 1)
 {
-    <PageTitle TitleFunc="@(() => $"Details of {group.Name}")" />
+    <MyPageTitle TitleFunc="@(() => $"Details of {group.Name}")" />
     <Box>
         <Title>
             Details of @group.Name
@@ -106,7 +106,7 @@
 }
 else if (group != null && currentPage > 1)
 {
-    <PageTitle TitleFunc="@(() => $"Releases of {group.Name}")" />
+    <MyPageTitle TitleFunc="@(() => $"Releases of {group.Name}")" />
     <Box>
         <Title>
             Releases of @group.Name

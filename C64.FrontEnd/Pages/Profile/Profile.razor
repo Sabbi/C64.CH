@@ -15,7 +15,7 @@
 
 @if (user != null)
 {
-    <PageTitle TitleFunc="@(() => $"Details of {user.UserName}")" />
+    <MyPageTitle TitleFunc="@(() => $"Details of {user.UserName}")" />
     <Box MarginBottom="4">
         <Title>Profile of @user.UserName</Title>
         <Content>

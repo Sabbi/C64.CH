@@ -6,7 +6,7 @@
 @inject NavigationManager navigationManager
 @inject ILogger<SimpleSearch> logger
 
-<PageTitle Title="@title" />
+<MyPageTitle Title="@title" />
 <Box>
     <Title>@title</Title>
     <Content>
@@ -55,9 +55,9 @@
 
     private async Task Load()
     {
-        var prodIds = (await unitOfWork.Productions.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase))).Select(p => p.ProductionId).ToList();
-        var groups = await unitOfWork.Groups.Find(p => p.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
-        var sceners = await unitOfWork.Sceners.Find(p => p.Handle.Contains(Search, StringComparison.OrdinalIgnoreCase));
+        var prodIds = (await unitOfWork.Productions.Find(p => p.Name.Contains(Search))).Select(p => p.ProductionId).ToList();
+        var groups = await unitOfWork.Groups.Find(p => p.Name.Contains(Search));
+        var sceners = await unitOfWork.Sceners.Find(p => p.Handle.Contains(Search));
 
         foreach (var group in groups.Take(20))
         {
