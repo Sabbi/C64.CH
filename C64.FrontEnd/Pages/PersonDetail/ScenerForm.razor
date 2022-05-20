@@ -84,6 +84,19 @@
             <span class="badge badge-primary" href="">@job <i class="fas fa-backspace cursor-pointer" @onclick="(() => RemoveJob(job))"></i> </span>
         }
     </h5>
+     @if (ShowExistsWarning)
+     {
+         <div class="form-check mb-3">
+             <div>
+                 <InputCheckbox class="form-check-input" id="ForceCreate" @bind-Value="EditScener.ForceCreate" />
+                 <label class="form-check-label" for="ForceCreate">A scener with the same handle already exists. Save anyways?</label>
+             </div>
+              @if (needConfirmWarning)
+                     {
+                         <div class="red"><b>You need check the box to save this (possible duplicate) scener.</b></div>
+                     }
+         </div>
+     }
     <button class="btn btn-primary" type="submit">@SubmitButtonCaption</button>
 </EditForm>
 
@@ -106,6 +119,8 @@
 
     [Parameter]
     public EventCallback OnHandleChanged { get; set; }
+    
+    private bool needConfirmWarning { get; set; }
 
     private async Task OnBlur()
     {
@@ -114,7 +129,15 @@
 
     private async Task OnDataAnnotationsValidated()
     {
-        await OnValidSubmit.InvokeAsync(null);
+        if (ShowExistsWarning && !EditScener.ForceCreate)
+        {
+            needConfirmWarning = true;
+        }
+        else
+        {
+            needConfirmWarning = false;
+            await OnValidSubmit.InvokeAsync(null);
+        }
     }
 
     private void OnSelectJob(ChangeEventArgs e)
