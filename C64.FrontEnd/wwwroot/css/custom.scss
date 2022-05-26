@@ -584,3 +584,9 @@ img.active {
         float: right;
     }
 }
+
+@include media-breakpoint-up(lg) {
+    .modal-lg {
+        max-width: 802px;
+    }
+}
