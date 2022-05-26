@@ -115,6 +115,19 @@
                     </div>
                 </div>
             }
+            @if (showExistsWarning)
+            {
+                <div class="form-check mb-3">
+                    <div>
+                        <InputCheckbox class="form-check-input" id="ForceCreate" @bind-Value="editProductionGeneral.ForceCreate" />
+                        <label class="form-check-label" for="ForceCreate">A production with the same name already exists. Save anyways?</label>
+                    </div>
+                    @if (needConfirmWarning)
+                    {
+                        <div class="red"><b>You need check the box to save this (possible duplicate) production.</b></div>
+                    }
+                </div>
+            }
             <button class="btn btn-primary" type="submit">Add Production</button>
         </EditForm>
     </Content>
@@ -131,6 +144,9 @@
     public IUnitOfWork unitOfWork { get; set; }
 
     private bool showExistsWarning { get; set; }
+
+    private bool needConfirmWarning { get; set; }
+
 
     private BootstrapModal bootstrapModal;
 
@@ -174,6 +190,14 @@
     private async Task OnValidSubmit()
     {
         logger.LogInformation("OnValidSubmit");
+
+        if (showExistsWarning && !editProductionGeneral.ForceCreate)
+        {
+            needConfirmWarning = true;
+            return;
+        }
+
+        needConfirmWarning = false;
 
         Production.Name = editProductionGeneral.Name;
         Production.Aka = editProductionGeneral.Aka;
