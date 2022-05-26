@@ -1,7 +1,7 @@
 ﻿@namespace C64.FrontEnd.Pages
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
-@inject ILogger<WriteComment>  logger;
+@inject ILogger<WriteComment> logger;
 @inject IToastService toastService
 @inject NavigationManager navigationManager
 
@@ -44,6 +44,19 @@
                     <InputPartialDate @bind-Value="@editGroup.ClosedDate" StartingYear="1982" EndingYear="DateTime.Now.Year" />
                 </div>
             </div>
+            @if (showExistsWarning)
+            {
+                <div class="form-check mb-3">
+                    <div>
+                        <InputCheckbox class="form-check-input" id="ForceCreate" @bind-Value="editGroup.ForceCreate" />
+                        <label class="form-check-label" for="ForceCreate">A group with the same name already exists. Save anyways?</label>
+                    </div>
+                    @if (needConfirmWarning)
+                    {
+                        <div class="red"><b>You need check the box to save this (possible duplicate) group.</b></div>
+                    }
+                </div>
+            }
             <button class="btn btn-primary" type="submit">Add Group</button>
         </EditForm>
     </Content>
@@ -59,6 +72,8 @@
     [Parameter]
     public IUnitOfWork unitOfWork { get; set; }
 
+    private bool needConfirmWarning { get; set; }
+
     private bool showExistsWarning;
 
     private BootstrapModal bootstrapModal;
@@ -73,6 +88,14 @@
 
     private async Task OnValidSubmit()
     {
+
+        if (showExistsWarning && !editGroup.ForceCreate)
+        {
+            needConfirmWarning = true;
+            return;
+        }
+
+        needConfirmWarning = false;
 
         Group.Name = editGroup.Name;
         Group.Aka = editGroup.Aka;

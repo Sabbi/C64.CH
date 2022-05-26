@@ -17,6 +17,8 @@ namespace C64.FrontEnd.Models
         public PartialDate ClosedDate { get; set; }
 
         public bool CanEditName { get; set; } = false;
+
+        public bool ForceCreate { get; set; }
     }
 
     public class EditGroupAdditional
