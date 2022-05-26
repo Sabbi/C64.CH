@@ -25,6 +25,8 @@ namespace C64.FrontEnd.Models
         public bool ShowRealName { get; set; }
 
         public IList<Job> SelectedJobs = new List<Job>();
+        
+        public bool ForceCreate { get; set; }
 
         public void LoadScener(Scener scener)
         {

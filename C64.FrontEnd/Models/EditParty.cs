@@ -30,6 +30,8 @@ namespace C64.FrontEnd.Models
         public string Location { get; set; }
         public string CountryId { get; set; }
 
+        public bool ForceCreate { get; set; }
+
         public void LoadParty(Party party)
         {
             Name = party.Name;

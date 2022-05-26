@@ -29,5 +29,7 @@ namespace C64.FrontEnd.Models
         public int PartyRank { get; set; }
 
         public string PartyCategoryId { get; set; }
+
+        public bool ForceCreate { get; set; }
     }
 }

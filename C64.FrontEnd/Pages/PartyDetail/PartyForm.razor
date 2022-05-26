@@ -93,6 +93,19 @@
             </InputSelect>
         </div>
     </div>
+    @if (ShowExistsWarning)
+    {
+        <div class="form-check mb-3">
+            <div>
+                <InputCheckbox class="form-check-input" id="ForceCreate" @bind-Value="EditParty.ForceCreate" />
+                <label class="form-check-label" for="ForceCreate">A party with the same name already exists. Save anyways?</label>
+            </div>
+            @if (needConfirmWarning)
+            {
+                <div class="red"><b>You need check the box to save this (possible duplicate) party.</b></div>
+            }
+        </div>
+    }
     <button class="btn btn-primary" type="submit">Add party</button>
 </EditForm>
 
@@ -113,6 +126,8 @@
     [Parameter]
     public EventCallback OnHandleChanged { get; set; }
 
+    private bool needConfirmWarning = false;
+
     private async Task OnBlur()
     {
         await OnHandleChanged.InvokeAsync();
@@ -122,6 +137,15 @@
 
     private async Task OnDataAnnotationsValidated()
     {
+
+        if (ShowExistsWarning && !EditParty.ForceCreate)
+        {
+            needConfirmWarning = true;
+            return;
+        }
+
+        needConfirmWarning = false;
+
         await OnValidSubmit.InvokeAsync(null);
 
     }
