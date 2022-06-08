@@ -18,7 +18,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await unitOfWork.Productions.FindPaginated(p => true, "Added", false, 1, 10);
+        var result = await unitOfWork.Productions.FindPaginated(p => !p.Deleted, "Added", false, 1, 10);
         productions = result.Data;
     }
 
