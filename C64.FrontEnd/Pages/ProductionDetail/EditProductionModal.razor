@@ -152,7 +152,13 @@
     private async Task<IEnumerable<Scener>> SearchScener(string searchText)
     {
         this.scenerSearchText = searchText;
-        var result = (await unitOfWork.Sceners.Find(p => p.Handle.Contains(searchText))).OrderBy(p => p.Handle);
+        var result = (await unitOfWork.Sceners.Find(p => p.Handle.Contains(searchText))).OrderBy(p => p.Handle).ToList();
+        if (result.Any(p => p.Handle.Equals(searchText, StringComparison.OrdinalIgnoreCase)))
+        {
+            var exactMatch = result.FirstOrDefault(p => p.Handle.Equals(searchText, StringComparison.OrdinalIgnoreCase));
+            result.Remove(exactMatch);
+            result.Insert(0, exactMatch);
+        }
         return result;
     }
 
@@ -160,8 +166,14 @@
     {
         this.searchText = searchText;
 
-        var result = (await unitOfWork.Groups.Find(p => p.Name.Contains(searchText))).OrderBy(p => p.Name);
-        return await Task.FromResult(result.OrderBy(p => p.Name));
+        var result = (await unitOfWork.Groups.Find(p => p.Name.Contains(searchText))).OrderBy(p => p.Name).ToList();;
+        if (result.Any(p => p.Name.Equals(searchText, StringComparison.OrdinalIgnoreCase)))
+        {
+            var exactMatch = result.FirstOrDefault(p => p.Name.Equals(searchText, StringComparison.OrdinalIgnoreCase));
+            result.Remove(exactMatch);
+            result.Insert(0, exactMatch);
+        }
+        return result;
 
     }
 
