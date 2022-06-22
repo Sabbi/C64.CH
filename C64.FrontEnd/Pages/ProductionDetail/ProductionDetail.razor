@@ -485,7 +485,7 @@
 
         logger.LogInformation("UserID: {userId}", userId);
 
-        if (production?.Comments.Where(p => p.UserId == userId && p.CommentedAt > DateTime.Now.AddHours(-6)).Count() >= 1)
+        if (production?.Comments.Where(p => p.UserId == userId && p.CommentedAt > DateTime.Now.AddMinutes(-15)).Count() >= 1)
         {
             logger.LogInformation("Comments are blocked");
             CommentsBlocked = true;
