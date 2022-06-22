@@ -55,9 +55,9 @@
 
     private async Task Load()
     {
-        var prodIds = (await unitOfWork.Productions.Find(p => p.Name.Contains(Search))).Select(p => p.ProductionId).ToList();
+        var prodIds = (await unitOfWork.Productions.Find(p => p.Name.Contains(Search) ||p.Aka.Contains(Search))).Select(p => p.ProductionId).ToList();
         var groups = await unitOfWork.Groups.Find(p => p.Name.Contains(Search));
-        var sceners = await unitOfWork.Sceners.Find(p => p.Handle.Contains(Search));
+        var sceners = await unitOfWork.Sceners.Find(p => p.Handle.Contains(Search) || p.Aka.Contains(Search) || p.RealName.Contains(Search));
 
         foreach (var group in groups.Take(20))
         {
