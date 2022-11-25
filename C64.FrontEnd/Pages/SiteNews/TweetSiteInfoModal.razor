@@ -6,7 +6,7 @@
 @inject ILogger<WriteComment>  logger
 @inject IToastService toastService
 
-@inject C64.Services.Tweeter.ITweeter tweeter
+@inject C64.Services.Tweeter.IMultiTweeter tweeter
 
 <BootstrapModal @ref="bootstrapModal" Title="@($"Tweet {@SiteInfo.Title}")" Size="BootstrapModal.ModalSize.Large">
     <Content>

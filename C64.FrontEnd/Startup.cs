@@ -106,14 +106,23 @@ namespace C64.FrontEnd
                 var accessTokenSecret = Configuration.GetValue<string>("Twitter:AccessTokenSecret");
                 var twitterLogo = Configuration.GetValue<string>("Twitter:Logo");
 
+                var mastodonServer = Configuration.GetValue<string>("Mastodon:Server");
+                var mastodonUsername = Configuration.GetValue<string>("Mastodon:Username");
+                var mastodonPassword = Configuration.GetValue<string>("Mastodon:Password");
+
                 services.AddTransient<ITweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
                 services.AddTransient<IPictureTweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
+
+                services.AddTransient<ITweeter>(x => new MastodonTweeter(mastodonServer, mastodonUsername, mastodonPassword, twitterLogo, x.GetRequiredService<ILogger<MastodonTweeter>>()));
+                services.AddTransient<IPictureTweeter>(x => new MastodonTweeter(mastodonServer, mastodonUsername, mastodonPassword, twitterLogo, x.GetRequiredService<ILogger<MastodonTweeter>>()));
             }
             else
             {
                 services.AddTransient<ITweeter, NullTweeter>();
                 services.AddTransient<IPictureTweeter, NullTweeter>();
             }
+
+            services.AddTransient<IMultiTweeter, MultiTweeter>();
 
             // Use en-US as culture, but tweak some to a more readable format.
             // -------------------------------------------------------------------------------------------------------------

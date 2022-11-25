@@ -7,7 +7,7 @@
 @inject IToastService toastService
 @inject IFileStorageService fileStorageService
 
-@inject C64.Services.Tweeter.IPictureTweeter tweeter
+@inject C64.Services.Tweeter.IMultiTweeter tweeter
 
 <BootstrapModal @ref="bootstrapModal" Title="@($"Tweet {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
     <Content>
