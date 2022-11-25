@@ -37,7 +37,7 @@ namespace C64.FrontEnd.Helpers
                             var srcRectangle = new Rectangle(8 * (source % 16), 8 * (source / 16), 8, 8);
                             var dstRectangle = new Rectangle(8 * i, 8 * current, 8, 8);
 
-                            if (current == 0 && i > 1)
+                            if (current == 0 && i > 1 && srcRectangle.Y < 64)
                                 srcRectangle.Y += 64;
 
                             var toPlot = Extract(charsImage, srcRectangle);
