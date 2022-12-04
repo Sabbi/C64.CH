@@ -85,7 +85,7 @@
 
         logger.LogInformation("Loading Parties, Year = {year}", year);
 
-        pastParties = (await unitOfWork.Parties.Find(p => !p.Deleted && p.From.Year == year || p.To.Year == year)).OrderBy(p => p.From);
+        pastParties = (await unitOfWork.Parties.Find(p => !p.Deleted && (p.From.Year == year || p.To.Year == year))).OrderBy(p => p.From);
 
         logger.LogInformation("Loaded parties, {numberOfParties} found", pastParties.Count());
 
