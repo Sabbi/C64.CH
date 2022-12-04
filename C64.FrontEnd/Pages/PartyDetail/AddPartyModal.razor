@@ -30,7 +30,7 @@
 
     private async Task OnBlur()
     {
-        var existingParty = await unitOfWork.Parties.Find(p => p.Name.Equals(editParty.Name));
+        var existingParty = await unitOfWork.Parties.Find(p => !p.Deleted && p.Name.Equals(editParty.Name));
         showExistsWarning = existingParty.Any();
     }
 

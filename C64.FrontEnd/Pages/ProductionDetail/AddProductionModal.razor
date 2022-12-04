@@ -165,7 +165,7 @@
 
     private async Task<IEnumerable<Party>> SearchParty(string searchPartyText)
     {
-        var result = (await unitOfWork.Parties.Find(p => p.Name.Contains(searchPartyText))).OrderByDescending(p => p.From);
+        var result = (await unitOfWork.Parties.Find(p => !p.Deleted && p.Name.Contains(searchPartyText))).OrderByDescending(p => p.From);
         return await Task.FromResult(result);
     }
 
