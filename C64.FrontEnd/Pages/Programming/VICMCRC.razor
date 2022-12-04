@@ -1,0 +1,201 @@
+﻿@page "/programming/VICMCRC"
+
+@inject IJSRuntime _jsRuntime
+@inject IToastService _toastService
+
+@using System.Text;
+<MyPageTitle Title="Programming - Online Tools" />
+<Box MarginBottom="4">
+    <Title>VIC Memory Control Register ($d018) Calculator (Textmode)</Title>
+    <Content>
+        <p>This little tool helps you to find the correct value for $d018 (Memory Control Register) and $dd00 (VIC-Bank), depending where your screen and charset is located. For text screen mode.</p>
+
+        <div class="row">
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    <label>VIC-Bank:</label>
+                    <div>
+                        <select class="form-control" @onchange="OnChangeVicBank">
+                            @foreach (var vicBank in vicBanks)
+                            {
+                                <option value="@vicBank.Key">@vicBank.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Charset Address</label>
+                    <div>
+                        <select class="form-control" @onchange="OnChangeCharset">
+                            @foreach (var charsetLocation in charsetLocations)
+                            {
+                                <option value="@charsetLocation.Key">@charsetLocation.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Screen Address</label>
+                    <div>
+                        <select class="form-control" @onchange="OnChangeScreen">
+                            @foreach (var screenLocation in screenLocations)
+                            {
+                                <option value="@screenLocation.Key">@screenLocation.Value</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+
+                    <div>
+                        <input id="changeoffset" type="checkbox" checked="@bankOffset" @onchange="OnChangeOffset" /> <label for="changeoffset">Add VIC-Bank to Charset/Screen-Addresses</label>
+                    </div>
+                </div>
+                <div class="form-group">
+
+                    <div>
+                        <input id="changeiec" type="checkbox" checked="@iecFriendly" @onchange="OnChangeIecFriendly" /> <label for="changeiec">IEC friendly?</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label>Result:</label>
+                <div class="form-group">
+
+                    <div>
+                        <textarea class="mb-2 form-control monospace" rows="8">@source</textarea>
+                        <button class="btn btn-primary" @onclick="CopyToClipboard">Copy to Clipboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Content>
+</Box>
+
+@code {
+    private ICollection<KeyValuePair<int, string>> vicBanks = new List<KeyValuePair<int, string>>();
+
+    private ICollection<KeyValuePair<int, string>> charsetLocations = new List<KeyValuePair<int, string>>();
+
+    private ICollection<KeyValuePair<int, string>> screenLocations = new List<KeyValuePair<int, string>>();
+
+    private bool bankOffset = true;
+    private bool iecFriendly = false;
+
+    private string source = "";
+
+    private int selectedVicBank = 0;
+    private int selectedCharsetLocation = 0;
+    private int selectedScreenLocation = 0;
+
+    protected override void OnInitialized()
+    {
+        vicBanks.Add(new KeyValuePair<int, string>(0, "$0000 - $3fff"));
+        vicBanks.Add(new KeyValuePair<int, string>(1, "$4000 - $7fff"));
+        vicBanks.Add(new KeyValuePair<int, string>(2, "$8000 - $bfff"));
+        vicBanks.Add(new KeyValuePair<int, string>(3, "$c000 - $ffff"));
+
+        GenerateCharsetLocations();
+        GenerateScreenLocations();
+        GenerateSource();
+    }
+
+    private void OnChangeVicBank(ChangeEventArgs e)
+    {
+        selectedVicBank = int.Parse(e.Value.ToString());
+        GenerateCharsetLocations();
+        GenerateScreenLocations();
+        GenerateSource();
+    }
+
+    private void OnChangeCharset(ChangeEventArgs e)
+    {
+        selectedCharsetLocation = int.Parse(e.Value.ToString());
+        GenerateSource();
+    }
+
+    private void OnChangeOffset(ChangeEventArgs e)
+    {
+        bankOffset = bool.Parse(e.Value.ToString());
+        GenerateCharsetLocations();
+        GenerateScreenLocations();
+        GenerateSource();
+    }
+
+    private void OnChangeScreen(ChangeEventArgs e)
+    {
+        selectedScreenLocation = int.Parse(e.Value.ToString());
+
+        GenerateSource();
+    }
+
+    private void OnChangeIecFriendly(ChangeEventArgs e)
+    {
+        iecFriendly = bool.Parse(e.Value.ToString());
+        GenerateSource();
+    }
+
+    private void GenerateCharsetLocations()
+    {
+        charsetLocations = new List<KeyValuePair<int, string>>();
+
+        for (var i = 0; i < 4; i++)
+        {
+            var start = bankOffset ? (selectedVicBank * 0x4000) + i * 0x1000 : i * 0x1000;
+            var end = start + 0xfff;
+
+            charsetLocations.Add(new KeyValuePair<int, string>(i, $"${start:x4} - ${end:x4}"));
+        }
+    }
+
+    private void GenerateScreenLocations()
+    {
+        screenLocations = new List<KeyValuePair<int, string>>();
+
+        for (var i = 0; i < 16; i++)
+        {
+            var start = bankOffset ? (selectedVicBank * 0x4000) + i * 0x400 : i * 0x400;
+            var end = start + 0x3ff;
+
+            screenLocations.Add(new KeyValuePair<int, string>(i, $"${start:x4} - ${end:x4}"));
+        }
+    }
+
+    private void GenerateSource()
+    {
+        var text = new StringBuilder();
+
+        if (iecFriendly)
+        {
+            text.AppendLine("lda $dd00");
+            text.AppendLine("and #$fc");
+            text.AppendLine("ora #$0" + (3 - selectedVicBank));
+            text.AppendLine("sta $dd00");
+        }
+        else
+        {        
+            text.AppendLine("lda #$0" + (3 - selectedVicBank));
+            text.AppendLine("sta $dd00");
+        }
+        text.AppendLine();
+
+        text.AppendLine("lda #$" + ((selectedScreenLocation << 4) + (selectedCharsetLocation << 2)).ToString("x2"));
+        text.AppendLine("sta $d018");
+
+
+        source = text.ToString();
+    }
+
+    private async Task CopyToClipboard()
+    {
+        await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", source);
+        _toastService.ShowSuccess("Code copied!");
+
+    }
+
+}
