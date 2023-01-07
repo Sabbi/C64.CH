@@ -16,7 +16,7 @@
                 <div class="form-group">
                     <label>VIC-Bank:</label>
                     <div>
-                        <select class="form-control" @onchange="OnChangeVicBank">
+                        <select class="form-control monospace" @onchange="OnChangeVicBank">
                             @foreach (var vicBank in vicBanks)
                             {
                                 <option value="@vicBank.Key">@vicBank.Value</option>
@@ -28,7 +28,7 @@
                 <div class="form-group">
                     <label>Charset Address</label>
                     <div>
-                        <select class="form-control" @onchange="OnChangeCharset">
+                        <select class="form-control monospace" @onchange="OnChangeCharset">
                             @foreach (var charsetLocation in charsetLocations)
                             {
                                 <option value="@charsetLocation.Key">@charsetLocation.Value</option>
@@ -40,7 +40,7 @@
                 <div class="form-group">
                     <label>Screen Address</label>
                     <div>
-                        <select class="form-control" @onchange="OnChangeScreen">
+                        <select class="form-control monospace" @onchange="OnChangeScreen">
                             @foreach (var screenLocation in screenLocations)
                             {
                                 <option value="@screenLocation.Key">@screenLocation.Value</option>
@@ -144,10 +144,10 @@
     {
         charsetLocations = new List<KeyValuePair<int, string>>();
 
-        for (var i = 0; i < 4; i++)
+        for (var i = 0; i < 8; i++)
         {
-            var start = bankOffset ? (selectedVicBank * 0x4000) + i * 0x1000 : i * 0x1000;
-            var end = start + 0xfff;
+            var start = bankOffset ? (selectedVicBank * 0x4000) + i * 0x800 : i * 0x0800;
+            var end = start + 0x7ff;
 
             charsetLocations.Add(new KeyValuePair<int, string>(i, $"${start:x4} - ${end:x4}"));
         }
@@ -184,7 +184,7 @@
         }
         text.AppendLine();
 
-        text.AppendLine("lda #$" + ((selectedScreenLocation << 4) + (selectedCharsetLocation << 2)).ToString("x2"));
+        text.AppendLine("lda #$" + ((selectedScreenLocation << 4) + (selectedCharsetLocation << 1)).ToString("x2"));
         text.AppendLine("sta $d018");
 
 
