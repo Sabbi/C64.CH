@@ -1,9 +1,5 @@
 ﻿[
   {
-    "outputFile": "wwwroot/js/admin/admin.min.js",
-    "inputFile": "wwwroot/js/admin/admin.js"
-  },
-  {
     "outputFile": "wwwroot/js/site.min.js",
     "inputFile": "wwwroot/js/site.js"
   },
