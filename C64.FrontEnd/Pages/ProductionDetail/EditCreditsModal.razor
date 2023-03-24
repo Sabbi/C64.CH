@@ -3,7 +3,7 @@
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger;
 
-<BootstrapModal @ref="bootstrapModal" Title="@($"Edit credits of {Production.Name}")" Size="BootstrapModal.ModalSize.Large">
+<BootstrapModal @ref="bootstrapModal" Title="@($"Edit credits of {Production.Name}")" Size="BootstrapModal.ModalSize.Large" ModalHeight="500px">
     <Content>
         <div class="form-group">
             <EditSingleCredit OnSubmit="OnAddCreditSubmit" />

@@ -2,7 +2,7 @@
 
 <div class="modal-backdrop fade show" @onclick="Cancel"></div>
 <div class="modal fade show d-block" style="pointer-events: none;" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-scrollable @sizeClass" role="document">
+    <div class="modal-dialog modal-dialog-scrollable @sizeClass" style="height: @ModalHeight" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">@Title</h5>
@@ -32,6 +32,9 @@
 
     [Parameter]
     public ModalSize Size { get; set; } = ModalSize.Default;
+
+    [Parameter]
+    public string ModalHeight { get; set; } = "unset";
 
     [Parameter]
     public RenderFragment Content { get; set; }
@@ -91,7 +94,5 @@
         Default,
         Large,
         ExtraLarge
-
     }
-
 }
