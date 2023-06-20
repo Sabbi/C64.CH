@@ -1,8 +1,9 @@
 ﻿@inject IModalService Modal
 @inject IUnitOfWork unitOfWork
 @inject IToastService toastService
+@inject HttpContextAccessor httpContextAccessor
+@inject NavigationManager navigationManager
 
-@inherits ProtectedLink
 
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddScenerModal" @onclick:preventDefault>
     @Content
@@ -24,8 +25,8 @@
         if (ExecuteBefore != null)
             await ExecuteBefore.Invoke();
 
-if (!CheckAccess())
-return;
+        if (!CheckAccess())
+            return;
 
         var parameters = new ModalParameters();
         parameters.Add(nameof(C64.FrontEnd.Page.AddScenerModal.unitOfWork), unitOfWork);
@@ -37,4 +38,23 @@ return;
         if (!result.Cancelled)
             toastService.ShowSuccess($"Scener {scener.Handle} added");
     }
+
+    private bool CheckAccess()
+    {
+        if (!httpContextAccessor.HttpContext.IsLoggedIn())
+        {
+            Modal.Show<LoginModal>();
+            return false;
+        }
+
+        if (!httpContextAccessor.HttpContext.CanEdit())
+        {
+            navigationManager.NavigateTo("/help/upgradeaccount");
+            toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
+            return false;
+        }
+
+        return true;
+    }
+
 }

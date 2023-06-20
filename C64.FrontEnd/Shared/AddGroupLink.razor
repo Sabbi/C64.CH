@@ -1,8 +1,8 @@
 ﻿@inject IModalService Modal
 @inject IUnitOfWork unitOfWork
 @inject IToastService toastService
-
-@inherits ProtectedLink
+@inject HttpContextAccessor httpContextAccessor
+@inject NavigationManager navigationManager
 
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddGroupModal" @onclick:preventDefault>
     @Content
@@ -34,5 +34,23 @@
 
         if (!result.Cancelled)
             toastService.ShowSuccess($"Group added");
+    }
+
+    private bool CheckAccess()
+    {
+        if (!httpContextAccessor.HttpContext.IsLoggedIn())
+        {
+            Modal.Show<LoginModal>();
+            return false;
+        }
+
+        if (!httpContextAccessor.HttpContext.CanEdit())
+        {
+            navigationManager.NavigateTo("/help/upgradeaccount");
+            toastService.ShowInfo("Editing requires an updated account - please drop us a note to have your account updated!");
+            return false;
+        }
+
+        return true;
     }
 }
