@@ -70,7 +70,10 @@ namespace C64.FrontEnd.Controllers
                 var file = await fileStorageService.GetFileContents(container, fileName);
                 if (container == productionContainer)
                 {
-                    await unitOfWork.Productions.AddDownload(fileName, httpContextAccessor.HttpContext.RemoteIp(), httpContextAccessor.HttpContext.Referer(), httpContextAccessor.HttpContext.GetUserId());
+                    var show = await unitOfWork.Productions.AddDownload(fileName, httpContextAccessor.HttpContext.RemoteIp(), httpContextAccessor.HttpContext.Referer(), httpContextAccessor.HttpContext.GetUserId());
+                    if (!show)
+                        return new NotFoundResult();
+                    
                     await unitOfWork.Commit();
                 }
 

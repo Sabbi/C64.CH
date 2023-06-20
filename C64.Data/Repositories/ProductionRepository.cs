@@ -63,17 +63,21 @@ namespace C64.Data.Repositories
             return productions;
         }
 
-        public async Task AddDownload(string filename, string remoteIp, string referer, string userId = null)
+        public async Task<bool> AddDownload(string filename, string remoteIp, string referer, string userId = null)
         {
             var productionFile = await context.Set<ProductionFile>().FirstOrDefaultAsync(p => p.Filename == filename);
 
             if (productionFile != null)
             {
+               
                 productionFile.Downloads++;
 
                 var download = new Download(productionFile.ProductionFileId, remoteIp, referer, userId);
                 context.Add(download);
+                return productionFile.Show;
             }
+
+            return true;
         }
 
         public async Task<IEnumerable<ProductionFile>> ProductionFiles(int productionId)

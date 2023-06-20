@@ -9,7 +9,7 @@ namespace C64.Data.Repositories
 {
     public interface IProductionRepository : IRepository<Production>
     {
-        Task AddDownload(string filename, string remoteIp, string referer, string userId = null);
+        Task<bool> AddDownload(string filename, string remoteIp, string referer, string userId = null);
 
         void AddHistory(HistoryRecord historyProduction);
 
