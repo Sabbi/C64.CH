@@ -53,6 +53,9 @@ namespace C64.FrontEnd.Extensions
 
         public static bool UserIsModerator(this HttpContext httpContext)
         {
+            if (httpContext == null || httpContext.User == null)
+                return false;
+
             return httpContext.User.IsInRole("Moderator") || httpContext.User.IsInRole("Admin");
         }
 
