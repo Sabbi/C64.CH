@@ -1,0 +1,86 @@
+﻿@page "/help/checkytlinks"
+@page "/help/checkytlinks/{Page:int}"
+
+@inject IUnitOfWork unitOfWork
+@inject NavigationManager navigationManager
+
+<AuthorizeView Roles="Admin, Moderator">
+    <NotAuthorized>
+        @{navigationManager.NavigateTo("/");}
+    </NotAuthorized>
+    <Authorized>
+        <MyPageTitle Title="Check YouTube-Links" />
+        <Box>
+            <Title>Check YouTube-Links</Title>
+            <Content>
+
+                @if (paginatedResult != null)
+                {
+
+                    @if (paginatedResult.TotalNumberOfRecords == 0)
+                    {
+                        <p>No Videos found?!</p>
+                    }
+                    else
+                    {
+                        <table class="table table-responsive table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Thumbnail</th>
+                                    <th>Production</th>
+                                    <th>YouTube-Link</th>
+                                    <th>Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var prod in paginatedResult.Data)
+                                {
+                                    @foreach (var video in prod.ProductionVideos)
+                                    {
+                                        <tr>
+                                            <td><img src="//img.youtube.com/vi/@video.VideoId/0.jpg" alt="thumb" width="180" /></td>
+                                            <td>@prod.Name</td>
+                                            <td>https://www.youtube.com/watch?@video.VideoId</td>
+                                            <td><a href="/productions/@prod.ProductionId/@prod.Name.UrlEncode()">Edit @prod.Name</a></td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+                        <Paginator CurrentPage="@paginatedResult.CurrentPage" TotalAmountPages="@paginatedResult.NumberOfPages" SelectedPage="OnSelectPage" MoveToAnchor="" />
+                        <PaginatorRecordInfo CurrentPage="@paginatedResult.CurrentPage" PageSize="20" TotalNumberOfRecords="@paginatedResult.TotalNumberOfRecords" />
+                    }
+                }
+            </Content>
+        </Box>
+    </Authorized>
+</AuthorizeView>
+@code{
+
+    [Parameter]
+    public int Page { get; set; }
+
+    private PaginatedResult<Production> paginatedResult;
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+
+        if (Page == 0)
+            Page = 1;
+
+        await LoadPage(Page);
+    }
+
+    private async Task LoadPage(int page)
+    {
+        paginatedResult = await unitOfWork.Productions.GetPaginatedWithVideoOnly(p => true, "ProductionId", false, page, 20);
+    }
+
+    private void OnSelectPage(int selectedPage)
+    {
+        navigationManager.NavigateTo($"/help/checkytlinks/{selectedPage}");
+    }
+
+}

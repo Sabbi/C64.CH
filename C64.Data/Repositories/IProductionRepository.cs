@@ -44,5 +44,8 @@ namespace C64.Data.Repositories
         void UpdateProductionStats();
 
         void UpdateSingleProductionStat(Production production);
+
+        Task<PaginatedResult<Production>> GetPaginatedWithVideoOnly(Expression<Func<Production, bool>> predicate, string orderBy, bool isSortedAscending, int page, int pageSize);
+
     }
 }
