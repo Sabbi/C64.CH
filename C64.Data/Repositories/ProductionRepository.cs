@@ -210,5 +210,11 @@ namespace C64.Data.Repositories
             var ids = context.Set<Production>().Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Where(p => p.ProductionsGroups.Any(p => p.Group.Name.StartsWith(letter))).Select(p => p.ProductionId);
             return await Task.FromResult(ids);
         }
+
+        public Task<PaginatedResult<Production>> GetPaginatedWithVideoOnly(Expression<Func<Production, bool>> predicate, string orderBy, bool isSortedAscending, int page, int pageSize)
+        {
+            var query = context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Include(p => p.ProductionVideos).Where(p => !p.Deleted && p.ProductionVideos.Any());
+            return FindPaginated(query, predicate, orderBy, isSortedAscending, page, pageSize);
+        }
     }
 }

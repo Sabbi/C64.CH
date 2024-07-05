@@ -211,6 +211,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Pages\Help\CheckYtLinks.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="wwwroot\images\sid.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
