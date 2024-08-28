@@ -57,11 +57,15 @@ namespace C64.FrontEnd.Extensions
             if (string.IsNullOrEmpty(url) || !url.Contains("?") || url.Substring(url.Length - 1) == "?")
                 return null;
 
-            var queryStrings = url.Split(new string[] { "?" }, System.StringSplitOptions.None)[1];
-
-            var dicQueryString = queryStrings.Split('&').ToDictionary(p => p.Split("=")[0], p => Uri.UnescapeDataString(p.Split('=')[1]));
-
-            return dicQueryString;
+            try
+            {
+                var queryStrings = url.Split(new string[] { "?" }, StringSplitOptions.None)[1];
+                var dicQueryString = queryStrings.Split('&').ToDictionary(p => p.Split("=")[0], p => Uri.UnescapeDataString(p.Split('=')[1]));
+                return dicQueryString;
+            }
+            catch (IndexOutOfRangeException) {
+                return new Dictionary<string, string>();
+            }
         }
     }
 }
