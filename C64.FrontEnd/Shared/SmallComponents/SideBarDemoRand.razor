@@ -21,6 +21,10 @@
                 {
                     <img class="w-100" src="/data/productionpictures/@production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show)?.Filename" />
                 }
+                else if (production.SubCategory == SubCategory.Music)
+                {
+                    <img class="w-100" src="/images/sid.png" />
+                }
                 else
                 {
                     <img class="w-100" src="/images/nopicture.jpg" />

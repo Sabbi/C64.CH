@@ -150,9 +150,9 @@
                                             currentCredit = credit.Credit.ToString();
                                         }
 
-                                        @if (credit.Scener.ScenersGroups.Any(p => p.Currently))
+                                        @if (credit.Scener.ScenersGroups.Any(p => p.MemberAtTheTime(new PartialDate(production.ReleaseDate, production.ReleaseDateType), production.Added)))
                                         {
-                                            <span class="pl-4"><a href="/sceners/@credit.Scener.ScenerId/@credit.Scener.Handle.UrlEncode()">@credit.Scener.Handle</a> of <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="credit.Scener.ScenersGroups.Where(p => p.Currently).Select(p => p.Group)" /></span><br />
+                                            <span class="pl-4"><a href="/sceners/@credit.Scener.ScenerId/@credit.Scener.Handle.UrlEncode()">@credit.Scener.Handle</a> of <LinkJoiner BaseUrl="/groups/{0}/{1}" LastSeparator=" and " Separator=", " AlsoAddValue="true" LinkJoinables="credit.Scener.ScenersGroups.Where(p => p.MemberAtTheTime(new PartialDate(production.ReleaseDate, production.ReleaseDateType), production.Added)).Select(p => p.Group)" /></span><br />
                                         }
                                         else
                                         {
