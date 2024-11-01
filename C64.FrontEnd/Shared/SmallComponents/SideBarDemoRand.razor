@@ -16,7 +16,7 @@
     <Content>
         @if (production != null)
         {
-            <a @onclick="GoToProduction">
+            <a href="/productions/@(production.ProductionId)/@(production.Name.UrlEncode())" @onclick="Reload">
                 @if (production.ProductionPictures.Any(p => p.Show))
                 {
                     <img class="w-100" src="/data/productionpictures/@production.ProductionPictures.OrderBy(p => p.Sort).FirstOrDefault(p => p.Show)?.Filename" />
@@ -52,12 +52,6 @@
             timer.Elapsed += OnTimerElapsed;
             timer.Start();
         }
-    }
-
-    private async Task GoToProduction()
-    {
-        navigationManager.NavigateTo($"/productions/{production.ProductionId}/{production.Name.UrlEncode()}");
-        await Reload();
     }
 
     private async Task Reload()
