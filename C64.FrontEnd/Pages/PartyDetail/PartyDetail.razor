@@ -104,6 +104,9 @@
 
         party = await unitOfWork.Parties.GetDetails(id, true);
 
+        if (party == null)
+            return;
+
         productionIds = party.ProductionsParties.Select(p => p.ProductionId);
 
         sw.Stop();
