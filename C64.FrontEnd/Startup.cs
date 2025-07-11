@@ -107,14 +107,13 @@ namespace C64.FrontEnd
                 var twitterLogo = Configuration.GetValue<string>("Twitter:Logo");
 
                 var mastodonServer = Configuration.GetValue<string>("Mastodon:Server");
-                var mastodonUsername = Configuration.GetValue<string>("Mastodon:Username");
-                var mastodonPassword = Configuration.GetValue<string>("Mastodon:Password");
-
+                var mastodonAccessToken = Configuration.GetValue<string>("Mastodon:AccessToken");
+               
                 services.AddTransient<ITweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
                 services.AddTransient<IPictureTweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
 
-                services.AddTransient<ITweeter>(x => new MastodonTweeter(mastodonServer, mastodonUsername, mastodonPassword, twitterLogo, x.GetRequiredService<ILogger<MastodonTweeter>>()));
-                services.AddTransient<IPictureTweeter>(x => new MastodonTweeter(mastodonServer, mastodonUsername, mastodonPassword, twitterLogo, x.GetRequiredService<ILogger<MastodonTweeter>>()));
+                services.AddTransient<ITweeter>(x => new MastodonTweeter(mastodonServer, mastodonAccessToken, twitterLogo, x.GetRequiredService<ILogger<MastodonTweeter>>()));
+                services.AddTransient<IPictureTweeter>(x => new MastodonTweeter(mastodonServer, mastodonAccessToken, twitterLogo, x.GetRequiredService<ILogger<MastodonTweeter>>()));
             }
             else
             {

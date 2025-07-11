@@ -11,18 +11,16 @@ namespace C64.Services.Tweeter
     public class MastodonTweeter : ITweeter, IPictureTweeter
     {
         private readonly string server;
-        private readonly string username;
-        private readonly string password;
+        private readonly string accessToken;
         private readonly string logoPath;
         private readonly ILogger<MastodonTweeter> logger;
         private HttpClient httpClient;
 
-        public MastodonTweeter(string server, string username, string password, string logoPath, ILogger<MastodonTweeter> logger)
+        public MastodonTweeter(string server, string accessToken, string logoPath, ILogger<MastodonTweeter> logger)
         {
             httpClient = new HttpClient();
             this.server = server;
-            this.username = username;
-            this.password = password;
+            this.accessToken = accessToken;
             this.logoPath = logoPath;
             this.logger = logger;
         }
@@ -81,13 +79,15 @@ namespace C64.Services.Tweeter
 
         private async Task<MastodonClient> CreateClient()
         {
-            var authClient = new AuthenticationClient(server);
+            var auth = new Mastonet.Entities.Auth();
+            auth.AccessToken = accessToken;
 
-            var appRegistration = await authClient.CreateApp("C64.CH", Scope.Read | Scope.Write | Scope.Follow);
-            var auth = await authClient.ConnectWithPassword(username, password);
+            var client = new MastodonClient(new Mastonet.Entities.AppRegistration
+            {
+                Instance = server
+            }, auth);
 
-            return new MastodonClient(appRegistration, auth, httpClient);
+            return await Task.FromResult(client);
         }
-
     }
 }
