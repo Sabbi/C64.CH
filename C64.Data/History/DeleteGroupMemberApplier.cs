@@ -25,10 +25,6 @@ namespace C64.Data.History
 
             var oldMemberData = group.ScenersGroups.FirstOrDefault(p => p.ScenerId == toDelete);
 
-            oldMemberData.Scener.ProductionsSceners = new HashSet<ProductionsSceners>();
-            oldMemberData.Scener.PartiesSceners = new HashSet<PartiesSceners>();
-            oldMemberData.Scener.AlterEgos = new HashSet<ScenersSceners>();
-
             var dbhistory = new HistoryRecord
             {
                 AffectedProductionId = group.GroupId,
