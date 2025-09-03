@@ -145,14 +145,21 @@
 
     private async Task<IEnumerable<Party>> SearchParty(string searchPartyText)
     {
-        var result = (await unitOfWork.Parties.Find(p => !p.Deleted && p.Name.Contains(searchPartyText))).OrderByDescending(p => p.From);
+        int parsedId;
+        bool isInt = int.TryParse(searchPartyText, out parsedId);
+
+        var result = (await unitOfWork.Parties.Find(p => !p.Deleted && (p.Name.Contains(searchPartyText) || (isInt && p.PartyId == parsedId)))).OrderByDescending(p => p.From);
         return await Task.FromResult(result);
     }
 
     private async Task<IEnumerable<Scener>> SearchScener(string searchText)
     {
         this.scenerSearchText = searchText;
-        var result = (await unitOfWork.Sceners.Find(p => p.Handle.Contains(searchText))).OrderBy(p => p.Handle).ToList();
+
+        int parsedId;
+        bool isInt = int.TryParse(searchText, out parsedId);
+
+        var result = (await unitOfWork.Sceners.Find(p => p.Handle.Contains(searchText) || (isInt && p.ScenerId == parsedId))).OrderBy(p => p.Handle).ToList();
         if (result.Any(p => p.Handle.Equals(searchText, StringComparison.OrdinalIgnoreCase)))
         {
             var exactMatch = result.FirstOrDefault(p => p.Handle.Equals(searchText, StringComparison.OrdinalIgnoreCase));
@@ -166,7 +173,11 @@
     {
         this.searchText = searchText;
 
-        var result = (await unitOfWork.Groups.Find(p => p.Name.Contains(searchText))).OrderBy(p => p.Name).ToList();;
+
+        int parsedId;
+        bool isInt = int.TryParse(searchText, out parsedId);
+
+        var result = (await unitOfWork.Groups.Find(p => p.Name.Contains(searchText) || (isInt && p.GroupId == parsedId))).OrderBy(p => p.Name).ToList();;
         if (result.Any(p => p.Name.Equals(searchText, StringComparison.OrdinalIgnoreCase)))
         {
             var exactMatch = result.FirstOrDefault(p => p.Name.Equals(searchText, StringComparison.OrdinalIgnoreCase));

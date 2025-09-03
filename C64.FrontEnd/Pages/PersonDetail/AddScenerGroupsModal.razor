@@ -121,7 +121,11 @@
 
     private async Task<IEnumerable<Group>> SearchGroup(string searchText)
     {
-        var sceners = (await unitOfWork.Groups.FindWithSceners(p => p.Name.Contains(searchText))).ToList();
+
+        int parsedId;
+        bool isInt = int.TryParse(searchText, out parsedId);
+
+        var sceners = (await unitOfWork.Groups.FindWithSceners(p => p.Name.Contains(searchText) || (isInt && p.GroupId == parsedId))).ToList();
 
         // TODO: Linqify
         foreach (var inGroup in Scener.ScenersGroups.Select(p => p.Group))

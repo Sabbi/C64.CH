@@ -58,7 +58,11 @@
 
     private async Task<IEnumerable<Scener>> SearchScener(string searchText)
     {
-        var foundSceners = (await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText))).ToList();
+        int parsedId;
+        bool isInt = int.TryParse(searchText, out parsedId);
+
+
+        var foundSceners = (await unitOfWork.Sceners.FindWithGroups(p => p.Handle.Contains(searchText) || (isInt && p.ScenerId == parsedId))).ToList();
         if (foundSceners.Any(p => p.Handle.Equals(searchText, StringComparison.OrdinalIgnoreCase)))
         {
             var exactMatches = foundSceners.Where(p => p.Handle.Equals(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
