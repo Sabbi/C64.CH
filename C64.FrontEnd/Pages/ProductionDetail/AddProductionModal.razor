@@ -165,7 +165,11 @@
 
     private async Task<IEnumerable<Party>> SearchParty(string searchPartyText)
     {
-        var result = (await unitOfWork.Parties.Find(p => !p.Deleted && p.Name.Contains(searchPartyText))).OrderByDescending(p => p.From);
+        int parsedId;
+        bool isInt = int.TryParse(searchPartyText, out parsedId);
+
+        var result = (await unitOfWork.Parties.Find(p => !p.Deleted && (p.Name.Contains(searchPartyText) || (isInt && p.PartyId == parsedId)))).OrderByDescending(p => p.From);
+
         return await Task.FromResult(result);
     }
 
@@ -173,7 +177,10 @@
     {
         this.searchText = searchText;
 
-        var result = (await unitOfWork.Groups.Find(p => p.Name.Contains(searchText))).OrderBy(p => p.Name);
+        int parsedId;
+        bool isInt = int.TryParse(searchText, out parsedId);
+
+        var result = (await unitOfWork.Groups.Find(p => p.Name.Contains(searchText) || (isInt && p.GroupId == parsedId))).OrderBy(p => p.Name).ToList(); ;
         return await Task.FromResult(result.OrderBy(p => p.Name));
 
     }
@@ -182,7 +189,11 @@
     {
         this.scenerSearchText = searchText;
 
-        var result = (await unitOfWork.Sceners.Find(p => p.Handle.Contains(searchText))).OrderBy(p => p.Handle);
+        int parsedId;
+        bool isInt = int.TryParse(searchText, out parsedId);
+
+        var result = (await unitOfWork.Sceners.Find(p => p.Handle.Contains(searchText) || (isInt && p.ScenerId == parsedId))).OrderBy(p => p.Handle).ToList();
+
         return await Task.FromResult(result.OrderBy(p => p.Handle));
 
     }
