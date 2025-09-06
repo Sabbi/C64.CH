@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Formatting.Display;
 using Serilog.Sinks.Email;
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace C64.FrontEnd
@@ -20,18 +23,17 @@ namespace C64.FrontEnd
 
             if (loggerConfig.GetValue<bool>("EmailSettings:EmailEnabled"))
             {
-                var emailConf = new EmailConnectionInfo
+                var emailConf = new EmailSinkOptions
                 {
-                    FromEmail = loggerConfig.GetValue<string>("EmailSettings:Logger_SenderEmail"),
-                    ToEmail = loggerConfig.GetValue<string>("EmailSettings:Logger_RecipientEmail"),
-                    EmailSubject = loggerConfig.GetValue<string>("EmailSettings:Logger_MailSubject"),
-                    MailServer = loggerConfig.GetValue<string>("EmailSettings:MailServer"),
+                    From = loggerConfig.GetValue<string>("EmailSettings:Logger_SenderEmail"),
+                    To = new List<string>() { loggerConfig.GetValue<string>("EmailSettings:Logger_RecipientEmail") },
+                    Subject = new MessageTemplateTextFormatter(loggerConfig.GetValue<string>("EmailSettings:Logger_MailSubject"), null),
+                    Host = loggerConfig.GetValue<string>("EmailSettings:MailServer"),
                     Port = loggerConfig.GetValue<int>("EmailSettings:MailPort"),
-                    EnableSsl = loggerConfig.GetValue<bool>("EmailSettings:EnableSsl"),
                 };
 
                 if (!string.IsNullOrEmpty(loggerConfig.GetValue<string>("EmailSettings:SmtpName")))
-                    emailConf.NetworkCredentials = new NetworkCredential(loggerConfig.GetValue<string>("EmailSettings:SmtpName"), loggerConfig.GetValue<string>("EmailSettings:SmtpPassword"));
+                    emailConf.Credentials = new NetworkCredential(loggerConfig.GetValue<string>("EmailSettings:SmtpName"), loggerConfig.GetValue<string>("EmailSettings:SmtpPassword"));
 
                 Log.Logger = new LoggerConfiguration()
                     .ReadFrom.Configuration(loggerConfig)
@@ -49,7 +51,9 @@ namespace C64.FrontEnd
             if (loggerConfig.GetValue<bool>("Serilog:SelfLogging"))
                 Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
-            var builder = CreateHostBuilder(args);
+            
+
+            var builder = CreateHostBuilder(args);            
             builder.Build().Run();
         }
 

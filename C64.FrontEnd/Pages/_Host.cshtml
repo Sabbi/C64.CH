@@ -23,7 +23,6 @@
     <link href="_content/Blazored.Toast/blazored-toast.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="_content/ChartJs.Blazor/ChartJSBlazor.css" />
-    <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
     <environment include="Development">
         <!-- DEVELOPMENT -->
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -32,6 +31,7 @@
         <!-- RELEASE -->
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+    <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
     <app>

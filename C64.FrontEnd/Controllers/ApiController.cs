@@ -28,9 +28,6 @@ namespace C64.FrontEnd.Controllers
         private readonly IUnitOfWork unitOfWork;
         private readonly IFileStorageService fileStorageService;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly string productionContainer = "productionfiles";
-        private readonly string pictureContainer = "productionpictures";
-        private static readonly int cacheTtl = 24 * 60 * 60 * 365; // 1 year
 
         public ApiController(IUnitOfWork unitOfWork, IFileStorageService fileStorageService, IHttpContextAccessor httpContextAccessor)
         {
