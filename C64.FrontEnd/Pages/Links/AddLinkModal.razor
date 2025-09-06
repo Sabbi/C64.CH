@@ -60,6 +60,6 @@
 
     private async Task OnValidSubmit()
     {
-        await bootstrapModal.BlazoredModal.Close(ModalResult.Ok(new Link { LinkCategoryId = int.Parse(addLinkModel.CategoryId), Name = addLinkModel.Title, Url = addLinkModel.Url }));
+        await bootstrapModal.BlazoredModal.CloseAsync(ModalResult.Ok(new Link { LinkCategoryId = int.Parse(addLinkModel.CategoryId), Name = addLinkModel.Title, Url = addLinkModel.Url }));
     }
 }

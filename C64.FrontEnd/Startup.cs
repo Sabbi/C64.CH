@@ -20,6 +20,7 @@ using MySqlConnector.Logging;
 using Serilog;
 using System;
 using System.Globalization;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace C64.FrontEnd
 {
@@ -38,7 +39,13 @@ namespace C64.FrontEnd
             services.AddServerSideBlazor();
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), p => p.MigrationsAssembly("C64.Data")), contextLifetime: ServiceLifetime.Transient);
+
+            var serverType = Configuration["DatabaseServer:ServerType"].Equals("Mysql", StringComparison.OrdinalIgnoreCase) ? ServerType.MySql : ServerType.MariaDb;
+            var version = Configuration["DatabaseServer:Version"].Split(".");
+
+            var serverVersion = ServerVersion.Create(int.Parse(version[0]), int.Parse(version[1]), int.Parse(version[2]), serverType);
+
+            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, serverVersion, p => p.MigrationsAssembly("C64.Data")), contextLifetime: ServiceLifetime.Transient);
 
             services.AddSession(options =>
             {

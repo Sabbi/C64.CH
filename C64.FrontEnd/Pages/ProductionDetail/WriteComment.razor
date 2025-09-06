@@ -27,7 +27,7 @@
                     <button class="btn btn-primary" type="Submit">Save and add your comment</button>
                 </div>
                 <div class="col-6 text-right">
-                    <BSButton class="btn btn-secondary" @onclick="@(() => bootstrapModal.Cancel())">Cancel</BSButton>
+                    <button class="btn btn-secondary" @onclick="@(() => bootstrapModal.Cancel())">Cancel</button>
                 </div>
             </div>
         </EditForm>
@@ -61,6 +61,6 @@
 
     private async Task HandleSubmit()
     {
-        await bootstrapModal.BlazoredModal.Close(ModalResult.Ok(writeCommentEditForm.Comment));
+        await bootstrapModal.BlazoredModal.CloseAsync(ModalResult.Ok(writeCommentEditForm.Comment));
     }
 }

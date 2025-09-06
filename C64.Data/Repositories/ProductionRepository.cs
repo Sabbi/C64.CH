@@ -107,7 +107,7 @@ namespace C64.Data.Repositories
 
             var skip = new Random().Next(count);
 
-            return await context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Where(p => !p.Deleted).Skip(skip).Take(1).FirstOrDefaultAsync();
+            return await context.Set<Production>().Include(p => p.ProductionPictures).Include(p => p.ProductionsGroups).ThenInclude(p => p.Group).Where(p => !p.Deleted).OrderBy(p => p.ProductionId).Skip(skip).Take(1).AsSingleQuery().FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Rating>> GetRatings(int productionId)

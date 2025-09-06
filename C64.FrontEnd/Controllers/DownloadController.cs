@@ -177,7 +177,7 @@ namespace C64.FrontEnd.Controllers
                 {
                     destination.Save(saveStream, new JpegEncoder());
 
-                    Response.Headers.Add("Cache-Control", $"public, max-age={cacheTtl}");
+                    Response.Headers.Append("Cache-Control", $"public, max-age={cacheTtl}");
 
                     return new FileContentResult(saveStream.ToArray(), "image/jpg")
                     {

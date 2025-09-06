@@ -1,8 +1,7 @@
 ﻿@using Microsoft.Extensions.Configuration
 @inject IConfiguration configuration
 
-@using Microsoft.AspNetCore.Components.Web.Extensions.Head
-<Title Value="@displayTitle"></Title>
+<PageTitle>@displayTitle</PageTitle>
 @code {
     [Parameter]
     public string Title { get; set; } = "C64.CH - The C64 Demo Portal";
