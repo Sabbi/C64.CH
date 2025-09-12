@@ -10,7 +10,13 @@ namespace C64.Data.History
         public void Apply(object entity, HistoryRecord historyProduction)
         {
             var group = (Group)entity;
-            var newMember = JsonConvert.DeserializeObject<AddGroupMember>(historyProduction.NewValue);
+
+            var settings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            var newMember = JsonConvert.DeserializeObject<AddGroupMember>(historyProduction.NewValue, settings);
 
             var newScenersGroups = new ScenersGroups
             {
