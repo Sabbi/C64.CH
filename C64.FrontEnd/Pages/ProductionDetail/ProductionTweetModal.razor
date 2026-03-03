@@ -71,7 +71,7 @@
         if (firstPicture != null)
             firstPictureData = await fileStorageService.GetFileContents("productionPictures", firstPicture);
 
-        tweet.Tweet = $"{Production.Name} by {string.Join(", ", releasedby)}, released on {Production.ReleaseDate.ParseDate(Production.ReleaseDateType)}. Check it out @ https://c64.ch/productions/{Production.Id}/{Production.Name.UrlEncode()} \n/ c64.ch -  #c64 #commodore #demoscene #retro";
+        tweet.Tweet = $"{Production.Name} released by {string.Join(", ", releasedby)} on {Production.ReleaseDate.ParseDate(Production.ReleaseDateType)}. Check it out @ https://c64.ch/productions/{Production.Id}/{Production.Name.UrlEncode()} \n/ c64.ch -  #c64 #commodore #demoscene #retro";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
