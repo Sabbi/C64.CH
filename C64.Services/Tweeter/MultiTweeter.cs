@@ -22,6 +22,9 @@ namespace C64.Services.Tweeter
 
         public async Task SendPictureTweet(string text, byte[] pictureData)
         {
+            if (text.Length > 300)
+                throw new ArgumentException($"Tweet is too long ({text.Length} vs. 300 chars)");
+
             foreach (var tweet in picutureTweeters)
             {
                 try
@@ -42,8 +45,12 @@ namespace C64.Services.Tweeter
             }
         }
 
+
         public async Task SendTweet(string text)
         {
+            if (text.Length > 300)
+                throw new ArgumentException($"Tweet is too long ({text.Length} vs. 300 chars)");
+
             foreach (var tweet in tweeters)
             {
                 try

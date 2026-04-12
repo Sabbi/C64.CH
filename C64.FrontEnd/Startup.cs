@@ -105,20 +105,18 @@ namespace C64.FrontEnd
                 hubOptions.MaximumReceiveMessageSize = 1024 * 1024;
             });
 
-            if (!string.IsNullOrEmpty(Configuration.GetValue<string>("Twitter:ConsumerKey")))
+            if (!string.IsNullOrEmpty(Configuration.GetValue<string>("BlueSky:Identifier")))
             {
-                var consumerKey = Configuration.GetValue<string>("Twitter:ConsumerKey");
-                var consumerSecret = Configuration.GetValue<string>("Twitter:ConsumerSecret");
-                var accessToken = Configuration.GetValue<string>("Twitter:AccessToken");
-                var accessTokenSecret = Configuration.GetValue<string>("Twitter:AccessTokenSecret");
                 var twitterLogo = Configuration.GetValue<string>("Twitter:Logo");
+
+                var blueSkyIdentifier = Configuration.GetValue<string>("BlueSky:Identifier");
+                var blueSkyPassword = Configuration.GetValue<string>("BlueSky:Password");
+                services.AddTransient<ITweeter>(x => new BlueSkyTweeter(blueSkyIdentifier, blueSkyPassword, twitterLogo, x.GetRequiredService<ILogger<BlueSkyTweeter>>()));
+                services.AddTransient<IPictureTweeter>(x => new BlueSkyTweeter(blueSkyIdentifier, blueSkyPassword, twitterLogo, x.GetRequiredService<ILogger<BlueSkyTweeter>>()));
+
 
                 var mastodonServer = Configuration.GetValue<string>("Mastodon:Server");
                 var mastodonAccessToken = Configuration.GetValue<string>("Mastodon:AccessToken");
-                              
-                //services.AddTransient<ITweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
-                //services.AddTransient<IPictureTweeter>(x => new DefaultTweeter(consumerKey, consumerSecret, accessToken, accessTokenSecret, twitterLogo, x.GetRequiredService<ILogger<DefaultTweeter>>()));
-
                 services.AddTransient<ITweeter>(x => new MastodonTweeter(mastodonServer, mastodonAccessToken, twitterLogo, x.GetRequiredService<ILogger<MastodonTweeter>>()));
                 services.AddTransient<IPictureTweeter>(x => new MastodonTweeter(mastodonServer, mastodonAccessToken, twitterLogo, x.GetRequiredService<ILogger<MastodonTweeter>>()));
             }
