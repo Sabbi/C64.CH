@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="idunno.Bluesky" Version="1.8.0" />
-    <PackageReference Include="mailkit" Version="4.13.0" />
+    <PackageReference Include="mailkit" Version="4.16.0" />
     <PackageReference Include="Mastonet" Version="1.9.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
