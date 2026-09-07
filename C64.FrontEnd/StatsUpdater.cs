@@ -27,7 +27,7 @@ namespace C64.FrontEnd
         {
             logger.LogInformation("StatsUpdater Hosting Service is running");
 
-            timer = new Timer(DoWork, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(30));
+            timer = new Timer(DoWork, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(10));
 
             return Task.CompletedTask;
         }
