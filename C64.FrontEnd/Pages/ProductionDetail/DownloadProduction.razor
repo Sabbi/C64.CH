@@ -2,8 +2,9 @@
 
 @inject IJSRuntime jsRuntime
 @inject IFileStorageService fileStorageService
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
+@implements IDisposable
 
 @using System.Security.Claims
 
@@ -37,6 +38,13 @@
 
     private bool isFirefox = false;
 
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         isFirefox = await jsRuntime.InvokeAsync<bool>("isFirefox");
@@ -57,5 +65,10 @@
         ProductionFile.Downloads++;
         await OnDownload.InvokeAsync(ProductionFile.ProductionFileId);
 
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

@@ -1,7 +1,6 @@
 ﻿@namespace C64.FrontEnd.Pages
 
-@using Microsoft.Extensions.DependencyInjection
-@inherits OwningComponentBase
+@inject IUnitOfWorkFactory unitOfWorkFactory
 
 @using ChartJs.Blazor.Charts
 @using ChartJs.Blazor.ChartJS.LineChart;
@@ -37,7 +36,7 @@
 
     public async Task Update(bool external = true)
     {
-        var unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        using var unitOfWork = unitOfWorkFactory.Create();
         var ratings = await unitOfWork.Productions.GetRatings(ProductionId);
 
         var chartNumberOfRatings = new List<int>();

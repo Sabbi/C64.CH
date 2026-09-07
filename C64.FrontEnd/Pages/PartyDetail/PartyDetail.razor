@@ -1,11 +1,9 @@
 ﻿@page "/parties/{PartyId:int}"
 @page "/parties/{PartyId:int}/{PartyName}"
 
-@using Microsoft.Extensions.DependencyInjection
-@inherits OwningComponentBase
-
 @implements IDisposable
 
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IJSRuntime jsRuntime
 @inject ILogger<PartyDetail> logger
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
@@ -50,6 +48,7 @@
     public string PartyName { get; set; }
 
     private IUnitOfWork unitOfWork;
+    private int loadVersion;
 
     private Party party;
 
@@ -100,12 +99,27 @@
         var sw = new System.Diagnostics.Stopwatch();
         sw.Start();
 
-        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        var version = ++loadVersion;
+        var newUnitOfWork = unitOfWorkFactory.Create();
 
-        party = await unitOfWork.Parties.GetDetails(id, true);
+        var loadedParty = await newUnitOfWork.Parties.GetDetails(id, true);
 
-        if (party == null)
+        if (version != loadVersion)
+        {
+            // A newer LoadParty started while this one was still running - discard this stale result.
+            newUnitOfWork.Dispose();
             return;
+        }
+
+        if (loadedParty == null)
+        {
+            newUnitOfWork.Dispose();
+            return;
+        }
+
+        unitOfWork?.Dispose();
+        unitOfWork = newUnitOfWork;
+        party = loadedParty;
 
         productionIds = party.ProductionsParties.Select(p => p.ProductionId);
 
@@ -114,5 +128,10 @@
         logger.LogInformation("Loaded party {name} in {milliseconds}ms", party.Name, sw.ElapsedMilliseconds);
 
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

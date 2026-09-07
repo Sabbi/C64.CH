@@ -1,11 +1,10 @@
-﻿@using Microsoft.Extensions.DependencyInjection
-@using Microsoft.Extensions.Configuration
+﻿@using Microsoft.Extensions.Configuration
 
 @namespace C64.FrontEnd.Shared
 
 @implements IDisposable
-@inherits OwningComponentBase
 
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject NavigationManager navigationManager
 @inject IConfiguration configuration
 
@@ -68,7 +67,7 @@
 
     private async Task LoadRandomProduction()
     {
-        var unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        using var unitOfWork = unitOfWorkFactory.Create();
         production = await unitOfWork.Productions.GetRandomProduction();
         await InvokeAsync(StateHasChanged);
     }

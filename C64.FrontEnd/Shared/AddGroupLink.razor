@@ -1,8 +1,10 @@
 ﻿@inject IModalService Modal
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IToastService toastService
 @inject HttpContextAccessor httpContextAccessor
 @inject NavigationManager navigationManager
+
+@implements IDisposable
 
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddGroupModal" @onclick:preventDefault>
     @Content
@@ -17,6 +19,18 @@
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
+    }
 
     private async Task OpenAddGroupModal()
     {

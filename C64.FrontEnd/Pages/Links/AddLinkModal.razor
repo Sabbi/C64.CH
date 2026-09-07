@@ -1,6 +1,8 @@
 ﻿@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger;
-@inject IUnitOfWork unitOfWork;
+@inject IUnitOfWorkFactory unitOfWorkFactory
+
+@implements IDisposable
 
 <BootstrapModal @ref="bootstrapModal" Title="@($"Add Link")" Size="BootstrapModal.ModalSize.Default">
     <Content>
@@ -52,8 +54,11 @@
 
     private List<LinkCategory> linkCategories = new List<LinkCategory>();
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         linkCategories = (await unitOfWork.Links.GetCategories()).ToList();
         addLinkModel.CategoryId = CategoryId.ToString();
     }
@@ -61,5 +66,10 @@
     private async Task OnValidSubmit()
     {
         await bootstrapModal.BlazoredModal.CloseAsync(ModalResult.Ok(new Link { LinkCategoryId = int.Parse(addLinkModel.CategoryId), Name = addLinkModel.Title, Url = addLinkModel.Url }));
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

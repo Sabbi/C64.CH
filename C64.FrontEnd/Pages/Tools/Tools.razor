@@ -1,6 +1,8 @@
 ﻿@page  "/tools"
 
-@inject IUnitOfWork unitOfWork;
+@inject IUnitOfWorkFactory unitOfWorkFactory
+
+@implements IDisposable
 
 <MyPageTitle Title="Tools" />
 <Box MarginBottom="4">
@@ -30,8 +32,16 @@
 
     private IEnumerable<Tool> toolList = new List<Tool>();
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         toolList = await unitOfWork.Tools.Find(p => p.Show);
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

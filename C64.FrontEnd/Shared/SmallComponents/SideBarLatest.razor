@@ -1,5 +1,6 @@
 ﻿@namespace C64.FrontEnd.Shared
-@inject IUnitOfWork unitOfWork
+@implements IDisposable
+@inject IUnitOfWorkFactory unitOfWorkFactory
 <Box ContentClasses="text-left p-1 overflow-hidden">
     <Title><a href="/productions/demos/latestadded">Last Added Demos</a></Title>
     <Content>
@@ -16,10 +17,18 @@
 
     private IEnumerable<Production> productions = new List<Production>();
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         var result = await unitOfWork.Productions.FindPaginated(p => !p.Deleted, "Added", false, 1, 10);
         productions = result.Data;
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 
 }

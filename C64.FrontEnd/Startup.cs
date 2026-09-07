@@ -45,7 +45,8 @@ namespace C64.FrontEnd
 
             var serverVersion = ServerVersion.Create(int.Parse(version[0]), int.Parse(version[1]), int.Parse(version[2]), serverType);
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, serverVersion, p => p.MigrationsAssembly("C64.Data")), contextLifetime: ServiceLifetime.Transient);
+            services.AddDbContextFactory<ApplicationDbContext>(options => options.UseMySql(connectionString, serverVersion, p => p.MigrationsAssembly("C64.Data")));
+            services.AddScoped(sp => sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
 
             services.AddSession(options =>
             {
@@ -57,7 +58,7 @@ namespace C64.FrontEnd
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.,_@+ /\\[](){}#*!=$Ј|адьцйифоквбуфтс^'Лез&:;КиноМанСанклартаКГригорийИЙ";
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.,_@+ /\\[](){}#*!=$пїЅ|пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ^'пїЅпїЅпїЅ&:;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 3;
                 options.Password.RequireLowercase = false;
@@ -94,6 +95,7 @@ namespace C64.FrontEnd
             services.AddTransient<IArchiveService, SharpZipArchiveService>();
             services.AddTransient<IFallbackArchiveService, FallbackArchiveService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
             services.AddSingleton<IPasswordHasher, Sha256PasswordHasher>();
             services.AddSingleton<NotifierService>();

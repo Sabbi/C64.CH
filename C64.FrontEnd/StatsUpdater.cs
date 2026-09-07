@@ -15,7 +15,6 @@ namespace C64.FrontEnd
         private Timer timer;
         private readonly ILogger<StatsUpdater> logger;
         private readonly IServiceScopeFactory serviceScopeFactory;
-        private IUnitOfWork unitOfWork;
 
         public StatsUpdater(ILogger<StatsUpdater> logger, IServiceScopeFactory serviceScopeFactory)
         {
@@ -48,9 +47,9 @@ namespace C64.FrontEnd
 
             sw.Start();
 
-            var scope = serviceScopeFactory.CreateScope();
+            using var scope = serviceScopeFactory.CreateScope();
 
-            unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
+            var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
 
             unitOfWork.Productions.UpdateProductionStats();
             unitOfWork.Groups.UpdateGroupStats();

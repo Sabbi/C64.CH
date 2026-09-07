@@ -2,7 +2,8 @@
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IJSRuntime jsRuntime
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
+@implements IDisposable
 
 <BootstrapModal @ref="bootstrapModal" Title="@title" Size="BootstrapModal.ModalSize.Large">
     <Content>
@@ -52,8 +53,11 @@
 
     private string title;
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         if (Production != null)
         {
             histories = (await unitOfWork.Productions.GetHistory(Production.ProductionId)).OrderByDescending(p => p.Applied);
@@ -79,5 +83,10 @@
     private string Parsed(HistoryRecord history)
     {
         return history.Description;
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

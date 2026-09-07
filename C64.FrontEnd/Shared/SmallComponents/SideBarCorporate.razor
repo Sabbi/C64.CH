@@ -4,7 +4,7 @@
 
 @implements IDisposable
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IJSRuntime jsRuntime
 
 <Box ContentClasses="text-left p-1 overflow-hidden">
@@ -33,6 +33,13 @@
     private TimeSpan? latency;
 
     private Timer timeTimer = new Timer();
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -80,6 +87,8 @@
 
             }
         }
+
+        unitOfWork?.Dispose();
     }
 
 }

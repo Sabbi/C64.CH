@@ -1,8 +1,10 @@
 ﻿@inject IModalService Modal
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IToastService toastService
 @inject NavigationManager navigationManager
 @inject HttpContextAccessor httpContextAccessor
+
+@implements IDisposable
 
 
 
@@ -19,6 +21,18 @@
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
+    }
 
     private async Task OpenAddProductionModal()
     {

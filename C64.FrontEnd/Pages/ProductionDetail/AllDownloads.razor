@@ -1,10 +1,11 @@
 ﻿@namespace C64.FrontEnd.Pages
 
 @inject IModalService modal
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IHttpContextAccessor httpContextAccessor
 
 @inject IJSRuntime jsRuntime
+@implements IDisposable
 
 @if (ProductionFiles.Any(p => p.Show))
 {
@@ -60,6 +61,13 @@ else
     private bool _driveSounds = false;
 
     private bool _crtEmulation = false;
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
 
     private async Task DownloadClicked(int fileId)
     {
@@ -157,5 +165,10 @@ else
 
             StateHasChanged();
         }
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

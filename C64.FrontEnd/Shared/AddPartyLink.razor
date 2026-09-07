@@ -1,10 +1,11 @@
 ﻿@inject IModalService Modal
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IToastService toastService
 
 @inject NavigationManager navigationManager
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
+@implements IDisposable
 
 <a href="" @attributes="@AllOtherAttributes" @onclick="OpenAddPartyModal" @onclick:preventDefault>
     @Content
@@ -19,6 +20,13 @@
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
 
     private async Task OpenAddPartyModal()
     {
@@ -43,5 +51,10 @@
             toastService.ShowSuccess($"Party {party.Name} added");
             navigationManager.NavigateTo($"/parties/{party.PartyId}/{party.Name.UrlEncode()}");
         }
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

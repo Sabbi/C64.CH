@@ -1,5 +1,6 @@
 ﻿@namespace C64.FrontEnd.Shared
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
+@implements IDisposable
 @if (statistic != null)
 {
     <Box ContentClasses="text-left p-1 overflow-hidden">
@@ -45,9 +46,17 @@
 
     private Statistic statistic = new Statistic();
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         statistic = await unitOfWork.Statistics.Get();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 
 }

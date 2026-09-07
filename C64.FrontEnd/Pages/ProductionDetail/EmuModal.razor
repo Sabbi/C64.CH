@@ -2,7 +2,7 @@
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IJSRuntime jsRuntime
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IFallbackArchiveService archiveService
 @inject IFileStorageService fileStorageService
 
@@ -57,8 +57,11 @@
 
     private bool started = false;
 
+    private IUnitOfWork unitOfWork;
+
     protected override void OnInitialized()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         title += $"Emulating  {ProductionFile.Filename}";
     }
 
@@ -67,23 +70,14 @@
         if (!firstRender)
             return;
 
-        // Concurrent connections otherwise, I don't know why (yet)
-        byte[] fileData = null;
+        byte[] fileData;
         try
         {
             fileData = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
         }
         catch
         {
-            try
-            {
-                System.Threading.Thread.Sleep(50);
-                fileData = await fileStorageService.GetFileContents("productionfiles", ProductionFile.Filename);
-            }
-            catch
-            {
-                return;
-            }
+            return;
         }
 
         var viceLoader = new DefaultViceLoader(archiveService);
@@ -107,6 +101,7 @@
     {
         timer.Dispose();
         jsRuntime.InvokeVoidAsync("exitEmu");
+        unitOfWork?.Dispose();
     }
 
     public async Task FullScreen()

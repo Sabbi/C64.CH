@@ -1,9 +1,10 @@
 ﻿@namespace C64.FrontEnd.Pages
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject NavigationManager navigationManager
 @inject IToastService toastService
+@implements IDisposable
 
 <BootstrapModal @ref="bootstrapModal" Title="Add new news" Size="BootstrapModal.ModalSize.Large">
     <Content>
@@ -16,6 +17,13 @@
     private BootstrapModal bootstrapModal;
 
     private SiteInfo siteNews = new SiteInfo();
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
 
     protected override void OnParametersSet()
     {
@@ -42,5 +50,10 @@
     private async Task OnCancel()
     {
         await bootstrapModal.Close();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

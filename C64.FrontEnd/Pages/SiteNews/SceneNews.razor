@@ -4,10 +4,11 @@
 
 @using C64.Data.Models
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject ILogger<SiteNews> logger
 
 @inject NavigationManager navigationManager
+@implements IDisposable
 
 <Box Anchor="SceneNews">
     <Title>
@@ -38,4 +39,16 @@
 
     [Parameter]
     public bool ChangeUrl { get; set; } = true;
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
+    }
 }

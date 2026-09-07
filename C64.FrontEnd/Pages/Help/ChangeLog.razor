@@ -1,6 +1,7 @@
 ﻿@page "/help/changelog"
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
+@implements IDisposable
 
 <MyPageTitle Title="Change Log" />
 <Box>
@@ -31,10 +32,18 @@
 </Box>
 @code{
 
+    private IUnitOfWork unitOfWork;
+
     private IEnumerable<ChangeLogEntry> entries = new HashSet<ChangeLogEntry>();
 
     protected override void OnInitialized()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         entries = unitOfWork.ChangeLogs.GetAll().OrderByDescending(p => p.Date);
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

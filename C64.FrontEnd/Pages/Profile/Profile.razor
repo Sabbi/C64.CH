@@ -1,11 +1,9 @@
 ﻿@page "/profile/{UserId}"
 @page "/profile/{UserId}/{Username}"
 
-@using Microsoft.Extensions.DependencyInjection
-@inherits OwningComponentBase
-
 @implements IDisposable
 
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IJSRuntime jsRuntime
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IModalService Modal
@@ -100,6 +98,7 @@
     public string Username { get; set; }
 
     private IUnitOfWork unitOfWork;
+    private int loadVersion;
 
     private User user;
 
@@ -130,10 +129,27 @@
 
     private async Task LoadUser(string userId)
     {
-        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
-        user = await unitOfWork.Users.GetWithFavorites(userId);
+        var version = ++loadVersion;
+        var newUnitOfWork = unitOfWorkFactory.Create();
+
+        var loadedUser = await newUnitOfWork.Users.GetWithFavorites(userId);
+
+        if (version != loadVersion)
+        {
+            // A newer LoadUser started while this one was still running - discard this stale result.
+            newUnitOfWork.Dispose();
+            return;
+        }
+
+        unitOfWork?.Dispose();
+        unitOfWork = newUnitOfWork;
+        user = loadedUser;
         hasPublicFavorites = user.PublicFavorites && user.Favorites.Any();
         await OnSelectPage(1);
-        return;
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

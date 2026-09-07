@@ -2,7 +2,7 @@
 
 @implements IDisposable
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject NavigationManager navigationManager
 
 @inject ILogger<Parties> logger
@@ -57,8 +57,13 @@
 
     private int year;
 
+    private IUnitOfWork unitOfWork;
+    private bool isDisposed;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
+
         upcomingParties = await unitOfWork.Parties.Find(p => !p.Deleted && p.To >= DateTime.Now);
         navigationManager.LocationChanged += OnLocationChanged;
         year = navigationManager.GetFromQueryString<int>("year");
@@ -75,6 +80,12 @@
 
     private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
+        // NavigationManager.LocationChanged is a plain multicast event: the Router's own
+        // subscriber (which tears this component down on navigation away) can run before
+        // this handler in the same dispatch, so this can still fire after Dispose().
+        if (isDisposed)
+            return;
+
         year = navigationManager.GetFromQueryString<int>("year");
         await LoadParties();
         logger.LogInformation("OnLocationChanged, Year = {year}", year);
@@ -94,7 +105,9 @@
 
     public void Dispose()
     {
+        isDisposed = true;
         navigationManager.LocationChanged -= OnLocationChanged;
+        unitOfWork?.Dispose();
     }
 
 }

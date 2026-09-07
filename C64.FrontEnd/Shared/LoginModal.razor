@@ -1,13 +1,14 @@
 ﻿@inject NavigationManager navigationManager
 @inject IJSRuntime jsRuntime
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject C64.Services.IPasswordHasher passwordHasher
 
 @inject ILogger<LoginModal> logger
 
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 @inject Microsoft.AspNetCore.Identity.SignInManager<User> signInManager
+@implements IDisposable
 
 <BootstrapModal Title="Login" @ref="bootstrapModal">
     <Content>
@@ -64,8 +65,12 @@
 
     private string returnUrl;
 
+    private IUnitOfWork unitOfWork;
+
     protected override void OnInitialized()
     {
+        unitOfWork = unitOfWorkFactory.Create();
+
         editContext = new EditContext(userInfo);
 
         messageStore = new ValidationMessageStore(editContext);
@@ -129,5 +134,10 @@
             }
 
         }
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

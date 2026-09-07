@@ -3,7 +3,7 @@
 
 @inject NavigationManager navigationManager
 @inject IJSRuntime jsRuntime
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject ILogger<ProductionList> logger
 
 @if (productions != null)
@@ -80,12 +80,12 @@
         LoadQueryParamters();
     }
 
-    public void Update()
+    public async Task UpdateAsync()
     {
         sorterData.CurrentSortColumn = DefaultSortColumn;
         sorterData.IsSortedAscending = DefaultIsSortedAscending;
 
-        Task.Run(async () => await LoadProductions()).Wait();
+        await LoadProductions();
         StateHasChanged();
     }
 
@@ -172,6 +172,7 @@
     {
         logger.LogInformation("Load Production for {@productionIds}", ProductionIds);
 
+        using var unitOfWork = unitOfWorkFactory.Create();
         var paginatedResult = await unitOfWork.Productions.GetPaginatedWithGroups(p => ProductionIds.Contains(p.ProductionId), sorterData.CurrentSortColumn, sorterData.IsSortedAscending, currentPage, pageSize);
         productions = paginatedResult.Data;
         currentPage = paginatedResult.CurrentPage;

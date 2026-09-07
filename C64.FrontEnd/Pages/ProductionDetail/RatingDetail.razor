@@ -3,7 +3,8 @@
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IModalService Modal
 @inject ILogger<RatingDetail> logger
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
+@implements IDisposable
 
 <div id="rating-overview">@Production.GetRatingText(true)</div>
 <div>
@@ -45,6 +46,13 @@
     private bool hasVoted = false;
     private Rating rating = new Rating();
 
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
+
     protected override void OnParametersSet()
     {
         hasVoted = Production.Ratings.Any(p => p.UserId == httpContext.HttpContext.GetUserId());
@@ -57,5 +65,10 @@
     private async Task OnVoteClicked(int selectedRate)
     {
         await OnVote.InvokeAsync(selectedRate);
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

@@ -3,9 +3,10 @@
 @layout AccountLayout
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 @inject IToastService toastService
+@implements IDisposable
 
 <MyPageTitle Title="Account - Settings" />
 <EditForm Model="editSettingsModel" OnValidSubmit="OnValidSubmit">
@@ -51,12 +52,15 @@
     </div>
 </EditForm>
 @code{
+    private IUnitOfWork unitOfWork;
+
     private EditSettingsModel editSettingsModel = new EditSettingsModel();
 
     private User user;
 
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         user = await userManager.FindByIdAsync(httpContext.HttpContext.GetUserId());
         editSettingsModel.Load(user);
     }
@@ -66,6 +70,11 @@
         editSettingsModel.Update(user);
         await userManager.UpdateAsync(user);
         toastService.ShowSuccess("Profile successfully updated");
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 
 }

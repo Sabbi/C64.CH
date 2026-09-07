@@ -1,10 +1,8 @@
 ﻿@page "/productions/{ProductionId:int}"
 @page "/productions/{ProductionId:int}/{ProdName}"
 
-@using Microsoft.Extensions.DependencyInjection
-@inherits OwningComponentBase
-
 @implements IDisposable
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject NotifierService notifier
 @inject ILogger<ProductionDetail> logger
 @inject IJSRuntime jsRuntime
@@ -260,6 +258,7 @@
     private bool CommentsBlocked = false;
 
     private IUnitOfWork unitOfWork;
+    private int loadVersion;
 
     private bool isFavorite = false;
 
@@ -473,9 +472,10 @@
         var sw = new System.Diagnostics.Stopwatch();
         sw.Start();
 
-        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        var version = ++loadVersion;
+        var newUnitOfWork = unitOfWorkFactory.Create();
 
-        production = await unitOfWork.Productions.GetDetails(id);
+        var loadedProduction = await newUnitOfWork.Productions.GetDetails(id);
 
         sw.Stop();
 
@@ -485,6 +485,20 @@
 
         logger.LogInformation("UserID: {userId}", userId);
 
+        var loadedIsFavorite = await newUnitOfWork.Users.IsFavorite(userId, ProductionId);
+
+        if (version != loadVersion)
+        {
+            // A newer LoadProd started while this one was still running - discard this stale result.
+            newUnitOfWork.Dispose();
+            return;
+        }
+
+        unitOfWork?.Dispose();
+        unitOfWork = newUnitOfWork;
+        production = loadedProduction;
+        isFavorite = loadedIsFavorite;
+
         if (production?.Comments.Where(p => p.UserId == userId && p.CommentedAt > DateTime.Now.AddMinutes(-5)).Count() >= 1)
         {
             logger.LogInformation("Comments are blocked");
@@ -492,10 +506,6 @@
         }
         else
             CommentsBlocked = false;
-
-        // Hack - fixes an InvalidOperationException when fast (re-)loading a new production
-        var spareUnitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
-        isFavorite = await spareUnitOfWork.Users.IsFavorite(httpContext.HttpContext.GetUserId(), ProductionId);
 
         StateHasChanged();
     }
@@ -537,5 +547,6 @@
     public void Dispose()
     {
         navigationManager.LocationChanged -= OnLocationChanged;
+        unitOfWork?.Dispose();
     }
 }

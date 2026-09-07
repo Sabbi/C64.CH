@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace C64.Data.Repositories
@@ -14,12 +15,12 @@ namespace C64.Data.Repositories
 
         public async Task<Statistic> Get()
         {
-            return await context.Set<Statistic>().FirstOrDefaultAsync();
+            return await context.Set<Statistic>().OrderBy(p => p.StatisticId).FirstOrDefaultAsync();
         }
 
         public async Task UpdateStats()
         {
-            var existing = await context.Set<Statistic>().FirstOrDefaultAsync();
+            var existing = await context.Set<Statistic>().OrderBy(p => p.StatisticId).FirstOrDefaultAsync();
             var stat = existing == null ? new Statistic() : existing;
 
             stat.NumberOfUsers = await context.Set<User>().CountAsync();

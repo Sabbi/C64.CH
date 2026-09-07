@@ -1,6 +1,6 @@
 ﻿@namespace C64.FrontEnd.Shared
 @implements IDisposable
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 <Box ContentClasses="text-left p-1 overflow-hidden">
     <Title><a href="/productions/demos/topdownloaded">Top Downloaded</a></Title>
     <Content>
@@ -17,8 +17,11 @@
 
     private IEnumerable<Production> productions = new List<Production>();
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         var result = await unitOfWork.Productions.FindPaginated(p => !p.Deleted, "Downloads", false, 1, 10);
         productions = result.Data;
     }
@@ -34,6 +37,7 @@
     {
         // notifierService.NewDownload -= OnNewDownload;
 
+        unitOfWork?.Dispose();
     }
 
 }

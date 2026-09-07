@@ -1,11 +1,9 @@
 ﻿@page "/sceners/{ScenerId:int}"
 @page "/sceners/{ScenerId:int}/{Handle}"
 
-@using Microsoft.Extensions.DependencyInjection
-@inherits OwningComponentBase
-
 @implements IDisposable
 
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IJSRuntime jsRuntime
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject IModalService Modal
@@ -146,6 +144,7 @@
     public string Handle { get; set; }
 
     private IUnitOfWork unitOfWork;
+    private int loadVersion;
 
     private Scener scener;
 
@@ -220,14 +219,31 @@
 
     private async Task LoadScener(int id)
     {
-        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        var version = ++loadVersion;
+        var newUnitOfWork = unitOfWorkFactory.Create();
 
-        scener = await unitOfWork.Sceners.GetDetails(id);
+        var loadedScener = await newUnitOfWork.Sceners.GetDetails(id);
+        var loadedScenerProductions = await newUnitOfWork.Productions.GetForScener(id);
 
-        scenerProductions = await unitOfWork.Productions.GetForScener(id);
+        if (version != loadVersion)
+        {
+            // A newer LoadScener started while this one was still running - discard this stale result.
+            newUnitOfWork.Dispose();
+            return;
+        }
+
+        unitOfWork?.Dispose();
+        unitOfWork = newUnitOfWork;
+        scener = loadedScener;
+        scenerProductions = loadedScenerProductions;
 
         productionIds = scener.ProductionsSceners.Select(p => p.ProductionId);
 
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

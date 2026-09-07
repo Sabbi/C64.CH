@@ -1,4 +1,4 @@
-﻿using C64.Data;
+using C64.Data;
 using C64.Data.Entities;
 using C64.Services.Archive;
 using Microsoft.EntityFrameworkCore;
@@ -11,17 +11,18 @@ namespace C64.Services.Storage
 {
     public class DbFileStorageService : IFileStorageService
     {
-        private readonly ApplicationDbContext context;
+        private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
         private readonly IArchiveService archiveService;
 
-        public DbFileStorageService(ApplicationDbContext context, IArchiveService archiveService)
+        public DbFileStorageService(IDbContextFactory<ApplicationDbContext> dbContextFactory, IArchiveService archiveService)
         {
-            this.context = context;
+            this.dbContextFactory = dbContextFactory;
             this.archiveService = archiveService;
         }
 
         public async Task DeleteFile(string container, string fileName)
         {
+            using var context = dbContextFactory.CreateDbContext();
             var fileToDelete = context.DbFiles.FirstOrDefault(p => p.Container == container && p.FileName == fileName);
             context.Remove(fileToDelete);
             await context.SaveChangesAsync();
@@ -29,6 +30,7 @@ namespace C64.Services.Storage
 
         public async Task<byte[]> GetFileContents(string container, string fileName)
         {
+            using var context = dbContextFactory.CreateDbContext();
             var fileToGet = await context.DbFiles.FirstOrDefaultAsync(p => p.Container == container && p.FileName == fileName);
             if (fileToGet != null)
                 return fileToGet.Data;
@@ -38,6 +40,7 @@ namespace C64.Services.Storage
 
         public async Task<FileInformation> GetFileInformations(string container, string fileName)
         {
+            using var context = dbContextFactory.CreateDbContext();
             var fileToGet = await context.DbFiles.FirstOrDefaultAsync(p => p.Container == container && p.FileName == fileName);
             if (fileToGet != null)
             {
@@ -53,6 +56,7 @@ namespace C64.Services.Storage
 
         public async Task ReplaceFile(byte[] content, string container, string fileName)
         {
+            using var context = dbContextFactory.CreateDbContext();
             var fileToUpdate = await context.DbFiles.FirstOrDefaultAsync(p => p.Container == container && p.FileName == fileName);
 
             if (fileToUpdate == null)
@@ -66,6 +70,8 @@ namespace C64.Services.Storage
 
         public async Task<string> SaveFile(byte[] content, string container, string fileName)
         {
+            using var context = dbContextFactory.CreateDbContext();
+
             if (Path.GetExtension(fileName).ToLower() == ".zip")
             {
                 archiveService.Load(content);
@@ -81,7 +87,7 @@ namespace C64.Services.Storage
 
             while (!freeFileFound)
             {
-                if (!FileExists(container, newFileName))
+                if (!FileExists(context, container, newFileName))
                     freeFileFound = true;
                 else
                 {
@@ -107,7 +113,7 @@ namespace C64.Services.Storage
             return newFileName;
         }
 
-        private bool FileExists(string container, string fileName)
+        private static bool FileExists(ApplicationDbContext context, string container, string fileName)
         {
             return context.DbFiles.Any(p => p.Container == container && p.FileName == fileName);
         }

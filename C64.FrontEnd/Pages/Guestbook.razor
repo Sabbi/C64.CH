@@ -1,10 +1,12 @@
 ﻿@page "/guestbook"
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IJSRuntime jsRuntime
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContextAccessor
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 @inject ILogger<Guestbook> logger;
+
+@implements IDisposable
 
 <MyPageTitle Title="Guestbook" />
 <Box MarginBottom="4">
@@ -106,6 +108,8 @@
 
     private AddGuestbookModel addGuestbookModel = new AddGuestbookModel();
 
+    private IUnitOfWork unitOfWork;
+
     protected async Task OnValidSubmit()
     {
         await jsRuntime.SetRedoTrigger("GuestbookEntry");
@@ -138,6 +142,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
+
         addGuestbookModel.Name = httpContextAccessor.HttpContext.GetUserName();
 
         if (!string.IsNullOrEmpty(addGuestbookModel.Name))
@@ -163,5 +169,10 @@
         paginatedResult = await unitOfWork.GuestbookEntries.FindPaginated(p => true, "GuestbookEntryId", false, selectedPage, pageSize);
         page = selectedPage;
         entries = paginatedResult.TotalNumberOfRecords;
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

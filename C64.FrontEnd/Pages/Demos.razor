@@ -1,6 +1,7 @@
-﻿@inject IUnitOfWork unitOfWork
+﻿@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject NavigationManager navigationManager
 @inject ILogger<Demos> logger
+@implements IDisposable
 
 @page "/productions/demos"
 <MyPageTitle Title="Demos Overview" />
@@ -177,6 +178,8 @@
 
 @code {
 
+    private IUnitOfWork unitOfWork;
+
     private Dictionary<string, string> groupData = new Dictionary<string, string>();
     private Dictionary<string, string> yearData = new Dictionary<string, string>();
     private Dictionary<string, string> scenerData = new Dictionary<string, string>();
@@ -224,6 +227,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
 
         sceners = (await unitOfWork.Sceners.FindWithGroups(p => true)).OrderBy(p => p.Handle).ToList();
 
@@ -278,6 +282,11 @@
             var scenerHandle = scenerData.FirstOrDefault(p => p.Key == selectedScener);
             navigationManager.NavigateTo($"/sceners/{selectedScener}/{scenerHandle.Value.UrlEncode()}");
         }
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 
 }

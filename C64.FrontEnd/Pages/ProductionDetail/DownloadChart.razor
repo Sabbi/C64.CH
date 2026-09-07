@@ -1,7 +1,6 @@
 ﻿@namespace C64.FrontEnd.Pages
 
-@using Microsoft.Extensions.DependencyInjection
-@inherits OwningComponentBase
+@inject IUnitOfWorkFactory unitOfWorkFactory
 
 @using ChartJs.Blazor.Charts
 @using ChartJs.Blazor.ChartJS.LineChart;
@@ -27,8 +26,6 @@
 
     private BarDataset<Point> barSet;
 
-    private IUnitOfWork unitOfWork;
-
     private List<int> chartDownloads;
     private List<string> chartDates;
 
@@ -40,7 +37,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        using var unitOfWork = unitOfWorkFactory.Create();
         var downloads = await unitOfWork.Productions.GetDownloads(ProductionId);
 
         chartDownloads = new List<int>();

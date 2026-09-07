@@ -1,9 +1,10 @@
 ﻿@namespace C64.FrontEnd.Pages
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject ILogger<SiteNews> logger
 
 @inject NavigationManager navigationManager
+@implements IDisposable
 
 @if (paginatedResult?.Data != null)
 {
@@ -38,6 +39,13 @@
 
     private PaginatedResult<SiteInfo> paginatedResult;
 
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         if (Page < 1)
@@ -65,4 +73,9 @@
         paginatedResult = await unitOfWork.SiteInfos.GetPaginatedWithUser(p => p.Category == Category, "PublishedAt", false, selectedPage, PageSize);
         Page = selectedPage;
     }
-} 
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
+    }
+}

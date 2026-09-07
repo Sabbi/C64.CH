@@ -2,7 +2,7 @@
 
 @implements IDisposable
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject NavigationManager navigationManager
 @inject ILogger<SimpleSearch> logger
 
@@ -27,13 +27,22 @@
 
     private string title => $"Searchresults for {Search}";
 
+    private IUnitOfWork unitOfWork;
+    private bool isDisposed;
+
     protected override void OnInitialized()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         navigationManager.LocationChanged += OnLocationChanged;
     }
 
     private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
     {
+        // NavigationManager.LocationChanged is a plain multicast event: the Router's own
+        // subscriber (which tears this component down on navigation away) can run before
+        // this handler in the same dispatch, so this can still fire after Dispose().
+        if (isDisposed)
+            return;
 
         var term = navigationManager.GetFromQueryString<string>("search");
         logger.LogInformation("Location Changed, search is now {search}", term);
@@ -86,6 +95,8 @@
 
     public void Dispose()
     {
+        isDisposed = true;
         navigationManager.LocationChanged -= OnLocationChanged;
+        unitOfWork?.Dispose();
     }
 }

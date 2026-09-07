@@ -1,11 +1,19 @@
 ﻿@page "/links/follow/{LinkId:int}"
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject NavigationManager navigationManager
+@implements IDisposable
 
 @code {
     [Parameter]
     public int LinkId { get; set; }
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -26,5 +34,10 @@
             link.Url = "http://" + link.Url;
 
         navigationManager.NavigateTo(link.Url, true);
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

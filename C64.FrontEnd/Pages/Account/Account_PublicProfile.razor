@@ -3,9 +3,11 @@
 @layout AccountLayout
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 @inject IToastService toastService
+
+@implements IDisposable
 
 <MyPageTitle Title="Account - Public Profile" />
 <h4>Public Profile</h4>
@@ -128,8 +130,12 @@
 
     private User user;
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
+
         countries = await unitOfWork.Countries.Find(p => p.Selectable, p => p.Name);
         user = await userManager.FindByIdAsync(httpContext.HttpContext.GetUserId());
 
@@ -142,6 +148,11 @@
         editPublicProfileModel.Update(user);
         await userManager.UpdateAsync(user);
         toastService.ShowSuccess("Profile successfully updated");
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 
 }

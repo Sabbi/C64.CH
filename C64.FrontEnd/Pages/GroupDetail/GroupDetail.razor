@@ -1,11 +1,9 @@
 ﻿@page "/groups/{GroupId:int}"
 @page "/groups/{GroupId:int}/{GroupName}"
 
-@using Microsoft.Extensions.DependencyInjection
-@inherits OwningComponentBase
-
 @implements IDisposable
 
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IJSRuntime jsRuntime
 @inject ILogger<GroupDetail> logger
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
@@ -130,6 +128,7 @@ else if (group != null && currentPage > 1)
     public string GroupName { get; set; }
 
     private IUnitOfWork unitOfWork;
+    private int loadVersion;
 
     private Group group;
 
@@ -214,9 +213,21 @@ else if (group != null && currentPage > 1)
         var sw = new System.Diagnostics.Stopwatch();
         sw.Start();
 
-        unitOfWork = ScopedServices.GetRequiredService<IUnitOfWork>();
+        var version = ++loadVersion;
+        var newUnitOfWork = unitOfWorkFactory.Create();
 
-        group = await unitOfWork.Groups.GetDetails(GroupId);
+        var loadedGroup = await newUnitOfWork.Groups.GetDetails(GroupId);
+
+        if (version != loadVersion)
+        {
+            // A newer LoadGroup started while this one was still running - discard this stale result.
+            newUnitOfWork.Dispose();
+            return;
+        }
+
+        unitOfWork?.Dispose();
+        unitOfWork = newUnitOfWork;
+        group = loadedGroup;
 
         if (group == null)
         {
@@ -232,5 +243,10 @@ else if (group != null && currentPage > 1)
         logger.LogInformation("Loaded group {name} in {milliseconds}ms", group.Name, sw.ElapsedMilliseconds);
 
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

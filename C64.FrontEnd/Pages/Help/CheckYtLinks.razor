@@ -1,8 +1,10 @@
 ﻿@page "/help/checkytlinks"
 @page "/help/checkytlinks/{Page:int}"
 
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject NavigationManager navigationManager
+
+@implements IDisposable
 
 <AuthorizeView Roles="Admin, Moderator">
     <NotAuthorized>
@@ -63,6 +65,13 @@
 
     private PaginatedResult<Production> paginatedResult;
 
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
+
     protected override async Task OnParametersSetAsync()
     {
 
@@ -81,6 +90,11 @@
     private void OnSelectPage(int selectedPage)
     {
         navigationManager.NavigateTo($"/help/checkytlinks/{selectedPage}");
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 
 }

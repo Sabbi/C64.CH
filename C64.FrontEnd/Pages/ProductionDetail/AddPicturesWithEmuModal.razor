@@ -139,23 +139,14 @@
 
     private async Task StartEmulator(ProductionFile productionFile)
     {
-        // Concurrent connections otherwise, I don't know why (yet)
-        byte[] fileData = null;
+        byte[] fileData;
         try
         {
             fileData = await fileStorageService.GetFileContents("productionfiles", productionFile.Filename);
         }
         catch
         {
-            try
-            {
-                System.Threading.Thread.Sleep(50);
-                fileData = await fileStorageService.GetFileContents("productionfiles", productionFile.Filename);
-            }
-            catch
-            {
-                return;
-            }
+            return;
         }
 
         var viceLoader = new DefaultViceLoader(archiveService);

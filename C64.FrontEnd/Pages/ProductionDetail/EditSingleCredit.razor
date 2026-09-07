@@ -1,6 +1,8 @@
 ﻿@namespace C64.FrontEnd.Pages
 
-@inject IUnitOfWork unitOfWork;
+@inject IUnitOfWorkFactory unitOfWorkFactory
+
+@implements IDisposable
 <label>
     <span>Add Credit:</span>
 </label>
@@ -43,6 +45,18 @@
     public EventCallback<EditCredit> OnSubmit { get; set; }
 
     private bool disabled = true;
+
+    private IUnitOfWork unitOfWork;
+
+    protected override void OnInitialized()
+    {
+        unitOfWork = unitOfWorkFactory.Create();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
+    }
 
     private void OnValueChanged(Scener selectedScener)
     {

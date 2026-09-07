@@ -1,8 +1,9 @@
 ﻿@inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
 @inject ILogger<WriteComment>  logger
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 
 @inject IJSRuntime jsRuntime
+@implements IDisposable
 
 <BootstrapModal @ref="bootstrapModal" Title="@($"Edit Link")" Size="BootstrapModal.ModalSize.Default">
     <Content>
@@ -71,8 +72,11 @@
 
     private List<LinkCategory> linkCategories = new List<LinkCategory>();
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         linkCategories = (await unitOfWork.Links.GetCategories()).ToList();
         model.CategoryId = Link.LinkCategoryId.ToString();
         model.Title = Link.Name;
@@ -108,5 +112,10 @@
                 await bootstrapModal.Close(ModalResult.Ok("Ok"));
             }
         }
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

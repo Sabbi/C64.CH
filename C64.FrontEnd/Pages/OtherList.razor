@@ -2,7 +2,7 @@
 @page "/productions/{ProdType}/{ListBy}"
 
 @inject NavigationManager navigationManager
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 
 @implements IDisposable
 
@@ -48,7 +48,7 @@
     private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
     {
         await LoadContent();
-        productionList.Update();
+        await productionList.UpdateAsync();
     }
 
     protected override async Task OnInitializedAsync()
@@ -59,6 +59,8 @@
 
     private async Task LoadContent()
     {
+        using var unitOfWork = unitOfWorkFactory.Create();
+
         switch (ListBy)
         {
             case "latestadded":

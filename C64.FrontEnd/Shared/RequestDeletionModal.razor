@@ -3,12 +3,13 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject Microsoft.AspNetCore.Http.HttpContextAccessor httpContext
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 
 @inject IToastService toastService
 @inject IEmailSender mailSender
 
 @inject UserManager<User> userManager
+@implements IDisposable
 
 <BootstrapModal @ref="bootstrapModal" Title="Request deletion" Size="BootstrapModal.ModalSize.Large">
     <Content>
@@ -58,8 +59,11 @@
 
     private bool disabled = false;
 
+    private IUnitOfWork unitOfWork;
+
     protected async override Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
         if (httpContext.HttpContext.IsLoggedIn())
         {
             var user = await userManager.FindByIdAsync(httpContext.HttpContext.GetUserId());
@@ -92,5 +96,10 @@
 
         toastService.ShowSuccess("Thank you, we received your request");
         await bootstrapModal.Close();
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 }

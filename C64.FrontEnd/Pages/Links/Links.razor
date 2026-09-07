@@ -3,11 +3,13 @@
 
 @inject NavigationManager navigationManager
 @inject IJSRuntime jsRuntime
-@inject IUnitOfWork unitOfWork
+@inject IUnitOfWorkFactory unitOfWorkFactory
 @inject IModalService Modal
 @inject IToastService toastService
 
 @inject IHttpContextAccessor httpContextAccessor
+
+@implements IDisposable
 
 <MyPageTitle Title="Links" />
 <Box>
@@ -102,8 +104,12 @@
 
     private string title;
 
+    private IUnitOfWork unitOfWork;
+
     protected override async Task OnInitializedAsync()
     {
+        unitOfWork = unitOfWorkFactory.Create();
+
         if (CategoryId == 0)
             CategoryId = 1;
 
@@ -172,6 +178,11 @@
     {
         links = (await unitOfWork.Links.Find(p => p.LinkCategoryId == CategoryId)).OrderByDescending(p => p.Added);
         title = $"{linkCategories.FirstOrDefault(p => p.LinkCategoryId == CategoryId).Name} ({links.Count()} links found)";
+    }
+
+    public void Dispose()
+    {
+        unitOfWork?.Dispose();
     }
 
 }
