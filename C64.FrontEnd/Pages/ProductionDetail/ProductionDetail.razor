@@ -266,7 +266,9 @@
 
     private async Task DownloadFile(int fileId)
     {
+        production.Downloads++;
         await downloadChart.AddDownload();
+        StateHasChanged();
     }
 
     private async Task SetFavorite(bool value)

@@ -69,8 +69,12 @@ namespace C64.Data.Repositories
 
             if (productionFile != null)
             {
-               
+
                 productionFile.Downloads++;
+
+                var production = await context.Set<Production>().FindAsync(productionFile.ProductionId);
+                if (production != null)
+                    production.Downloads++;
 
                 var download = new Download(productionFile.ProductionFileId, remoteIp, referer, userId);
                 context.Add(download);
