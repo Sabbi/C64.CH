@@ -60,6 +60,8 @@
 
     private bool disabled = false;
 
+    private bool readyToCheckPicture = false;
+
     private string tweetButtonText = "Tweet";
 
     protected override async Task OnParametersSetAsync()
@@ -71,13 +73,16 @@
         if (firstPicture != null)
             firstPictureData = await fileStorageService.GetFileContents("productionPictures", firstPicture);
 
-        tweet.Tweet = $"{Production.Name} released by {string.Join(", ", releasedby)} on {Production.ReleaseDate.ParseDate(Production.ReleaseDateType)}. Check it out @ https://c64.ch/productions/{Production.Id}/{Production.Name.UrlEncode()} \n/ c64.ch -  #c64 #commodore #demoscene #retro";
+        tweet.Tweet = $"{Production.Name} released by {string.Join(", ", releasedby)} on {Production.ReleaseDate.ParseDate(Production.ReleaseDateType)}. Check it out @ https://c64.ch/productions/{Production.Id}/{Production.Name.UrlEncode()} \n/ c64.ch -  #c64 #commodore #demoscene #retro #{Production.SubCategory.ToString().ToLowerInvariant()}";
+
+        readyToCheckPicture = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstPictureData == null)
+        if (readyToCheckPicture && firstPictureData == null)
         {
+            readyToCheckPicture = false;
             toastService.ShowError("Only Productions with a picture can be tweeted!");
             await bootstrapModal.Close(ModalResult.Cancel());
         }
