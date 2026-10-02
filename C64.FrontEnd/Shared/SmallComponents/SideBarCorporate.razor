@@ -36,6 +36,9 @@
 
     private IUnitOfWork unitOfWork;
 
+    // The circuit can be torn down 
+    private volatile bool disposed;
+
     protected override void OnInitialized()
     {
         unitOfWork = unitOfWorkFactory.Create();
@@ -47,6 +50,9 @@
         {
             await UpdateLatency();
 
+            if (disposed)
+                return;
+
             timeTimer.Interval = 4000;
             timeTimer.Elapsed += OnTimerElapsed;
             timeTimer.Start();
@@ -55,6 +61,9 @@
 
     private async void OnTimerElapsed(object sender, ElapsedEventArgs e)
     {
+        if (disposed)
+            return;
+
         await UpdateLatency();
     }
 
@@ -64,8 +73,16 @@
         {
             startTime = DateTime.UtcNow;
             var _ = await jsRuntime.InvokeAsync<string>("toString");
+
+            if (disposed)
+                return;
+
             latency = DateTime.UtcNow - startTime;
             await base.InvokeAsync(StateHasChanged);
+        }
+        catch (ObjectDisposedException)
+        {
+            // Circuit was torn down mid-await; nothing left to update.
         }
         catch
         {
@@ -75,6 +92,8 @@
 
     public void Dispose()
     {
+        disposed = true;
+
         if (timeTimer != null)
         {
             try

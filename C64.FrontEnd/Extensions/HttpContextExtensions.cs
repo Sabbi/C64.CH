@@ -43,11 +43,17 @@ namespace C64.FrontEnd.Extensions
 
         public static string GetUserName(this HttpContext httpContext)
         {
+            if (httpContext?.User == null)
+                return null;
+
             return httpContext.User.FindFirstValue(ClaimTypes.Name);
         }
 
         public static bool CanEdit(this HttpContext httpContext)
         {
+            if (httpContext?.User == null)
+                return false;
+
             return httpContext.User.IsInRole("Moderator") || httpContext.User.IsInRole("Editor");
         }
 
@@ -61,6 +67,9 @@ namespace C64.FrontEnd.Extensions
 
         public static IEnumerable<string> GetRoles(this HttpContext httpContext)
         {
+            if (httpContext?.User == null)
+                return Enumerable.Empty<string>();
+
             return httpContext.User.Claims.Where(p => p.Type == ClaimTypes.Role).Select(p => p.Value);
         }
 

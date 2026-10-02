@@ -141,7 +141,7 @@
                                         <Authorized>
                                             <ul>
                                                 <li><a href="#" @onclick:preventDefault @onclick="@(() => NavigateTo("/account"))">Manage your account</a></li>
-                                                <li><a href="#" @onclick:preventDefault @onclick="@(() => navigationManager.NavigateTo("/user/logout",true))">Logout</a></li>
+                                                <li><a href="/user/logout">Logout</a></li>
                                             </ul>
                                         </Authorized>
                                         <NotAuthorized>
